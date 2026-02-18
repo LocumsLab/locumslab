@@ -1,0 +1,3119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="LocumsLab helps healthcare professionals model W2 vs 1099 locums income, taxes, and take-home. Save scenarios and compare decisions in minutes.">
+<link rel="canonical" href="https://locumslab.com/">
+<meta property="og:title" content="LocumsLab — Run the numbers before you go locums">
+<meta property="og:description" content="Model W2 vs 1099 income, taxes, and true take-home. Save scenarios and compare offers in minutes.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://locumslab.com/">
+<meta property="og:image" content="https://locumslab.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="LocumsLab — Run the numbers before you go locums">
+<meta name="twitter:description" content="Model W2 vs 1099 income, taxes, and take-home. Save scenarios and compare offers in minutes.">
+<meta name="twitter:image" content="https://locumslab.com/og.png">
+
+<title>LocumsLab — Model W2 vs 1099 Locums Decisions</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+  :root {
+    --bg: #0f1419;
+    --surface: #1a1f29;
+    --surface2: #242b38;
+    --border: #2d3748;
+    --accent: #10b981;
+    --accent-dark: #059669;
+    --text: #f7fafc;
+    --muted: #94a3b8;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  .hidden { display: none !important; }
+
+  /* Auth */
+  .auth-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+  }
+
+  .auth-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 48px;
+    max-width: 440px;
+    width: 90%;
+    /* Mobile improvements */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .auth-logo {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .auth-tagline {
+    font-size: 0.875rem;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+
+  .auth-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .auth-tab {
+    flex: 1;
+    padding: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  .auth-tab.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .auth-form { display: none; }
+  .auth-form.active { display: block; }
+
+  .auth-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9375rem;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+  }
+
+  .auth-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .auth-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+    /* Mobile touch improvements */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    min-height: 48px; /* Minimum touch target size */
+  }
+
+  .auth-btn:hover {
+    background: var(--accent-dark);
+  }
+
+  .auth-error {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  .auth-error.show { display: block; }
+
+  /* Header */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    background: rgba(15,20,25,0.95);
+    backdrop-filter: blur(10px);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+
+  .logo-badge {
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.3);
+    color: var(--accent);
+    font-size: 0.6875rem;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .header-right {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .user-email {
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+
+  .header-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .header-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .header-btn.upgrade {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .header-btn.upgrade:hover {
+    background: var(--accent-dark);
+  }
+
+  /* Wizard */
+  .wizard {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 80px 48px;
+  }
+
+  .wizard-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .wizard-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    letter-spacing: -0.03em;
+  }
+
+  .wizard-header .highlight {
+    color: var(--accent);
+  }
+
+  .wizard-header p {
+    font-size: 1.125rem;
+    color: var(--muted);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .wizard-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 700px) {
+    .wizard-choices { grid-template-columns: 1fr; }
+  }
+
+  .choice-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .choice-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(16,185,129,0.15);
+  }
+
+  .choice-emoji {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+  }
+
+  .choice-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .choice-desc {
+    font-size: 0.9375rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Dashboard */
+  .dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 60px 48px 80px;
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .dashboard-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .dash-btn {
+    padding: 12px 24px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .dash-btn:hover {
+    background: var(--accent-dark);
+  }
+
+  .dash-btn.secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .dash-btn.secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--surface);
+  }
+
+  .template-section {
+    margin-bottom: 48px;
+  }
+
+  .template-section h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.8125rem;
+  }
+
+  .scenarios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .scenario-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .scenario-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(16,185,129,0.1);
+  }
+
+  .scenario-card.template {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+    border: 1px dashed var(--accent);
+  }
+
+  .scenario-card.template:hover {
+    border-style: solid;
+  }
+
+  .scenario-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .scenario-name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .scenario-tag {
+    background: rgba(16,185,129,0.1);
+    color: var(--accent);
+    font-size: 0.6875rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .scenario-meta {
+    font-size: 0.8125rem;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .scenario-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .scenario-stat-label {
+    color: var(--muted);
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+  }
+
+  .scenario-stat-value {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.9375rem;
+  }
+
+  .scenario-action-btn {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 1.125rem;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s;
+  }
+
+  .scenario-action-btn:hover {
+    color: var(--danger);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+  }
+
+  .empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    opacity: 0.3;
+  }
+
+  /* Comparison */
+  .comparison-view {
+    margin-top: 48px;
+  }
+
+  .comparison-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .comparison-header h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+
+  .export-btn {
+    padding: 10px 20px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .export-btn:hover {
+    background: var(--accent-dark);
+  }
+
+  .comparison-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .comparison-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .comparison-table th {
+    background: var(--surface2);
+    padding: 16px;
+    text-align: left;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .comparison-table td {
+    padding: 16px;
+    border-bottom: 1px solid rgba(45,55,72,0.5);
+    font-size: 0.9375rem;
+  }
+
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .comparison-table tr:hover {
+    background: rgba(16,185,129,0.03);
+  }
+
+  .comparison-table .metric-label {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .comparison-table .winner {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* Calculator */
+  .calculator {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 48px 80px;
+  }
+
+  .calc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+
+  .calc-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .calc-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .save-btn, .export-scenario-btn {
+    padding: 10px 20px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .save-btn:hover, .export-scenario-btn:hover {
+    background: var(--accent-dark);
+  }
+
+  .export-scenario-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .nav {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+    margin-bottom: 40px;
+  }
+
+  .nav-btn {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .nav-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .nav-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .panel {
+    display: none;
+  }
+
+  .panel.active {
+    display: block;
+  }
+
+  .panel-header {
+    margin-bottom: 36px;
+  }
+
+  .panel-header h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .panel-header p {
+    font-size: 0.9375rem;
+    color: var(--muted);
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 900px) {
+    .two-col { grid-template-columns: 1fr; }
+    header, .wizard, .dashboard, .calculator { padding-left: 24px; padding-right: 24px; }
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+  }
+
+  .card-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+  }
+
+  .field {
+    margin-bottom: 20px;
+  }
+
+  .field:last-child { margin-bottom: 0; }
+
+  .field label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .field input,
+  .field select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9375rem;
+    padding: 10px 14px;
+    border-radius: 6px;
+    transition: border-color 0.2s;
+  }
+
+  .field input:focus,
+  .field select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .field input[type="range"] {
+    padding: 0;
+    height: 6px;
+    border: none;
+    background: var(--border);
+    cursor: pointer;
+    accent-color: var(--accent);
+    margin-top: 8px;
+  }
+
+  .range-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .range-val {
+    font-size: 0.9375rem;
+    color: var(--accent);
+    font-weight: 600;
+    min-width: 52px;
+    text-align: right;
+  }
+
+  .calc-btn {
+    width: 100%;
+    margin-top: 28px;
+    padding: 14px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .calc-btn:hover {
+    background: var(--accent-dark);
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 32px 0;
+  }
+
+  .stat-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    position: relative;
+  }
+
+  .stat-box.highlight {
+    border-color: var(--accent);
+    background: rgba(16,185,129,0.05);
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .stat-value.neutral { color: var(--text); }
+  .stat-value.danger { color: var(--danger); }
+  .stat-value.success { color: var(--accent); }
+
+  .stat-sub {
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+
+  .chart-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+
+  .chart-wrap canvas {
+    max-height: 320px;
+  }
+
+  .insight {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 12px 12px 0;
+    padding: 24px;
+  }
+
+  .insight-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .insight p {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  /* Modals */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 6000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.show { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .modal p {
+    color: var(--muted);
+    font-size: 0.9375rem;
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+
+  .modal-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9375rem;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+  }
+
+  .modal-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .modal-btn {
+    flex: 1;
+    padding: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .modal-btn.primary {
+    background: var(--accent);
+    color: white;
+    border: none;
+  }
+
+  .modal-btn.primary:hover {
+    background: var(--accent-dark);
+  }
+
+  .modal-btn.secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .modal-btn.secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .pricing-box {
+    background: var(--surface2);
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+  }
+
+  .pricing-amount {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .pricing-features {
+    font-size: 0.9375rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .compare-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .compare-card.winner {
+    border-color: var(--accent);
+    background: rgba(16,185,129,0.03);
+  }
+
+  .compare-card h4 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9375rem;
+  }
+
+  .row:last-child { border-bottom: none; }
+  .row-label { color: var(--muted); }
+  .row-val { font-weight: 600; }
+
+  footer {
+    text-align: center;
+    padding: 48px;
+    font-size: 0.8125rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+
+  footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+</style>
+<!-- Optional analytics (GA4). Replace G-XXXXXXX with your Measurement ID.
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXX');
+</script>
+-->
+</head>
+<body>
+
+<!-- AUTH -->
+<div class="auth-screen hidden" id="authScreen">
+  <div class="auth-box">
+    <div class="auth-logo">LocumsLab</div>
+    <div class="auth-tagline">Compare contracts. Model your future. Make confident decisions.</div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="switchAuthTab('login')">Log In</div>
+      <div class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</div>
+    </div>
+    <div class="auth-error" id="authError"></div>
+    <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
+      <input type="email" class="auth-input" placeholder="Email" required id="loginEmail">
+      <input type="password" class="auth-input" placeholder="Password" required id="loginPassword">
+      <button type="submit" class="auth-btn">Log In</button>
+    </form>
+    <form class="auth-form" id="signupForm" onsubmit="handleSignup(event)">
+      <input type="email" class="auth-input" placeholder="Email" required id="signupEmail">
+      <input type="password" class="auth-input" placeholder="Password (min 6 characters)" required id="signupPassword" minlength="6">
+      <input type="password" class="auth-input" placeholder="Confirm Password" required id="signupPasswordConfirm">
+      <button type="submit" class="auth-btn">Create Account</button>
+    </form>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp">
+  <header>
+    <div class="logo">
+      <div class="logo-text">LocumsLab</div>
+      <div class="logo-badge" id="planBadge">Free</div>
+    </div>
+    <div class="header-right">
+      <span class="user-email" id="userEmail"></span>
+      <button class="header-btn upgrade hidden" id="upgradeBtn" onclick="showUpgradeModal()">Upgrade to Pro</button>
+      <button class="header-btn" onclick="showDashboard()">Dashboard</button>
+      <button class="header-btn" onclick="handleLogout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- WIZARD -->
+  
+  <div class="wizard" id="wizard">
+    <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px; padding: 16px 20px; margin-bottom: 32px; text-align: center;">
+      <span style="color: #fbbf24; font-size: 0.9375rem;">👋 Try all calculators free. <a href="#" onclick="showAuthScreen(); return false;" style="color: #10b981; font-weight: 600; text-decoration: underline;">Sign up</a> to save scenarios and unlock comparison view.</span>
+    </div>
+
+    <div class="wizard-header">
+      <h1>Should you go <span class="highlight">locums</span>?</h1>
+      <p>Compare staff positions vs travel contracts. Model your income, taxes, and financial future.</p>
+    </div>
+    <div class="wizard-choices">
+      <div class="choice-card" onclick="selectGoal('staff-vs-locums')">
+        <div class="choice-emoji">⚖️</div>
+        <div class="choice-title">Staff vs Locums</div>
+        <div class="choice-desc">Compare your current staff position against locums/travel contracts</div>
+      </div>
+      <div class="choice-card" onclick="selectGoal('contract-eval')">
+        <div class="choice-emoji">📋</div>
+        <div class="choice-title">Evaluate a Contract</div>
+        <div class="choice-desc">Review a specific travel contract offer and see your true take-home</div>
+      </div>
+      <div class="choice-card" onclick="selectGoal('w2-1099')">
+        <div class="choice-emoji">💼</div>
+        <div class="choice-title">W2 vs 1099</div>
+        <div class="choice-desc">Understand the tax and income differences between employment types</div>
+      </div>
+      <div class="choice-card" onclick="selectGoal('scorp')">
+        <div class="choice-emoji">🏢</div>
+        <div class="choice-title">S-Corp Evaluator</div>
+        <div class="choice-desc">Should you form an S-Corporation? Compare tax implications and savings</div>
+      </div>
+      <div class="choice-card" onclick="selectGoal('explore')">
+        <div class="choice-emoji">🔍</div>
+        <div class="choice-title">Explore All Tools</div>
+        <div class="choice-desc">Access all calculators including home affordability, loans, and more</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="dashboard hidden" id="dashboardView">
+    <div class="dashboard-header">
+      <h1>Your Scenarios</h1>
+      <div class="dashboard-actions">
+        <button class="dash-btn" onclick="startNew()">+ New Scenario</button>
+        <button class="dash-btn secondary" onclick="loadScenarios()">↻ Refresh</button>
+      </div>
+    </div>
+
+    <!-- Pre-populated Templates -->
+    <div class="template-section">
+      <h2>Start from a Template</h2>
+      <div class="scenarios-grid" id="templatesContainer"></div>
+    </div>
+
+    <!-- User Scenarios -->
+    <div class="template-section">
+      <h2>My Scenarios</h2>
+      <div id="scenariosContainer"></div>
+    </div>
+
+    <!-- Comparison View -->
+    <div class="comparison-view hidden" id="comparisonView">
+      <div class="comparison-header">
+        <h2>Compare Your Scenarios</h2>
+        <button class="export-btn" onclick="exportComparison()">
+          <span>📄</span>
+          <span>Export to PDF</span>
+        </button>
+      </div>
+      <div class="comparison-table">
+        <table id="comparisonTable"></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALCULATOR -->
+  <div class="calculator hidden" id="calculatorView">
+    <div class="calc-header">
+      <div class="calc-title" id="calcTitle">New Scenario</div>
+      <div class="calc-actions">
+        <button class="export-scenario-btn hidden" id="exportScenarioBtn" onclick="exportScenarioPDF()">
+          <span>📄</span>
+          <span>Export PDF</span>
+        </button>
+        <button class="save-btn" onclick="showSaveModal()">
+          <span>💾</span>
+          <span>Save</span>
+        </button>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-btn active" onclick="switchPanel('staff-locums', this)">Staff vs Locums</button>
+      <button class="nav-btn" onclick="switchPanel('w2-1099', this)">W2 vs 1099</button>
+      <button class="nav-btn" onclick="switchPanel('scorp', this)">S-Corp</button>
+      <button class="nav-btn" onclick="switchPanel('tax', this)">Tax Estimator</button>
+      <button class="nav-btn" onclick="switchPanel('home', this)">Home Buying</button>
+      <button class="nav-btn" onclick="switchPanel('loan', this)">Loans</button>
+      <button class="nav-btn" onclick="switchPanel('income', this)">10yr Income</button>
+    </nav>
+
+    <main>
+      <!-- STAFF VS LOCUMS -->
+      <div class="panel active" id="panel-staff-locums">
+        <div class="panel-header">
+          <h2>Staff Position vs Locums/Travel</h2>
+          <p>Compare your current staff role against locums or travel contracts</p>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">STAFF POSITION</div>
+            <div class="field">
+              <label>Annual Base Salary</label>
+              <input type="number" id="staff-salary" value="140000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>Annual Benefits Value</label>
+              <input type="number" id="staff-benefits" value="28000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>Annual Bonus/Incentive Pay</label>
+              <input type="number" id="staff-bonus" value="10000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>Paid Time Off (days/year)</label>
+              <input type="number" id="staff-pto" value="20" min="0" max="365">
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">LOCUMS/TRAVEL CONTRACT</div>
+            <div class="field">
+              <label>Hourly or Weekly Rate</label>
+              <select id="locums-rate-type" onchange="toggleRateType()">
+                <option value="hourly">Hourly Rate</option>
+                <option value="weekly" selected>Weekly Rate</option>
+              </select>
+            </div>
+            <div class="field" id="hourly-rate-field">
+              <label>Hourly Rate ($)</label>
+              <input type="number" id="locums-hourly" value="85" min="0">
+            </div>
+            <div class="field" id="weekly-rate-field">
+              <label>Weekly Rate ($)</label>
+              <input type="number" id="locums-weekly" value="3200" min="0" step="100">
+            </div>
+            <div class="field">
+              <label>Hours per Week</label>
+              <input type="number" id="locums-hours" value="40" min="0" max="80">
+            </div>
+            <div class="field">
+              <label>Weeks per Year</label>
+              <input type="number" id="locums-weeks" value="48" min="1" max="52">
+            </div>
+            <div class="field">
+              <label>Housing Stipend (if applicable)</label>
+              <input type="number" id="locums-housing" value="2000" min="0" step="100">
+            </div>
+            <div class="field">
+              <label>Annual Health Insurance Cost</label>
+              <input type="number" id="locums-insurance" value="18000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>Other Annual Expenses</label>
+              <input type="number" id="locums-expenses" value="8000" min="0" step="1000">
+            </div>
+            <button class="calc-btn" onclick="calcStaffLocums()">Compare →</button>
+          </div>
+        </div>
+        <div id="sl-results" class="hidden">
+          <div class="two-col">
+            <div class="compare-card" id="staff-card">
+              <h4>Staff Position</h4>
+              <div class="row">
+                <span class="row-label">Base Salary</span>
+                <span class="row-val" id="staff-base">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Benefits Value</span>
+                <span class="row-val" id="staff-ben">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Total Compensation</span>
+                <span class="row-val" id="staff-total">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Taxes (Est. 25%)</span>
+                <span class="row-val" id="staff-tax">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Net Take-Home</span>
+                <span class="row-val" id="staff-net">—</span>
+              </div>
+            </div>
+            <div class="compare-card" id="locums-card">
+              <h4>Locums/Travel</h4>
+              <div class="row">
+                <span class="row-label">Gross Income</span>
+                <span class="row-val" id="locums-gross">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Total Expenses</span>
+                <span class="row-val" id="locums-exp">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Taxable Income</span>
+                <span class="row-val" id="locums-taxable">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Taxes (SE + Fed)</span>
+                <span class="row-val" id="locums-tax">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Net Take-Home</span>
+                <span class="row-val" id="locums-net">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Difference vs Staff</span>
+                <span class="row-val" id="locums-diff">—</span>
+              </div>
+            </div>
+          </div>
+          <div class="insight" style="margin-top:24px">
+            <div class="insight-label">ANALYSIS</div>
+            <p id="sl-insight"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- W2 vs 1099 -->
+      <div class="panel" id="panel-w2-1099">
+        <div class="panel-header">
+          <h2>W2 vs 1099 Comparison</h2>
+          <p>Understand the financial impact of employment classification</p>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">W2 EMPLOYEE</div>
+            <div class="field">
+              <label>Annual Salary</label>
+              <input type="number" id="w2-salary" value="180000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>Benefits Value (Annual)</label>
+              <input type="number" id="w2-benefits" value="25000" min="0" step="1000">
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">1099 CONTRACTOR</div>
+            <div class="field">
+              <label>Hourly Rate</label>
+              <input type="number" id="c1099-rate" value="110" min="0">
+            </div>
+            <div class="field">
+              <label>Annual Hours</label>
+              <input type="number" id="c1099-hours" value="2000" min="0">
+            </div>
+            <div class="field">
+              <label>Health Insurance (Annual)</label>
+              <input type="number" id="c1099-health" value="18000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>Other Business Expenses</label>
+              <input type="number" id="c1099-exp" value="12000" min="0" step="1000">
+            </div>
+            <button class="calc-btn" onclick="calcW21099()">Compare →</button>
+          </div>
+        </div>
+        <div id="w2-results" class="hidden">
+          <div class="two-col">
+            <div class="compare-card" id="w2-card">
+              <h4>W2 Employee</h4>
+              <div class="row">
+                <span class="row-label">Salary</span>
+                <span class="row-val" id="w2-gross">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Benefits</span>
+                <span class="row-val" id="w2-ben">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Taxes</span>
+                <span class="row-val" id="w2-tax">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Net</span>
+                <span class="row-val" id="w2-net">—</span>
+              </div>
+            </div>
+            <div class="compare-card" id="c1099-card">
+              <h4>1099 Contractor</h4>
+              <div class="row">
+                <span class="row-label">Gross</span>
+                <span class="row-val" id="c1099-gross">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Expenses</span>
+                <span class="row-val" id="c1099-expenses">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Taxes</span>
+                <span class="row-val" id="c1099-tax">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Net</span>
+                <span class="row-val" id="c1099-net">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Diff vs W2</span>
+                <span class="row-val" id="c1099-diff">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- S-CORP EVALUATOR -->
+      <div class="panel" id="panel-scorp">
+        <div class="panel-header">
+          <h2>S-Corp Evaluator</h2>
+          <p>Should you form an S-Corporation? Compare Sole Prop/LLC vs S-Corp tax implications</p>
+        </div>
+        
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">YOUR BUSINESS</div>
+            <div class="field">
+              <label>Your Profession</label>
+              <select id="scorp-profession">
+                <option value="crna">CRNA</option>
+                <option value="md_hospitalist">Physician - Hospitalist</option>
+                <option value="md_em">Physician - Emergency Medicine</option>
+                <option value="md_anesthesia">Physician - Anesthesiology</option>
+                <option value="md_fp">Physician - Family Practice</option>
+                <option value="np">Nurse Practitioner</option>
+                <option value="pa">Physician Assistant</option>
+                <option value="rn">Registered Nurse</option>
+                <option value="other">Other Healthcare Professional</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Annual 1099 Income</label>
+              <input type="number" id="scorp-income" value="180000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>Annual Business Expenses</label>
+              <input type="number" id="scorp-expenses" value="35000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>Filing Status</label>
+              <select id="scorp-filing">
+                <option value="single">Single</option>
+                <option value="married" selected>Married Filing Jointly</option>
+              </select>
+            </div>
+            <button class="calc-btn" onclick="calculateSCorp()">Calculate</button>
+          </div>
+          
+          <div class="card">
+            <div class="card-title">ABOUT S-CORP</div>
+            <p style="font-size: 0.9375rem; color: var(--muted); line-height: 1.7; margin-bottom: 16px;">
+              An S-Corporation can save you thousands in self-employment taxes by allowing you to split income between W2 salary (subject to SE tax) and distributions (not subject to SE tax).
+            </p>
+            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+              <div style="font-weight: 700; color: var(--accent); margin-bottom: 8px;">✓ Potential Savings</div>
+              <div style="font-size: 0.875rem; color: var(--muted);">At $150k net income, you could save $5,000-8,000/year in taxes</div>
+            </div>
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 16px;">
+              <div style="font-weight: 700; color: #ef4444; margin-bottom: 8px;">⚠ Trade-offs</div>
+              <div style="font-size: 0.875rem; color: var(--muted);">Payroll complexity, CPA costs (~$3k/year), reasonable salary requirements</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="scorp-results" class="hidden">
+          <div class="results-header">
+            <h3>Sole Prop/LLC vs S-Corporation Comparison</h3>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+            <!-- Sole Prop Column -->
+            <div style="background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 24px;">
+              <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 20px; color: var(--text);">Sole Proprietorship / LLC</h4>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9375rem;">
+                <span style="color: var(--muted);">Gross Income</span>
+                <span style="font-weight: 700;" id="sp-gross">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9375rem;">
+                <span style="color: var(--muted);">Business Expenses</span>
+                <span style="font-weight: 700;" id="sp-expenses">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9375rem;">
+                <span style="color: var(--muted);">Net Business Income</span>
+                <span style="font-weight: 700;" id="sp-net">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9375rem; background: rgba(251, 191, 36, 0.1); margin: 0 -12px; padding: 10px 12px;">
+                <span style="color: var(--muted);">Self-Employment Tax (15.3%)</span>
+                <span style="font-weight: 700;" id="sp-se-tax">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9375rem;">
+                <span style="color: var(--muted);">Federal Income Tax</span>
+                <span style="font-weight: 700;" id="sp-income-tax">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9375rem;">
+                <span style="color: var(--muted);">Retirement (Solo 401k)</span>
+                <span style="font-weight: 700;" id="sp-retirement">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 16px 0 0; margin-top: 8px; border-top: 2px solid var(--accent); font-size: 1.125rem;">
+                <span style="font-weight: 700;">Total Taxes</span>
+                <span style="font-weight: 700;" id="sp-total-tax">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; font-size: 1.125rem;">
+                <span style="font-weight: 700;">Take-Home Pay</span>
+                <span style="font-weight: 700; color: var(--accent);" id="sp-take-home">—</span>
+              </div>
+            </div>
+
+            <!-- S-Corp Column -->
+            <div id="scorp-col" style="background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 24px; position: relative;">
+              <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 20px; color: var(--text);">S-Corporation</h4>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9375rem;">
+                <span style="color: var(--muted);">Gross Income</span>
+                <span style="font-weight: 700;" id="sc-gross">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9375rem;">
+                <span style="color: var(--muted);">Business Expenses</span>
+                <span style="font-weight: 700;" id="sc-expenses">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9375rem;">
+                <span style="color: var(--muted);">Net Business Income</span>
+                <span style="font-weight: 700;" id="sc-net">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9375rem; background: rgba(16, 185, 129, 0.1); margin: 0 -12px; padding: 10px 12px;">
+                <span style="color: var(--muted);">Recommended W2 Salary</span>
+                <span style="font-weight: 700;" id="sc-w2-salary">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9375rem; background: rgba(16, 185, 129, 0.1); margin: 0 -12px; padding: 10px 12px;">
+                <span style="color: var(--muted);">Distributions (No SE Tax!)</span>
+                <span style="font-weight: 700;" id="sc-distributions">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9375rem;">
+                <span style="color: var(--muted);">Payroll Taxes (W2 only)</span>
+                <span style="font-weight: 700;" id="sc-payroll-tax">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9375rem;">
+                <span style="color: var(--muted);">Federal Income Tax</span>
+                <span style="font-weight: 700;" id="sc-income-tax">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9375rem;">
+                <span style="color: var(--muted);">S-Corp Admin Costs</span>
+                <span style="font-weight: 700;" id="sc-admin">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9375rem;">
+                <span style="color: var(--muted);">Retirement (401k)</span>
+                <span style="font-weight: 700;" id="sc-retirement">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 16px 0 0; margin-top: 8px; border-top: 2px solid var(--accent); font-size: 1.125rem;">
+                <span style="font-weight: 700;">Total Taxes + Costs</span>
+                <span style="font-weight: 700;" id="sc-total-tax">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; font-size: 1.125rem;">
+                <span style="font-weight: 700;">Take-Home Pay</span>
+                <span style="font-weight: 700; color: var(--accent);" id="sc-take-home">—</span>
+              </div>
+              <div id="sc-savings-row" style="display: flex; justify-content: space-between; padding: 12px; margin: 8px -12px 0; background: rgba(16, 185, 129, 0.15); border-radius: 8px; font-weight: 700; color: var(--accent);">
+                <span>Annual Savings vs Sole Prop</span>
+                <span id="sc-savings">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recommendation Box -->
+          <div id="scorp-recommendation" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1)); border: 2px solid var(--accent); border-radius: 12px; padding: 24px; margin-bottom: 32px;">
+            <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; color: var(--text);">Recommendation</h4>
+            <p id="scorp-rec-text" style="font-size: 1rem; line-height: 1.7; color: var(--text);">—</p>
+          </div>
+
+          <!-- How We Calculated -->
+          <div style="margin-top: 40px;">
+            <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 24px; color: var(--text);">How We Calculated This</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+              <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px;">
+                <h5 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px;">Self-Employment Tax</h5>
+                <p style="font-size: 0.875rem; color: var(--muted); line-height: 1.6;">For Sole Prop: 15.3% on 92.35% of net income. You pay both employer + employee portions.</p>
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 8px 12px; border-radius: 4px; font-family: monospace; font-size: 0.8125rem; margin-top: 12px;">
+                  Net × 92.35% × 15.3%
+                </div>
+              </div>
+              <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px;">
+                <h5 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px;">S-Corp Strategy (BLS Safe Harbor)</h5>
+                <p style="font-size: 0.875rem; color: var(--muted); line-height: 1.6;">We use your profession's BLS median salary as your W2 salary. This "safe harbor" approach is defensible to the IRS and maximizes distributions (which save 15.3% SE tax).</p>
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 8px 12px; border-radius: 4px; font-family: monospace; font-size: 0.8125rem; margin-top: 12px;">
+                  W2 = BLS Median (e.g. $206k for CRNA)
+                </div>
+              </div>
+              <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px;">
+                <h5 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px;">Distributions</h5>
+                <p style="font-size: 0.875rem; color: var(--muted); line-height: 1.6;">Remaining profit is distributed. NOT subject to SE tax (15.3% savings!).</p>
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 8px 12px; border-radius: 4px; font-family: monospace; font-size: 0.8125rem; margin-top: 12px;">
+                  Distributions = Net - Salary
+                </div>
+              </div>
+              <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px;">
+                <h5 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px;">Retirement</h5>
+                <p style="font-size: 0.875rem; color: var(--muted); line-height: 1.6;"><strong>Sole Prop:</strong> 20% of net + $23k<br><strong>S-Corp:</strong> 25% of W2 + $23k</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAX -->
+      <div class="panel" id="panel-tax">
+        <div class="panel-header">
+          <h2>Self-Employment Tax Estimator</h2>
+          <p>Calculate quarterly payments and deductions</p>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">INCOME</div>
+            <div class="field">
+              <label>Annual 1099 Income</label>
+              <input type="number" id="tx-gross" value="160000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>W2 Income (if any)</label>
+              <input type="number" id="tx-w2" value="0" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>Filing Status</label>
+              <select id="tx-filing">
+                <option value="single">Single</option>
+                <option value="married" selected>Married Filing Jointly</option>
+                <option value="hoh">Head of Household</option>
+              </select>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">DEDUCTIONS</div>
+            <div class="field">
+              <label>Home Office (sq ft)</label>
+              <input type="number" id="tx-office" value="200" min="0">
+            </div>
+            <div class="field">
+              <label>Professional Development</label>
+              <input type="number" id="tx-software" value="3000" min="0" step="100">
+            </div>
+            <div class="field">
+              <label>Health Insurance Premiums</label>
+              <input type="number" id="tx-health" value="18000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>Other Business Expenses</label>
+              <input type="number" id="tx-other" value="5000" min="0" step="100">
+            </div>
+            <button class="calc-btn" onclick="calcTax()">Estimate →</button>
+          </div>
+        </div>
+        <div id="tx-results" class="hidden">
+          <div class="results-grid">
+            <div class="stat-box highlight">
+              <div class="stat-label">EFFECTIVE TAX RATE</div>
+              <div class="stat-value" id="tx-rate">—</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">SE TAX</div>
+              <div class="stat-value danger" id="tx-se">—</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">TOTAL DEDUCTIONS</div>
+              <div class="stat-value success" id="tx-ded">—</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">QUARTERLY PAYMENT</div>
+              <div class="stat-value neutral" id="tx-q">—</div>
+            </div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">TAX STRATEGY</div>
+            <p id="tx-insight"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- HOME -->
+      <div class="panel" id="panel-home">
+        <div class="panel-header">
+          <h2>Home Affordability Timeline</h2>
+          <p>Calculate when you can afford your target home</p>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">HOME TARGET</div>
+            <div class="field">
+              <label>Target Home Price</label>
+              <input type="number" id="hm-price" value="650000" min="0" step="10000">
+            </div>
+            <div class="field">
+              <label>Down Payment %</label>
+              <div class="range-row">
+                <input type="range" id="hm-down" min="3" max="30" value="20" step="1"
+                  oninput="document.getElementById('hm-down-val').textContent = this.value + '%'">
+                <span class="range-val" id="hm-down-val">20%</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Mortgage Rate %</label>
+              <div class="range-row">
+                <input type="range" id="hm-rate" min="3" max="9" value="6.5" step="0.25"
+                  oninput="document.getElementById('hm-rate-val').textContent = this.value + '%'">
+                <span class="range-val" id="hm-rate-val">6.5%</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">YOUR FINANCES</div>
+            <div class="field">
+              <label>Current Savings</label>
+              <input type="number" id="hm-savings" value="80000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>Monthly Savings Rate</label>
+              <input type="number" id="hm-monthly" value="5000" min="0" step="100">
+            </div>
+            <div class="field">
+              <label>Annual Household Income</label>
+              <input type="number" id="hm-income" value="280000" min="0" step="1000">
+            </div>
+            <button class="calc-btn" onclick="calcHome()">Calculate →</button>
+          </div>
+        </div>
+        <div id="hm-results" class="hidden">
+          <div class="results-grid">
+            <div class="stat-box highlight">
+              <div class="stat-label">TIME TO AFFORD</div>
+              <div class="stat-value" id="hm-months">—</div>
+              <div class="stat-sub" id="hm-date">—</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">DOWN PAYMENT</div>
+              <div class="stat-value neutral" id="hm-down-amt">—</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">MONTHLY PAYMENT</div>
+              <div class="stat-value neutral" id="hm-payment">—</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">DTI RATIO</div>
+              <div class="stat-value" id="hm-dti">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOAN -->
+      <div class="panel" id="panel-loan">
+        <div class="panel-header">
+          <h2>Student Loan Payoff Strategy</h2>
+          <p>Compare standard vs aggressive repayment</p>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">LOAN DETAILS</div>
+            <div class="field">
+              <label>Total Balance</label>
+              <input type="number" id="ln-balance" value="150000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>Interest Rate %</label>
+              <div class="range-row">
+                <input type="range" id="ln-rate" min="1" max="12" value="6.5" step="0.1"
+                  oninput="document.getElementById('ln-rate-val').textContent = this.value + '%'">
+                <span class="range-val" id="ln-rate-val">6.5%</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Current Monthly Payment</label>
+              <input type="number" id="ln-payment" value="1700" min="0" step="100">
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">AGGRESSIVE STRATEGY</div>
+            <div class="field">
+              <label>Aggressive Payment Amount</label>
+              <input type="number" id="ln-agg" value="3000" min="0" step="100">
+            </div>
+            <button class="calc-btn" onclick="calcLoan()">Compare →</button>
+          </div>
+        </div>
+        <div id="ln-results" class="hidden">
+          <div class="two-col">
+            <div class="compare-card">
+              <h4>Standard Repayment</h4>
+              <div class="row">
+                <span class="row-label">Total Interest</span>
+                <span class="row-val" id="ln-std-int">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Payoff Time</span>
+                <span class="row-val" id="ln-std-time">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Total Paid</span>
+                <span class="row-val" id="ln-std-total">—</span>
+              </div>
+            </div>
+            <div class="compare-card winner">
+              <h4>Aggressive Payoff</h4>
+              <div class="row">
+                <span class="row-label">Total Interest</span>
+                <span class="row-val" id="ln-agg-int">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Payoff Time</span>
+                <span class="row-val" id="ln-agg-time">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Total Paid</span>
+                <span class="row-val" id="ln-agg-total">—</span>
+              </div>
+              <div class="row">
+                <span class="row-label">Savings</span>
+                <span class="row-val" id="ln-save">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INCOME -->
+      <div class="panel" id="panel-income">
+        <div class="panel-header">
+          <h2>10-Year Income Projection</h2>
+          <p>Model household income growth over time</p>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">PRIMARY INCOME</div>
+            <div class="field">
+              <label>Current Annual Salary</label>
+              <input type="number" id="it-salary" value="160000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>Annual Raise %</label>
+              <div class="range-row">
+                <input type="range" id="it-raise" min="0" max="10" value="3" step="0.5"
+                  oninput="document.getElementById('it-raise-val').textContent = this.value + '%'">
+                <span class="range-val" id="it-raise-val">3%</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Spouse/Partner Salary</label>
+              <input type="number" id="it-spouse" value="85000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>Spouse Annual Raise %</label>
+              <div class="range-row">
+                <input type="range" id="it-spouse-raise" min="0" max="10" value="2.5" step="0.5"
+                  oninput="document.getElementById('it-spouse-raise-val').textContent = this.value + '%'">
+                <span class="range-val" id="it-spouse-raise-val">2.5%</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">ADDITIONAL INCOME & TAX</div>
+            <div class="field">
+              <label>Side Income (Annual)</label>
+              <input type="number" id="it-side" value="0" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>Tax Rate %</label>
+              <div class="range-row">
+                <input type="range" id="it-tax" min="15" max="45" value="28" step="1"
+                  oninput="document.getElementById('it-tax-val').textContent = this.value + '%'">
+                <span class="range-val" id="it-tax-val">28%</span>
+              </div>
+            </div>
+            <button class="calc-btn" onclick="calcIncome()">Project →</button>
+          </div>
+        </div>
+        <div id="it-results" class="hidden">
+          <div class="results-grid">
+            <div class="stat-box highlight">
+              <div class="stat-label">YEAR 5 INCOME</div>
+              <div class="stat-value" id="it-y5">—</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">YEAR 10 INCOME</div>
+              <div class="stat-value neutral" id="it-y10">—</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">TOTAL GROWTH</div>
+              <div class="stat-value success" id="it-growth">—</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">CURRENT TOTAL</div>
+              <div class="stat-value neutral" id="it-cur">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="saveModal">
+  <div class="modal">
+    <h3>Save This Scenario</h3>
+    <p>Give your scenario a descriptive name so you can compare it later.</p>
+    <input type="text" class="modal-input" id="scenarioName" placeholder="e.g., CRNA Staff vs 13-week Contract">
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="hideSaveModal()">Cancel</button>
+      <button class="modal-btn primary" onclick="saveScenario()">Save Scenario</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="upgradeModal">
+  <div class="modal">
+    <h3>Upgrade to Pro</h3>
+    <p>You've reached the free plan limit (3 scenarios). Upgrade to unlock unlimited scenarios, comparison view, and PDF exports.</p>
+    <div class="pricing-box">
+      <div class="pricing-amount">$9/month</div>
+      <div class="pricing-features">
+        ✓ Unlimited scenarios<br>
+        ✓ Scenario comparison view<br>
+        ✓ PDF export for all reports<br>
+        ✓ Priority support
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="hideUpgradeModal()">Maybe Later</button>
+      <button class="modal-btn primary" onclick="handleUpgrade()">Upgrade to Pro</button>
+    </div>
+  </div>
+</div>
+
+
+<footer>
+  <p><strong>LocumsLab</strong> — Compare contracts. Model take-home. Decide with clarity.</p>
+  <p style="margin-top:8px; font-size:0.75rem; color: var(--muted); max-width: 900px;">
+    Educational estimates only (not financial, legal, or tax advice). Calculations use simplified assumptions and may differ from your actual situation.
+    Always confirm with a qualified tax professional and review your contract terms.
+    <span style="display:inline-block; margin-left:10px;">Data is stored locally in your browser.</span>
+  </p>
+  <p style="margin-top:10px; font-size:0.75rem; color: var(--muted);">
+    <a href="#" onclick="showLegal('privacy'); return false;" style="color: var(--muted); text-decoration: underline;">Privacy</a>
+    &nbsp;·&nbsp;
+    <a href="#" onclick="showLegal('terms'); return false;" style="color: var(--muted); text-decoration: underline;">Terms</a>
+    &nbsp;·&nbsp;
+    <a href="/cdn-cgi/l/email-protection#4e262b2222210e22212d3b233d222f2c602d2123" style="color: var(--muted); text-decoration: underline;">Contact</a>
+  </p>
+</footer>
+
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// State
+let currentUser = null;
+let currentScenarioId = null;
+let isPro = false;
+const stripe = Stripe('pk_test_REPLACE_WITH_YOUR_STRIPE_KEY');
+
+// Pre-populated templates
+const TEMPLATES = [
+  {
+    id: 'tmpl_md_hospitalist',
+    name: 'MD: Hospitalist Staff vs Locums',
+    tag: 'Physician',
+    description: 'Staff hospitalist $280k vs locums contracts',
+    data: {
+      staffSalary: 280000,
+      staffBenefits: 50000,
+      staffBonus: 30000,
+      staffPto: 25,
+      locumsWeekly: 6000,
+      locumsHours: 40,
+      locumsWeeks: 46,
+      locumsHousing: 3000,
+      locumsInsurance: 28000,
+      locumsExpenses: 15000
+    }
+  },
+  {
+    id: 'tmpl_crna_staff_locums',
+    name: 'CRNA: Staff vs Locums',
+    tag: 'CRNA',
+    description: 'Staff CRNA $210k vs 13-week locums contract',
+    data: {
+      staffSalary: 210000,
+      staffBenefits: 35000,
+      staffBonus: 15000,
+      staffPto: 20,
+      locumsWeekly: 3800,
+      locumsHours: 40,
+      locumsWeeks: 48,
+      locumsHousing: 2200,
+      locumsInsurance: 20000,
+      locumsExpenses: 10000
+    }
+  },
+  {
+    id: 'tmpl_np_travel',
+    name: 'NP: Full-Time vs Travel',
+    tag: 'NP',
+    description: 'Staff NP $110k vs travel contracts',
+    data: {
+      staffSalary: 110000,
+      staffBenefits: 22000,
+      staffBonus: 5000,
+      staffPto: 15,
+      locumsWeekly: 2400,
+      locumsHours: 36,
+      locumsWeeks: 48,
+      locumsHousing: 1800,
+      locumsInsurance: 16000,
+      locumsExpenses: 6000
+    }
+  },
+  {
+    id: 'tmpl_pa_urgent_care',
+    name: 'PA: Staff vs Per Diem',
+    tag: 'PA',
+    description: 'Staff PA $105k vs per diem urgent care',
+    data: {
+      staffSalary: 105000,
+      staffBenefits: 20000,
+      staffBonus: 3000,
+      staffPto: 12,
+      locumsHourly: 75,
+      locumsHours: 40,
+      locumsWeeks: 50,
+      locumsHousing: 0,
+      locumsInsurance: 15000,
+      locumsExpenses: 5000
+    }
+  }
+];
+
+// Utility functions
+function fmt(n) {
+  if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return '$' + (n/1000).toFixed(1) + 'k';
+  return '$' + Math.round(n).toLocaleString();
+}
+
+function fmtFull(n) {
+  return '$' + Math.round(n).toLocaleString();
+}
+
+// Auth
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(tab + 'Form').classList.add('active');
+  document.getElementById('authError').classList.remove('show');
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('authError');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  const users = JSON.parse(localStorage.getItem('locums_users') || '{}');
+  if (!users[email] || users[email].password !== password) {
+    showAuthError('Invalid credentials');
+    return;
+  }
+  currentUser = email;
+  isPro = users[email].isPro || false;
+  localStorage.setItem('locums_current_user', email);
+  
+  // Hide auth screen
+  document.getElementById('authScreen').classList.add('hidden');
+  showMainApp();
+  
+  // Show success message
+  alert('Welcome back! Logged in successfully.');
+}
+
+async function handleSignup(e) {
+  e.preventDefault();
+  const email = document.getElementById('signupEmail').value;
+  const password = document.getElementById('signupPassword').value;
+  const confirm = document.getElementById('signupPasswordConfirm').value;
+  if (password !== confirm) {
+    showAuthError('Passwords do not match');
+    return;
+  }
+  const users = JSON.parse(localStorage.getItem('locums_users') || '{}');
+  if (users[email]) {
+    showAuthError('Account already exists');
+    return;
+  }
+  users[email] = { password, created: new Date().toISOString(), isPro: false };
+  localStorage.setItem('locums_users', JSON.stringify(users));
+  currentUser = email;
+  isPro = false;
+  localStorage.setItem('locums_current_user', email);
+  
+  // Hide auth screen and show main app
+  document.getElementById('authScreen').classList.add('hidden');
+  showMainApp();
+  
+  // Show success message after a brief delay to ensure UI updates
+  setTimeout(() => {
+    alert('Account created! You can now save scenarios and compare offers.');
+  }, 100);
+}
+
+function handleLogout() {
+  currentUser = null;
+  isPro = false;
+  localStorage.removeItem('locums_current_user');
+  document.getElementById('authScreen').classList.remove('hidden');
+  document.getElementById('mainApp').classList.add('hidden');
+}
+
+function showMainApp() {
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('mainApp').classList.remove('hidden');
+  
+  const emailEl = document.getElementById('userEmail');
+  const badgeEl = document.getElementById('planBadge');
+  const upgradeBtn = document.getElementById('upgradeBtn');
+  
+  if (currentUser) {
+    // Logged in - show email and plan
+    emailEl.textContent = currentUser;
+    emailEl.style.display = 'inline';
+    badgeEl.textContent = isPro ? 'Pro' : 'Free';
+    
+    if (isPro) {
+      upgradeBtn.classList.add('hidden');
+    } else {
+      upgradeBtn.classList.remove('hidden');
+    }
+  } else {
+    // Demo mode - hide email
+    emailEl.textContent = '';
+    emailEl.style.display = 'none';
+    badgeEl.textContent = 'Demo';
+    upgradeBtn.classList.remove('hidden');
+    upgradeBtn.textContent = 'Sign Up Free';
+    upgradeBtn.onclick = showAuthScreen;
+  }
+  
+  showWizard();
+}
+
+function showWizard() {
+  document.getElementById('wizard').classList.remove('hidden');
+  document.getElementById('dashboardView').classList.add('hidden');
+  document.getElementById('calculatorView').classList.add('hidden');
+}
+
+// S-CORP CALCULATOR
+function calculateSCorp() {
+  const income = parseFloat(document.getElementById('scorp-income').value) || 0;
+  const expenses = parseFloat(document.getElementById('scorp-expenses').value) || 0;
+  const filing = document.getElementById('scorp-filing').value;
+  const profession = document.getElementById('scorp-profession').value;
+  
+  const netIncome = income - expenses;
+  
+  // BLS Median Salaries (2023-2024 data) - Safe Harbor Strategy
+  const BLS_SALARIES = {
+    'crna': 205770,
+    'md_hospitalist': 275000,
+    'md_em': 310000,
+    'md_anesthesia': 420000,
+    'md_fp': 235000,
+    'np': 121610,
+    'pa': 126010,
+    'rn': 86070,
+    'other': Math.floor(netIncome * 0.60) // Fallback: 60% of net
+  };
+  
+  const blsSalary = BLS_SALARIES[profession];
+  
+  // SOLE PROP CALCULATION
+  const spSeTaxBase = netIncome * 0.9235; // 92.35% of net income
+  const spSeTax = spSeTaxBase * 0.153; // 15.3% SE tax
+  
+  // Simplified income tax
+  const spTaxableIncome = netIncome - (spSeTax / 2); // Deduct half of SE tax
+  const spIncomeTax = filing === 'married' 
+    ? calculateIncomeTaxMarried(spTaxableIncome)
+    : calculateIncomeTaxSingle(spTaxableIncome);
+  
+  // Solo 401k max contribution
+  const spEmployeeContribution = Math.min(23000, netIncome);
+  const spEmployerContribution = Math.min(Math.floor(netIncome * 0.20), 69000 - spEmployeeContribution);
+  const spRetirement = spEmployeeContribution + spEmployerContribution;
+  
+  const spTotalTax = spSeTax + spIncomeTax;
+  const spTakeHome = netIncome - spTotalTax - spRetirement;
+  
+  // S-CORP CALCULATION (BLS Safe Harbor Strategy)
+  // Use BLS median as W2 salary, but only if net income is higher
+  let reasonableSalary;
+  let salaryStrategy;
+  
+  if (profession === 'other') {
+    reasonableSalary = Math.floor(netIncome * 0.60);
+    salaryStrategy = `Using 60% of net income ($${reasonableSalary.toLocaleString()}) as reasonable salary.`;
+  } else if (netIncome > blsSalary) {
+    // Net income exceeds BLS median - use BLS as W2 salary (maximum tax savings!)
+    reasonableSalary = blsSalary;
+    salaryStrategy = `Using BLS median salary ($${blsSalary.toLocaleString()}) as W2 salary. This is the "safe harbor" strategy - defensible to IRS and maximizes your tax savings by keeping more as distributions.`;
+  } else {
+    // Net income below BLS median - use 60% of net
+    reasonableSalary = Math.floor(netIncome * 0.60);
+    salaryStrategy = `Your net income is below the BLS median for your profession. Using 60% of net income ($${reasonableSalary.toLocaleString()}) as reasonable salary.`;
+  }
+  
+  const distributions = netIncome - reasonableSalary;
+  
+  const scPayrollTax = reasonableSalary * 0.153; // 15.3% payroll tax on salary only
+  const scAdminCosts = 3000; // Payroll service + CPA
+  
+  const scTaxableIncome = reasonableSalary + distributions;
+  const scIncomeTax = filing === 'married'
+    ? calculateIncomeTaxMarried(scTaxableIncome)
+    : calculateIncomeTaxSingle(scTaxableIncome);
+  
+  // S-Corp 401k
+  const scEmployeeContribution = Math.min(23000, reasonableSalary);
+  const scEmployerContribution = Math.min(Math.floor(reasonableSalary * 0.25), 69000 - scEmployeeContribution);
+  const scRetirement = scEmployeeContribution + scEmployerContribution;
+  
+  const scTotalTax = scPayrollTax + scIncomeTax + scAdminCosts;
+  const scTakeHome = netIncome - scTotalTax - scRetirement;
+  
+  const savings = scTakeHome - spTakeHome;
+  
+  // Display results
+  document.getElementById('sp-gross').textContent = fmt(income);
+  document.getElementById('sp-expenses').textContent = fmt(expenses);
+  document.getElementById('sp-net').textContent = fmt(netIncome);
+  document.getElementById('sp-se-tax').textContent = fmt(spSeTax);
+  document.getElementById('sp-income-tax').textContent = fmt(spIncomeTax);
+  document.getElementById('sp-retirement').textContent = fmt(spRetirement);
+  document.getElementById('sp-total-tax').textContent = fmt(spTotalTax);
+  document.getElementById('sp-take-home').textContent = fmt(spTakeHome);
+  
+  document.getElementById('sc-gross').textContent = fmt(income);
+  document.getElementById('sc-expenses').textContent = fmt(expenses);
+  document.getElementById('sc-net').textContent = fmt(netIncome);
+  document.getElementById('sc-w2-salary').textContent = fmt(reasonableSalary);
+  document.getElementById('sc-distributions').textContent = fmt(distributions);
+  document.getElementById('sc-payroll-tax').textContent = fmt(scPayrollTax);
+  document.getElementById('sc-income-tax').textContent = fmt(scIncomeTax);
+  document.getElementById('sc-admin').textContent = fmt(scAdminCosts);
+  document.getElementById('sc-retirement').textContent = fmt(scRetirement);
+  document.getElementById('sc-total-tax').textContent = fmt(scTotalTax);
+  document.getElementById('sc-take-home').textContent = fmt(scTakeHome);
+  document.getElementById('sc-savings').textContent = (savings >= 0 ? '+' : '') + fmt(savings);
+  
+  // Recommendation
+  let recommendation = '';
+  const scorpCol = document.getElementById('scorp-col');
+  scorpCol.style.borderColor = 'var(--border)';
+  scorpCol.style.background = 'var(--surface)';
+  
+  if (netIncome < 60000) {
+    recommendation = `At ${fmt(netIncome)} net income, an S-Corp is NOT recommended. The administrative costs (~$3,000/year) outweigh the tax savings. Stick with sole proprietorship or LLC.`;
+  } else if (netIncome < 80000) {
+    recommendation = `At ${fmt(netIncome)} net income, an S-Corp is BORDERLINE. You'd save approximately ${fmt(savings)}/year, but consider if the added complexity is worth it. Consult a CPA.
+
+${salaryStrategy}`;
+    if (savings > 1500) {
+      scorpCol.style.borderColor = 'var(--accent)';
+      scorpCol.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.05), var(--surface))';
+    }
+  } else {
+    recommendation = `At ${fmt(netIncome)} net income, an S-Corp is RECOMMENDED. You'd save approximately ${fmt(savings)}/year in taxes. The administrative costs are well worth it at this income level.
+
+${salaryStrategy}
+
+Note: Always work with a CPA to ensure proper setup and compliance.`;
+    scorpCol.style.borderColor = 'var(--accent)';
+    scorpCol.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.05), var(--surface))';
+  }
+  
+  document.getElementById('scorp-rec-text').textContent = recommendation;
+  document.getElementById('scorp-results').classList.remove('hidden');
+}
+
+function calculateIncomeTaxMarried(income) {
+  // 2024 married filing jointly brackets (simplified)
+  if (income <= 22000) return income * 0.10;
+  if (income <= 89050) return 2200 + (income - 22000) * 0.12;
+  if (income <= 190750) return 10246 + (income - 89050) * 0.22;
+  if (income <= 364200) return 32580 + (income - 190750) * 0.24;
+  return 74208 + (income - 364200) * 0.32;
+}
+
+function calculateIncomeTaxSingle(income) {
+  // 2024 single brackets (simplified)
+  if (income <= 11000) return income * 0.10;
+  if (income <= 44725) return 1100 + (income - 11000) * 0.12;
+  if (income <= 95375) return 5147 + (income - 44725) * 0.22;
+  if (income <= 182100) return 16290 + (income - 95375) * 0.24;
+  return 37104 + (income - 182100) * 0.32;
+}
+
+function selectGoal(goal) {
+  if (goal === 'explore') {
+    showDashboard();
+  } else if (goal === 'scorp') {
+    // Go directly to S-Corp calculator
+    startNew();
+    // Switch to S-Corp panel
+    const allPanels = document.querySelectorAll('.panel');
+    allPanels.forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-scorp').classList.add('active');
+    // Switch nav button
+    const allBtns = document.querySelectorAll('.nav-btn');
+    allBtns.forEach(b => b.classList.remove('active'));
+    const scorpBtn = Array.from(allBtns).find(b => b.textContent === 'S-Corp');
+    if (scorpBtn) scorpBtn.classList.add('active');
+  } else {
+    startNew();
+  }
+}
+
+function showDashboard() {
+  document.getElementById('wizard').classList.add('hidden');
+  document.getElementById('dashboardView').classList.remove('hidden');
+  document.getElementById('calculatorView').classList.add('hidden');
+  loadTemplates();
+  loadScenarios();
+}
+
+function startNew() {
+  currentScenarioId = null;
+  document.getElementById('wizard').classList.add('hidden');
+  document.getElementById('dashboardView').classList.add('hidden');
+  document.getElementById('calculatorView').classList.remove('hidden');
+  document.getElementById('calcTitle').textContent = 'New Scenario';
+  updateExportButton();
+}
+
+function loadTemplates() {
+  const container = document.getElementById('templatesContainer');
+  container.innerHTML = TEMPLATES.map(t => `
+    <div class="scenario-card template" onclick="loadTemplate('${t.id}')">
+      <div class="scenario-header">
+        <div>
+          <div class="scenario-name">${t.name}</div>
+          <div class="scenario-tag">${t.tag}</div>
+        </div>
+      </div>
+      <div class="scenario-meta">${t.description}</div>
+    </div>
+  `).join('');
+}
+
+function loadTemplate(id) {
+  const template = TEMPLATES.find(t => t.id === id);
+  if (!template) return;
+  
+  const d = template.data;
+  document.getElementById('staff-salary').value = d.staffSalary || 140000;
+  document.getElementById('staff-benefits').value = d.staffBenefits || 28000;
+  document.getElementById('staff-bonus').value = d.staffBonus || 10000;
+  document.getElementById('staff-pto').value = d.staffPto || 20;
+  
+  if (d.locumsWeekly) {
+    document.getElementById('locums-rate-type').value = 'weekly';
+    document.getElementById('locums-weekly').value = d.locumsWeekly;
+    toggleRateType();
+  } else if (d.locumsHourly) {
+    document.getElementById('locums-rate-type').value = 'hourly';
+    document.getElementById('locums-hourly').value = d.locumsHourly;
+    toggleRateType();
+  }
+  
+  document.getElementById('locums-hours').value = d.locumsHours || 40;
+  document.getElementById('locums-weeks').value = d.locumsWeeks || 48;
+  document.getElementById('locums-housing').value = d.locumsHousing || 2000;
+  document.getElementById('locums-insurance').value = d.locumsInsurance || 18000;
+  document.getElementById('locums-expenses').value = d.locumsExpenses || 8000;
+  
+  document.getElementById('dashboardView').classList.add('hidden');
+  document.getElementById('calculatorView').classList.remove('hidden');
+  document.getElementById('calcTitle').textContent = template.name + ' (from template)';
+  
+  // Auto-calculate
+  calcStaffLocums();
+}
+
+function getUserScenarios() {
+  const key = `locums_scenarios_${currentUser}`;
+  return JSON.parse(localStorage.getItem(key) || '[]');
+}
+
+function saveUserScenarios(scenarios) {
+  const key = `locums_scenarios_${currentUser}`;
+  localStorage.setItem(key, JSON.stringify(scenarios));
+}
+
+function loadScenarios() {
+  const scenarios = getUserScenarios();
+  const container = document.getElementById('scenariosContainer');
+  if (scenarios.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><p>No saved scenarios yet. Start with a template above!</p></div>';
+    document.getElementById('comparisonView').classList.add('hidden');
+    return;
+  }
+  container.innerHTML = `<div class="scenarios-grid">${scenarios.map(s => {
+    const date = new Date(s.updated).toLocaleDateString();
+    return `
+      <div class="scenario-card" onclick="loadScenario('${s.id}')">
+        <div class="scenario-header">
+          <div class="scenario-name">${s.name}</div>
+          <button class="scenario-action-btn" onclick="event.stopPropagation(); deleteScenario('${s.id}')">🗑️</button>
+        </div>
+        <div class="scenario-meta">Updated: ${date}</div>
+      </div>
+    `;
+  }).join('')}</div>`;
+
+  if (isPro && scenarios.length >= 2) {
+    showComparison(scenarios);
+  } else {
+    document.getElementById('comparisonView').classList.add('hidden');
+  }
+}
+
+function showComparison(scenarios) {
+  const table = document.getElementById('comparisonTable');
+  const headers = ['Metric', ...scenarios.map(s => s.name)];
+  let html = '<thead><tr>';
+  headers.forEach(h => html += `<th>${h}</th>`);
+  html += '</tr></thead><tbody>';
+
+  // Add key comparison metrics
+  const metrics = [
+    { label: 'Staff Salary', key: 'staffSalary', format: fmtFull },
+    { label: 'Locums Gross Income', key: 'calculated_locums_gross', format: fmtFull },
+    { label: 'Net Difference', key: 'calculated_net_diff', format: fmtFull }
+  ];
+
+  // Calculate metrics for each scenario
+  scenarios.forEach(s => {
+    const d = s.data;
+    const rateType = d.locumsRateType || 'weekly';
+    let locumsGross;
+    if (rateType === 'weekly') {
+      locumsGross = (d.locumsWeekly || 0) * (d.locumsWeeks || 48);
+    } else {
+      locumsGross = (d.locumsHourly || 0) * (d.locumsHours || 40) * (d.locumsWeeks || 48);
+    }
+    s.data.calculated_locums_gross = locumsGross;
+    
+    // Simple net calculation (this would match the actual calculation in calcStaffLocums)
+    const staffNet = (d.staffSalary || 0) * 0.75; // Rough estimate
+    const locumsNet = locumsGross - (d.locumsInsurance || 0) - (d.locumsExpenses || 0);
+    s.data.calculated_net_diff = locumsNet * 0.7 - staffNet; // Rough estimate after taxes
+  });
+
+  metrics.forEach(m => {
+    html += `<tr><td class="metric-label">${m.label}</td>`;
+    const values = scenarios.map(s => s.data[m.key] || 0);
+    const bestIdx = m.key === 'calculated_net_diff' 
+      ? values.indexOf(Math.max(...values))
+      : 0;
+    scenarios.forEach((s, idx) => {
+      const val = s.data[m.key] || 0;
+      const className = idx === bestIdx && m.key === 'calculated_net_diff' ? 'winner' : '';
+      html += `<td class="${className}">${m.format(val)}</td>`;
+    });
+    html += '</tr>';
+  });
+
+  html += '</tbody>';
+  table.innerHTML = html;
+  document.getElementById('comparisonView').classList.remove('hidden');
+}
+
+function loadScenario(id) {
+  const s = getUserScenarios().find(x => x.id === id);
+  if (!s) return;
+  currentScenarioId = id;
+  document.getElementById('dashboardView').classList.add('hidden');
+  document.getElementById('calculatorView').classList.remove('hidden');
+  document.getElementById('calcTitle').textContent = s.name;
+  
+  const d = s.data;
+  document.getElementById('staff-salary').value = d.staffSalary || 140000;
+  document.getElementById('staff-benefits').value = d.staffBenefits || 28000;
+  document.getElementById('staff-bonus').value = d.staffBonus || 10000;
+  document.getElementById('staff-pto').value = d.staffPto || 20;
+  
+  const rateType = d.locumsRateType || 'weekly';
+  document.getElementById('locums-rate-type').value = rateType;
+  toggleRateType();
+  
+  if (rateType === 'weekly') {
+    document.getElementById('locums-weekly').value = d.locumsWeekly || 3200;
+  } else {
+    document.getElementById('locums-hourly').value = d.locumsHourly || 85;
+  }
+  
+  document.getElementById('locums-hours').value = d.locumsHours || 40;
+  document.getElementById('locums-weeks').value = d.locumsWeeks || 48;
+  document.getElementById('locums-housing').value = d.locumsHousing || 2000;
+  document.getElementById('locums-insurance').value = d.locumsInsurance || 18000;
+  document.getElementById('locums-expenses').value = d.locumsExpenses || 8000;
+  
+  updateExportButton();
+}
+
+function deleteScenario(id) {
+  if (!confirm('Delete this scenario?')) return;
+  let scenarios = getUserScenarios();
+  scenarios = scenarios.filter(s => s.id !== id);
+  saveUserScenarios(scenarios);
+  loadScenarios();
+}
+
+
+function showSaveModal() {
+  // Check if user is logged in
+  if (!currentUser) {
+    if (confirm('Sign up free to save scenarios and compare offers. Create account now?')) {
+      showAuthScreen();
+    }
+    return;
+  }
+  
+  // Original save logic
+  if (!isPro && getUserScenarios().length >= 3 && !currentScenarioId) {
+    showUpgradeModal();
+    return;
+  }
+  document.getElementById('saveModal').classList.add('show');
+  document.getElementById('scenarioName').value = '';
+  document.getElementById('scenarioName').focus();
+}
+
+function hideSaveModal() {
+  document.getElementById('saveModal').classList.remove('show');
+}
+
+function saveScenario() {
+  const name = document.getElementById('scenarioName').value.trim();
+  if (!name) {
+    alert('Please enter a scenario name');
+    return;
+  }
+  
+  const data = {
+    staffSalary: parseFloat(document.getElementById('staff-salary').value) || 0,
+    staffBenefits: parseFloat(document.getElementById('staff-benefits').value) || 0,
+    staffBonus: parseFloat(document.getElementById('staff-bonus').value) || 0,
+    staffPto: parseFloat(document.getElementById('staff-pto').value) || 0,
+    locumsRateType: document.getElementById('locums-rate-type').value,
+    locumsHourly: parseFloat(document.getElementById('locums-hourly').value) || 0,
+    locumsWeekly: parseFloat(document.getElementById('locums-weekly').value) || 0,
+    locumsHours: parseFloat(document.getElementById('locums-hours').value) || 0,
+    locumsWeeks: parseFloat(document.getElementById('locums-weeks').value) || 0,
+    locumsHousing: parseFloat(document.getElementById('locums-housing').value) || 0,
+    locumsInsurance: parseFloat(document.getElementById('locums-insurance').value) || 0,
+    locumsExpenses: parseFloat(document.getElementById('locums-expenses').value) || 0
+  };
+  
+  let scenarios = getUserScenarios();
+  if (currentScenarioId) {
+    const idx = scenarios.findIndex(s => s.id === currentScenarioId);
+    if (idx !== -1) {
+      scenarios[idx].name = name;
+      scenarios[idx].data = data;
+      scenarios[idx].updated = new Date().toISOString();
+    }
+  } else {
+    scenarios.push({
+      id: 'sc_' + Date.now(),
+      name,
+      data,
+      created: new Date().toISOString(),
+      updated: new Date().toISOString()
+    });
+  }
+  
+  saveUserScenarios(scenarios);
+  hideSaveModal();
+  document.getElementById('calcTitle').textContent = name;
+  alert('Scenario saved!');
+  updateExportButton();
+}
+
+function showUpgradeModal() {
+  document.getElementById('upgradeModal').classList.add('show');
+}
+
+function hideUpgradeModal() {
+  document.getElementById('upgradeModal').classList.remove('show');
+}
+
+function handleUpgrade() {
+  /* Launch note: replace STRIPE_PAYMENT_LINK with your Stripe Payment Link (or Checkout) */
+  const STRIPE_PAYMENT_LINK = window.STRIPE_PAYMENT_LINK || '';
+  if (STRIPE_PAYMENT_LINK) {
+    window.location.href = STRIPE_PAYMENT_LINK;
+    return;
+  }
+  alert('Pro checkout is not configured yet. Add your Stripe Payment Link in STRIPE_PAYMENT_LINK.');
+  const users = JSON.parse(localStorage.getItem('locums_users') || '{}');
+  users[currentUser].isPro = true;
+  localStorage.setItem('locums_users', JSON.stringify(users));
+  isPro = true;
+  document.getElementById('planBadge').textContent = 'Pro';
+  document.getElementById('upgradeBtn').classList.add('hidden');
+  hideUpgradeModal();
+  updateExportButton();
+  if (document.getElementById('saveModal').classList.contains('show')) {
+    // User was trying to save, let them continue
+  } else {
+    showSaveModal();
+  }
+}
+
+function switchPanel(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggleRateType() {
+  const type = document.getElementById('locums-rate-type').value;
+  if (type === 'hourly') {
+    document.getElementById('hourly-rate-field').style.display = 'block';
+    document.getElementById('weekly-rate-field').style.display = 'none';
+  } else {
+    document.getElementById('hourly-rate-field').style.display = 'none';
+    document.getElementById('weekly-rate-field').style.display = 'block';
+  }
+}
+
+// Calculator functions
+function calcStaffLocums() {
+  const staffSalary = parseFloat(document.getElementById('staff-salary').value) || 0;
+  const staffBenefits = parseFloat(document.getElementById('staff-benefits').value) || 0;
+  const staffBonus = parseFloat(document.getElementById('staff-bonus').value) || 0;
+  
+  const rateType = document.getElementById('locums-rate-type').value;
+  const locumsHourly = parseFloat(document.getElementById('locums-hourly').value) || 0;
+  const locumsWeekly = parseFloat(document.getElementById('locums-weekly').value) || 0;
+  const locumsHours = parseFloat(document.getElementById('locums-hours').value) || 0;
+  const locumsWeeks = parseFloat(document.getElementById('locums-weeks').value) || 0;
+  const locumsHousing = parseFloat(document.getElementById('locums-housing').value) || 0;
+  const locumsInsurance = parseFloat(document.getElementById('locums-insurance').value) || 0;
+  const locumsExpenses = parseFloat(document.getElementById('locums-expenses').value) || 0;
+  
+  // Staff calculations
+  const staffTotal = staffSalary + staffBenefits + staffBonus;
+  const staffTax = staffSalary * 0.25; // Simplified
+  const staffNet = staffSalary + staffBonus - staffTax;
+  
+  // Locums calculations
+  let locumsGross;
+  if (rateType === 'weekly') {
+    locumsGross = locumsWeekly * locumsWeeks + (locumsHousing * locumsWeeks / 4.33);
+  } else {
+    locumsGross = locumsHourly * locumsHours * locumsWeeks + (locumsHousing * locumsWeeks / 4.33);
+  }
+  
+  const totalExpenses = locumsInsurance + locumsExpenses;
+  const taxableIncome = locumsGross - totalExpenses;
+  const seTax = taxableIncome * 0.9235 * 0.153;
+  const fedTax = taxableIncome * 0.24;
+  const totalTax = seTax + fedTax;
+  const locumsNet = locumsGross - totalExpenses - totalTax;
+  
+  const diff = locumsNet - staffNet;
+  
+  // Display
+  document.getElementById('staff-base').textContent = fmtFull(staffSalary);
+  document.getElementById('staff-ben').textContent = fmtFull(staffBenefits);
+  document.getElementById('staff-total').textContent = fmtFull(staffTotal);
+  document.getElementById('staff-tax').textContent = fmtFull(staffTax);
+  document.getElementById('staff-net').textContent = fmtFull(staffNet);
+  
+  document.getElementById('locums-gross').textContent = fmtFull(locumsGross);
+  document.getElementById('locums-exp').textContent = fmtFull(totalExpenses);
+  document.getElementById('locums-taxable').textContent = fmtFull(taxableIncome);
+  document.getElementById('locums-tax').textContent = fmtFull(totalTax);
+  document.getElementById('locums-net').textContent = fmtFull(locumsNet);
+  document.getElementById('locums-diff').textContent = (diff >= 0 ? '+' : '') + fmtFull(diff);
+  
+  if (locumsNet > staffNet) {
+    document.getElementById('locums-card').classList.add('winner');
+    document.getElementById('staff-card').classList.remove('winner');
+  } else {
+    document.getElementById('staff-card').classList.add('winner');
+    document.getElementById('locums-card').classList.remove('winner');
+  }
+  
+  const monthlyDiff = diff / 12;
+  document.getElementById('sl-insight').textContent = 
+    `${diff >= 0 ? 'Locums comes out ahead' : 'Staff position comes out ahead'} by ${fmtFull(Math.abs(diff))} annually (${fmtFull(Math.abs(monthlyDiff))}/month). ${diff >= 0 ? 'The extra income from locums exceeds the additional costs of self-employment taxes, health insurance, and business expenses.' : 'The benefits and job security of a staff position outweigh the higher gross income from locums contracts.'} Consider factors like flexibility, lifestyle, travel preferences, and long-term career goals when making your decision.`;
+  
+  document.getElementById('sl-results').classList.remove('hidden');
+  updateExportButton();
+}
+
+function calcW21099() {
+  const w2Sal = parseFloat(document.getElementById('w2-salary').value) || 0;
+  const w2Ben = parseFloat(document.getElementById('w2-benefits').value) || 0;
+  const rate = parseFloat(document.getElementById('c1099-rate').value) || 0;
+  const hours = parseFloat(document.getElementById('c1099-hours').value) || 0;
+  const health = parseFloat(document.getElementById('c1099-health').value) || 0;
+  const exp = parseFloat(document.getElementById('c1099-exp').value) || 0;
+  
+  const w2Tax = w2Sal * 0.24 + w2Sal * 0.0765;
+  const w2Net = w2Sal - w2Tax;
+  
+  const c1099Gross = rate * hours;
+  const totalExp = health + exp;
+  const taxable = c1099Gross - totalExp;
+  const seTax = taxable * 0.9235 * 0.153;
+  const fedTax = taxable * 0.24;
+  const c1099Net = c1099Gross - totalExp - seTax - fedTax;
+  const diff = c1099Net - w2Net;
+  
+  document.getElementById('w2-gross').textContent = fmtFull(w2Sal);
+  document.getElementById('w2-ben').textContent = fmtFull(w2Ben);
+  document.getElementById('w2-tax').textContent = fmtFull(w2Tax);
+  document.getElementById('w2-net').textContent = fmtFull(w2Net);
+  
+  document.getElementById('c1099-gross').textContent = fmtFull(c1099Gross);
+  document.getElementById('c1099-expenses').textContent = fmtFull(totalExp);
+  document.getElementById('c1099-tax').textContent = fmtFull(seTax + fedTax);
+  document.getElementById('c1099-net').textContent = fmtFull(c1099Net);
+  document.getElementById('c1099-diff').textContent = (diff >= 0 ? '+' : '') + fmtFull(diff);
+  
+  if (c1099Net > w2Net) {
+    document.getElementById('c1099-card').classList.add('winner');
+    document.getElementById('w2-card').classList.remove('winner');
+  } else {
+    document.getElementById('w2-card').classList.add('winner');
+    document.getElementById('c1099-card').classList.remove('winner');
+  }
+  
+  document.getElementById('w2-results').classList.remove('hidden');
+  updateExportButton();
+}
+
+function calcTax() {
+  const gross = parseFloat(document.getElementById('tx-gross').value) || 0;
+  const office = parseFloat(document.getElementById('tx-office').value) || 0;
+  const software = parseFloat(document.getElementById('tx-software').value) || 0;
+  const health = parseFloat(document.getElementById('tx-health').value) || 0;
+  const other = parseFloat(document.getElementById('tx-other').value) || 0;
+  
+  const officeDeduction = office * 5;
+  const totalDed = software + health + other + officeDeduction;
+  const net = Math.max(0, gross - totalDed);
+  const seTax = net * 0.9235 * 0.153;
+  const fedTax = net * 0.24;
+  const total = seTax + fedTax;
+  const effective = (total / gross * 100).toFixed(1);
+  const quarterly = total / 4;
+  
+  document.getElementById('tx-rate').textContent = effective + '%';
+  document.getElementById('tx-se').textContent = fmtFull(seTax);
+  document.getElementById('tx-ded').textContent = fmtFull(totalDed);
+  document.getElementById('tx-q').textContent = fmtFull(quarterly);
+  document.getElementById('tx-insight').textContent = 
+    `Set aside ${fmtFull(quarterly)} per quarter for estimated tax payments. Your deductions reduce taxable income by ${fmtFull(totalDed)}. Consider maximizing deductible expenses like continuing education, professional dues, and mileage for travel between assignments.`;
+  
+  document.getElementById('tx-results').classList.remove('hidden');
+  updateExportButton();
+}
+
+function calcHome() {
+  const price = parseFloat(document.getElementById('hm-price').value) || 0;
+  const downPct = parseFloat(document.getElementById('hm-down').value) / 100;
+  const rate = parseFloat(document.getElementById('hm-rate').value) / 100;
+  const savings = parseFloat(document.getElementById('hm-savings').value) || 0;
+  const monthly = parseFloat(document.getElementById('hm-monthly').value) || 0;
+  const income = parseFloat(document.getElementById('hm-income').value) || 0;
+  
+  const downAmt = price * downPct;
+  const closing = price * 0.03;
+  const total = downAmt + closing;
+  const toSave = Math.max(0, total - savings);
+  const months = toSave / monthly;
+  
+  const loan = price - downAmt;
+  const monthlyRate = rate / 12;
+  const payment = loan * (monthlyRate * Math.pow(1 + monthlyRate, 360)) / (Math.pow(1 + monthlyRate, 360) - 1);
+  const dti = (payment / (income / 12)) * 100;
+  
+  const targetDate = new Date();
+  targetDate.setMonth(targetDate.getMonth() + Math.ceil(months));
+  
+  document.getElementById('hm-months').textContent = Math.ceil(months) + ' mo';
+  document.getElementById('hm-date').textContent = targetDate.toLocaleDateString('en-US', {month: 'long', year: 'numeric'});
+  document.getElementById('hm-down-amt').textContent = fmtFull(downAmt);
+  document.getElementById('hm-payment').textContent = fmtFull(payment);
+  document.getElementById('hm-dti').textContent = dti.toFixed(1) + '%';
+  
+  if (dti > 28) {
+    document.getElementById('hm-dti').classList.add('danger');
+    document.getElementById('hm-dti').classList.remove('success');
+  } else {
+    document.getElementById('hm-dti').classList.add('success');
+    document.getElementById('hm-dti').classList.remove('danger');
+  }
+  
+  document.getElementById('hm-results').classList.remove('hidden');
+  updateExportButton();
+}
+
+function calcLoan() {
+  const balance = parseFloat(document.getElementById('ln-balance').value) || 0;
+  const rate = parseFloat(document.getElementById('ln-rate').value) / 100 / 12;
+  const std = parseFloat(document.getElementById('ln-payment').value) || 0;
+  const agg = parseFloat(document.getElementById('ln-agg').value) || std;
+  
+  let stdBal = balance, stdMonths = 0, stdInt = 0;
+  while (stdBal > 0 && stdMonths < 360) {
+    const int = stdBal * rate;
+    stdInt += int;
+    stdBal -= (std - int);
+    stdMonths++;
+  }
+  
+  let aggBal = balance, aggMonths = 0, aggInt = 0;
+  while (aggBal > 0 && aggMonths < 360) {
+    const int = aggBal * rate;
+    aggInt += int;
+    aggBal -= (agg - int);
+    aggMonths++;
+  }
+  
+  const save = stdInt - aggInt;
+  
+  document.getElementById('ln-std-int').textContent = fmtFull(stdInt);
+  document.getElementById('ln-std-time').textContent = (stdMonths / 12).toFixed(1) + ' yrs';
+  document.getElementById('ln-std-total').textContent = fmtFull(balance + stdInt);
+  
+  document.getElementById('ln-agg-int').textContent = fmtFull(aggInt);
+  document.getElementById('ln-agg-time').textContent = (aggMonths / 12).toFixed(1) + ' yrs';
+  document.getElementById('ln-agg-total').textContent = fmtFull(balance + aggInt);
+  document.getElementById('ln-save').textContent = fmtFull(save);
+  
+  document.getElementById('ln-results').classList.remove('hidden');
+  updateExportButton();
+}
+
+function calcIncome() {
+  const salary = parseFloat(document.getElementById('it-salary').value) || 0;
+  const raise = parseFloat(document.getElementById('it-raise').value) / 100;
+  const spouse = parseFloat(document.getElementById('it-spouse').value) || 0;
+  const spouseRaise = parseFloat(document.getElementById('it-spouse-raise').value) / 100;
+  const side = parseFloat(document.getElementById('it-side').value) || 0;
+  
+  const y5 = (salary * Math.pow(1 + raise, 5)) + (spouse * Math.pow(1 + spouseRaise, 5)) + side;
+  const y10 = (salary * Math.pow(1 + raise, 10)) + (spouse * Math.pow(1 + spouseRaise, 10)) + side;
+  const current = salary + spouse + side;
+  const growth = ((y10 / current - 1) * 100).toFixed(1);
+  
+  document.getElementById('it-y5').textContent = fmt(y5);
+  document.getElementById('it-y10').textContent = fmt(y10);
+  document.getElementById('it-growth').textContent = growth + '%';
+  document.getElementById('it-cur').textContent = fmt(current);
+  
+  document.getElementById('it-results').classList.remove('hidden');
+  updateExportButton();
+}
+
+// PDF Export Functions
+function updateExportButton() {
+  const btn = document.getElementById('exportScenarioBtn');
+  const hasResults = !document.getElementById('sl-results').classList.contains('hidden') ||
+                     !document.getElementById('w2-results').classList.contains('hidden') ||
+                     !document.getElementById('tx-results').classList.contains('hidden') ||
+                     !document.getElementById('hm-results').classList.contains('hidden') ||
+                     !document.getElementById('ln-results').classList.contains('hidden') ||
+                     !document.getElementById('it-results').classList.contains('hidden');
+  
+  if (isPro && hasResults) {
+    btn.classList.remove('hidden');
+    btn.classList.remove('disabled');
+  } else if (!isPro && hasResults) {
+    btn.classList.remove('hidden');
+    btn.classList.add('disabled');
+    btn.onclick = () => {
+      alert('PDF export is a Pro feature. Upgrade to unlock!');
+      showUpgradeModal();
+    };
+  } else {
+    btn.classList.add('hidden');
+  }
+}
+
+function exportScenarioPDF() {
+  if (!isPro) {
+    showUpgradeModal();
+    return;
+  }
+  
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  const title = document.getElementById('calcTitle').textContent;
+  const date = new Date().toLocaleDateString();
+  
+  // Header
+  doc.setFontSize(20);
+  doc.setFont(undefined, 'bold');
+  doc.text('LocumsLab Report', 20, 20);
+  
+  doc.setFontSize(12);
+  doc.setFont(undefined, 'normal');
+  doc.text(title, 20, 30);
+  doc.text(`Generated: ${date}`, 20, 37);
+  
+  let yPos = 50;
+  
+  // Check which panel is active and export that data
+  const activePanel = document.querySelector('.panel.active');
+  
+  if (activePanel.id === 'panel-staff-locums' && !document.getElementById('sl-results').classList.contains('hidden')) {
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    doc.text('Staff vs Locums Comparison', 20, yPos);
+    yPos += 10;
+    
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    
+    // Staff Position
+    doc.text('Staff Position:', 20, yPos);
+    yPos += 6;
+    doc.text(`Base: ${document.getElementById('staff-base').textContent}`, 30, yPos);
+    yPos += 6;
+    doc.text(`Benefits: ${document.getElementById('staff-ben').textContent}`, 30, yPos);
+    yPos += 6;
+    doc.text(`Total Comp: ${document.getElementById('staff-total').textContent}`, 30, yPos);
+    yPos += 6;
+    doc.text(`Net: ${document.getElementById('staff-net').textContent}`, 30, yPos);
+    yPos += 10;
+    
+    // Locums
+    doc.text('Locums/Travel:', 20, yPos);
+    yPos += 6;
+    doc.text(`Gross: ${document.getElementById('locums-gross').textContent}`, 30, yPos);
+    yPos += 6;
+    doc.text(`Expenses: ${document.getElementById('locums-exp').textContent}`, 30, yPos);
+    yPos += 6;
+    doc.text(`Net: ${document.getElementById('locums-net').textContent}`, 30, yPos);
+    yPos += 6;
+    doc.text(`Difference: ${document.getElementById('locums-diff').textContent}`, 30, yPos);
+    yPos += 10;
+    
+    // Insight
+    doc.setFontSize(9);
+    const insight = document.getElementById('sl-insight').textContent;
+    const lines = doc.splitTextToSize(insight, 170);
+    doc.text(lines, 20, yPos);
+  }
+  
+  // Footer
+  doc.setFontSize(8);
+  doc.setTextColor(128, 128, 128);
+  doc.text('Generated by LocumsLab - For illustrative purposes only', 20, 280);
+  
+  doc.save(`${title.replace(/[^a-z0-9]/gi, '_')}_${date}.pdf`);
+}
+
+function exportComparison() {
+  if (!isPro) {
+    showUpgradeModal();
+    return;
+  }
+  
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  const date = new Date().toLocaleDateString();
+  
+  // Header
+  doc.setFontSize(20);
+  doc.setFont(undefined, 'bold');
+  doc.text('Scenario Comparison Report', 20, 20);
+  
+  doc.setFontSize(12);
+  doc.setFont(undefined, 'normal');
+  doc.text(`Generated: ${date}`, 20, 30);
+  
+  let yPos = 45;
+  
+  // Get scenarios
+  const scenarios = getUserScenarios();
+  
+  doc.setFontSize(14);
+  doc.setFont(undefined, 'bold');
+  doc.text('Scenarios Compared:', 20, yPos);
+  yPos += 10;
+  
+  doc.setFontSize(10);
+  doc.setFont(undefined, 'normal');
+  scenarios.forEach(s => {
+    doc.text(`• ${s.name}`, 25, yPos);
+    yPos += 6;
+  });
+  
+  yPos += 10;
+  
+  // Comparison table
+  doc.setFontSize(14);
+  doc.setFont(undefined, 'bold');
+  doc.text('Key Metrics:', 20, yPos);
+  yPos += 10;
+  
+  doc.setFontSize(10);
+  doc.setFont(undefined, 'normal');
+  
+  const table = document.getElementById('comparisonTable');
+  const rows = table.querySelectorAll('tr');
+  
+  rows.forEach((row, idx) => {
+    if (idx === 0) {
+      // Header row
+      doc.setFont(undefined, 'bold');
+    } else {
+      doc.setFont(undefined, 'normal');
+    }
+    
+    const cells = row.querySelectorAll('th, td');
+    let xPos = 20;
+    cells.forEach(cell => {
+      doc.text(cell.textContent.substring(0, 25), xPos, yPos);
+      xPos += 60;
+    });
+    yPos += 7;
+    
+    if (yPos > 270) {
+      doc.addPage();
+      yPos = 20;
+    }
+  });
+  
+  // Footer
+  doc.setFontSize(8);
+  doc.setTextColor(128, 128, 128);
+  doc.text('Generated by LocumsLab - For illustrative purposes only', 20, 280);
+  
+  doc.save(`Scenario_Comparison_${date}.pdf`);
+}
+
+// Initialize
+
+function showAuthScreen() {
+  document.getElementById('authScreen').classList.remove('hidden');
+}
+
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('locums_current_user');
+  if (saved) {
+    currentUser = saved;
+    const users = JSON.parse(localStorage.getItem('locums_users') || '{}');
+    isPro = users[saved]?.isPro || false;
+    showMainApp();
+  } else {
+    // Demo mode - show main app without login
+    showMainApp();
+  }
+  
+  // Set initial rate type visibility
+  toggleRateType();
+  
+  // MOBILE FIX: Add touch event listeners for better tablet/mobile support
+  setTimeout(() => {
+    const upgradeBtn = document.getElementById('upgradeBtn');
+    if (upgradeBtn && !currentUser) {
+      // Add touchstart event for mobile devices
+      upgradeBtn.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        showAuthScreen();
+      }, { passive: false });
+    }
+    
+    // Add touch support for signup links in demo notice
+    document.querySelectorAll('a[onclick*="showAuthScreen"]').forEach(link => {
+      link.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        showAuthScreen();
+      }, { passive: false });
+    });
+  }, 500);
+});
+// ===== LEGAL CONTENT =====
+const LEGAL = {
+  privacy: {
+    title: "Privacy",
+    body: `
+      <p><strong>Short version:</strong> LocumsLab stores your scenarios in <em>your browser</em> (localStorage). We do not transmit or store your scenario data on a server in this demo build.</p>
+      <ul>
+        <li><strong>What we store:</strong> Your email (for login in this demo) and scenario data you save.</li>
+        <li><strong>Where it lives:</strong> Your device / browser storage. Clearing site data or switching devices will remove access.</li>
+        <li><strong>Analytics:</strong> If you enable optional analytics, it will collect basic usage events (page views) but not your scenario contents.</li>
+      </ul>
+      <p>If you have questions, email <a href="mailto:hello@locumslab.com" style="color: var(--accent); text-decoration: underline;">hello@locumslab.com</a>.</p>
+    `
+  },
+  terms: {
+    title: "Terms",
+    body: `
+      <p><strong>LocumsLab provides educational estimates only.</strong> It is not financial, legal, tax, or professional advice.</p>
+      <ul>
+        <li>Calculations use simplified assumptions (e.g., flat tax rates) and may be inaccurate for your situation.</li>
+        <li>You are responsible for verifying outputs and decisions, including with a qualified tax professional.</li>
+        <li>Use at your own risk. We provide the tool “as is” without warranties.</li>
+      </ul>
+      <p>By using the site, you agree to these terms.</p>
+    `
+  }
+};
+
+function showLegal(kind) {
+  const modal = document.getElementById('legalModal');
+  const content = LEGAL[kind] || LEGAL.terms;
+  document.getElementById('legalTitle').textContent = content.title;
+  document.getElementById('legalBody').innerHTML = content.body;
+   document.getElementById('legalModal').classList.add('show');
+}
+
+function hideLegal() {
+  document.getElementById('legalModal').classList.remove('show');
+}
+</script>
+</body>
+</html>
