@@ -1938,8 +1938,8 @@
 
 <div class="modal-overlay" id="upgradeModal">
   <div class="modal">
-    <h3>🚀 Upgrade to Pro</h3>
-    <p style="margin-bottom: 20px;">Unlock powerful features to make confident career decisions</p>
+    <h3>🚀 Upgrade to Pro (Coming Soon!)</h3>
+    <p style="margin-bottom: 20px;">Pro tier is launching soon with powerful features to help you make confident career decisions</p>
     <div class="pricing-box">
       <div class="pricing-amount">$39 <span style="font-size: 1rem; font-weight: 400; color: var(--muted);">one-time</span></div>
       <div class="pricing-features">
@@ -1949,13 +1949,13 @@
         ✓ Export professional PDF reports<br>
         ✓ Lifetime access — use forever
       </div>
-      <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px; margin-top: 16px; font-size: 0.875rem;">
-        💡 <strong>ROI:</strong> If S-Corp saves you $8,000/year in taxes, this pays for itself in 2 days.
+      <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 12px; margin-top: 16px; font-size: 0.875rem;">
+        📧 <strong>Want early access?</strong> Click "Get Notified" below and we'll email you when Pro launches!
       </div>
     </div>
     <div class="modal-actions">
       <button class="modal-btn secondary" onclick="hideUpgradeModal()">Maybe Later</button>
-      <button class="modal-btn primary" onclick="handleUpgrade()">Upgrade Now — $39</button>
+      <button class="modal-btn primary" onclick="requestEarlyAccess()">Get Notified</button>
     </div>
   </div>
 </div>
@@ -1976,12 +1976,12 @@
         ✓ Annual tax savings estimate
       </div>
     </div>
-    <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 20px; font-size: 0.875rem;">
-      💡 For a CRNA earning $250k, the S-Corp calculator could identify $8,000+ in annual tax savings. Pro pays for itself instantly.
+    <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 20px; font-size: 0.875rem;">
+      🚀 <strong>Pro tier launching soon!</strong> Want early access? Email hello@locumslab.com with "Pro Access" in the subject.
     </div>
     <div class="modal-actions">
       <button class="modal-btn secondary" onclick="hideScorpPaywall()">Maybe Later</button>
-      <button class="modal-btn primary" onclick="handleUpgrade()">Unlock S-Corp — $39</button>
+      <button class="modal-btn primary" onclick="requestEarlyAccess()">Get Notified</button>
     </div>
   </div>
 </div>
@@ -3076,6 +3076,39 @@ function showComparePaywall() {
 
 function hideComparePaywall() {
   document.getElementById('comparePaywallModal').classList.remove('show');
+}
+
+function requestEarlyAccess() {
+  const email = currentUser || prompt('Enter your email to get notified when Pro launches:');
+  
+  if (!email) {
+    return;
+  }
+  
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert('Please enter a valid email address');
+    return;
+  }
+  
+  // Store in localStorage for now (you can export this later)
+  const waitlist = JSON.parse(localStorage.getItem('locums_pro_waitlist') || '[]');
+  if (!waitlist.includes(email)) {
+    waitlist.push({
+      email: email,
+      timestamp: new Date().toISOString(),
+      source: 'paywall'
+    });
+    localStorage.setItem('locums_pro_waitlist', JSON.stringify(waitlist));
+  }
+  
+  // Close modals
+  hideUpgradeModal();
+  hideScorpPaywall();
+  hideComparePaywall();
+  
+  alert('✅ You\'re on the list!\n\nWe\'ll email you at ' + email + ' when Pro launches (likely within 1-2 weeks).\n\nIn the meantime, feel free to use all the free calculators!');
 }
 
 function showFAQ() {
