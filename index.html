@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Financial calculator for physicians, CRNAs, NPs, PAs, and nurses comparing staff positions vs locums contracts. Model income, taxes, and take-home pay.">
+<title>LocumsLab — Make Your Next Career Move with Confidence</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a2540;
+    --blue: #0066cc;
+    --green: #00a86b;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-600: #475569;
+    --gray-900: #0f172a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    color: var(--gray-900);
+    background: white;
+    line-height: 1.7;
+  }
+
+  /* Header */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--navy);
+    letter-spacing: -0.02em;
+  }
+
+  .nav-cta {
+    background: var(--blue);
+    color: white;
+    padding: 10px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition: all 0.2s;
+  }
+
+  .nav-cta:hover {
+    background: #0052a3;
+    transform: translateY(-1px);
+  }
+
+  /* Hero */
+  .hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 40px 80px;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--gray-100);
+    color: var(--gray-600);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--navy);
+    margin-bottom: 24px;
+    letter-spacing: -0.02em;
+  }
+
+  .hero p {
+    font-size: 1.25rem;
+    color: var(--gray-600);
+    max-width: 640px;
+    margin: 0 auto 40px;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--blue);
+    color: white;
+    padding: 16px 32px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.125rem;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+  }
+
+  .hero-cta:hover {
+    background: #0052a3;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 102, 204, 0.3);
+  }
+
+  /* Problem */
+  .problem {
+    background: linear-gradient(180deg, white 0%, var(--gray-50) 100%);
+    padding: 80px 40px;
+  }
+
+  .section-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+
+  .section-header h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 400;
+    color: var(--navy);
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .section-header p {
+    font-size: 1.125rem;
+    color: var(--gray-600);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .problem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px;
+  }
+
+  .problem-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 16px;
+    padding: 32px;
+    transition: all 0.3s;
+  }
+
+  .problem-card:hover {
+    border-color: var(--blue);
+    box-shadow: 0 8px 24px rgba(0, 102, 204, 0.1);
+    transform: translateY(-4px);
+  }
+
+  .problem-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--blue), var(--green));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+
+  .problem-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 12px;
+  }
+
+  .problem-card p {
+    color: var(--gray-600);
+    font-size: 1rem;
+  }
+
+  /* Solution */
+  .solution {
+    padding: 100px 40px;
+    background: white;
+  }
+
+  .solution-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  @media (max-width: 900px) {
+    .solution-grid { grid-template-columns: 1fr; }
+  }
+
+  .solution h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 400;
+    color: var(--navy);
+    margin-bottom: 24px;
+    letter-spacing: -0.02em;
+  }
+
+  .solution p {
+    font-size: 1.125rem;
+    color: var(--gray-600);
+    margin-bottom: 32px;
+    line-height: 1.8;
+  }
+
+  .feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .feature-check {
+    width: 24px;
+    height: 24px;
+    background: var(--green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+  }
+
+  .feature-item span {
+    font-size: 1rem;
+    color: var(--gray-900);
+  }
+
+  .solution-visual {
+    background: linear-gradient(135deg, var(--gray-50), white);
+    border: 1px solid var(--gray-200);
+    border-radius: 20px;
+    padding: 40px;
+    position: relative;
+  }
+
+  .visual-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  .visual-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--gray-200);
+    font-size: 0.9375rem;
+  }
+
+  .visual-row:last-child { border-bottom: none; }
+
+  .visual-label {
+    color: var(--gray-600);
+  }
+
+  .visual-value {
+    font-weight: 700;
+    color: var(--green);
+    font-family: 'DM Sans', monospace;
+  }
+
+  /* Templates */
+  .templates {
+    padding: 100px 40px;
+    background: var(--gray-50);
+  }
+
+  .templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .template-card {
+    background: white;
+    border: 2px solid var(--gray-200);
+    border-radius: 16px;
+    padding: 28px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .template-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--blue), var(--green));
+    transform: scaleX(0);
+    transition: transform 0.3s;
+  }
+
+  .template-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .template-card:hover {
+    border-color: var(--blue);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 102, 204, 0.15);
+  }
+
+  .template-badge {
+    display: inline-block;
+    background: var(--gray-100);
+    color: var(--gray-600);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+  }
+
+  .template-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+
+  .template-card p {
+    color: var(--gray-600);
+    font-size: 0.9375rem;
+    margin-bottom: 20px;
+  }
+
+  .template-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 1px solid var(--gray-200);
+  }
+
+  .template-stat-label {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .template-stat-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--blue);
+    font-family: 'DM Sans', monospace;
+  }
+
+  /* Pricing */
+  .pricing {
+    padding: 100px 40px;
+    background: white;
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    max-width: 900px;
+    margin: 64px auto 0;
+  }
+
+  @media (max-width: 768px) {
+    .pricing-grid { grid-template-columns: 1fr; }
+  }
+
+  .pricing-card {
+    background: white;
+    border: 2px solid var(--gray-200);
+    border-radius: 20px;
+    padding: 40px;
+    transition: all 0.3s;
+  }
+
+  .pricing-card.featured {
+    border-color: var(--blue);
+    box-shadow: 0 12px 32px rgba(0, 102, 204, 0.15);
+    transform: scale(1.02);
+  }
+
+  .pricing-card.featured::before {
+    content: 'BEST VALUE';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--blue);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .pricing-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+
+  .pricing-card .price {
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--navy);
+    margin: 16px 0;
+  }
+
+  .pricing-card .price span {
+    font-size: 1.125rem;
+    color: var(--gray-600);
+    font-weight: 500;
+  }
+
+  .pricing-features {
+    list-style: none;
+    margin: 32px 0;
+  }
+
+  .pricing-features li {
+    padding: 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1rem;
+  }
+
+  .pricing-features li::before {
+    content: '✓';
+    color: var(--green);
+    font-weight: 700;
+    font-size: 1.125rem;
+  }
+
+  .pricing-cta {
+    width: 100%;
+    padding: 14px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .pricing-cta:hover {
+    background: #0052a3;
+    transform: translateY(-2px);
+  }
+
+  .pricing-cta.secondary {
+    background: white;
+    border: 2px solid var(--gray-200);
+    color: var(--gray-900);
+  }
+
+  .pricing-cta.secondary:hover {
+    border-color: var(--blue);
+    background: white;
+  }
+
+  /* FAQ */
+  .faq {
+    padding: 100px 40px;
+    background: var(--gray-50);
+  }
+
+  .faq-list {
+    max-width: 800px;
+    margin: 64px auto 0;
+  }
+
+  .faq-item {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 16px;
+  }
+
+  .faq-question {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 12px;
+  }
+
+  .faq-answer {
+    font-size: 1rem;
+    color: var(--gray-600);
+    line-height: 1.7;
+  }
+
+  /* CTA Final */
+  .cta-final {
+    padding: 100px 40px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    text-align: center;
+    color: white;
+  }
+
+  .cta-final h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 400;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+  }
+
+  .cta-final p {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    margin-bottom: 40px;
+  }
+
+  .cta-final-btn {
+    background: white;
+    color: var(--blue);
+    padding: 16px 40px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.125rem;
+    display: inline-block;
+    transition: all 0.3s;
+  }
+
+  .cta-final-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.3);
+  }
+
+  /* Footer */
+  footer {
+    padding: 60px 40px 40px;
+    background: var(--navy);
+    color: white;
+  }
+
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 48px;
+  }
+
+  @media (max-width: 768px) {
+    .footer-content { grid-template-columns: 1fr; }
+  }
+
+  .footer-brand h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 12px;
+  }
+
+  .footer-brand p {
+    opacity: 0.8;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+
+  .footer-section h4 {
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+    opacity: 0.7;
+  }
+
+  .footer-links {
+    list-style: none;
+  }
+
+  .footer-links li {
+    margin-bottom: 12px;
+  }
+
+  .footer-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 0.9375rem;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+
+  .footer-links a:hover {
+    opacity: 1;
+  }
+
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 32px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    font-size: 0.875rem;
+    opacity: 0.7;
+  }
+
+  @media (max-width: 768px) {
+    .hero { padding: 60px 24px 40px; }
+    nav { padding: 20px 24px; }
+    .problem, .solution, .templates, .pricing, .faq, .cta-final {
+      padding: 60px 24px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="logo">LocumsLab</div>
+    <a href="app.html" class="nav-cta">Try Calculator</a>
+  </nav>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">For Physicians, CRNAs, NPs, PAs & Nurses</div>
+  <h1>Make Your Next Career Move<br>with Confidence</h1>
+  <p>Compare staff positions vs locums contracts. Model income, taxes, and take-home pay before you decide.</p>
+  <a href="app.html" class="hero-cta">
+    Try Free Calculator →
+  </a>
+</section>
+
+<!-- Problem -->
+<section class="problem">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2>Stop Guessing About Money</h2>
+      <p>Every healthcare professional asks these questions before going locums</p>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="problem-icon">💰</div>
+        <h3>Will I actually make more?</h3>
+        <p>Locums rates look great, but what about taxes, insurance, and self-employment costs?</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">📊</div>
+        <h3>How much will taxes hit me?</h3>
+        <p>Self-employment tax + federal + state. What's left after the IRS takes their cut?</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">🤔</div>
+        <h3>Should I form an S-Corp?</h3>
+        <p>Could save thousands in taxes, but is it worth the complexity for your situation?</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Solution -->
+<section class="solution">
+  <div class="section-inner">
+    <div class="solution-grid">
+      <div>
+        <h2>Your numbers.<br>Your future.<br>Your decision.</h2>
+        <p>LocumsLab shows you exactly what you'll take home — after taxes, insurance, and business expenses. Compare unlimited scenarios and make your move with confidence.</p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <div class="feature-check">✓</div>
+            <span><strong>7 Financial Calculators</strong> — Staff vs Locums, S-Corp, Retirement, Taxes, and more</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-check">✓</div>
+            <span><strong>Save & Compare Scenarios</strong> — Model multiple offers side-by-side</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-check">✓</div>
+            <span><strong>Pre-filled Templates</strong> — Start with MD, CRNA, NP, or PA examples</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-check">✓</div>
+            <span><strong>PDF Reports</strong> — Export professional reports to share with your CPA or spouse</span>
+          </div>
+        </div>
+      </div>
+      <div class="solution-visual">
+        <div class="visual-card">
+          <div class="visual-row">
+            <span class="visual-label">Staff Position Net</span>
+            <span class="visual-value">$142,000</span>
+          </div>
+          <div class="visual-row">
+            <span class="visual-label">Locums Net (After Tax)</span>
+            <span class="visual-value">$156,400</span>
+          </div>
+          <div class="visual-row">
+            <span class="visual-label">Annual Difference</span>
+            <span class="visual-value">+$14,400</span>
+          </div>
+          <div class="visual-row">
+            <span class="visual-label">Recommendation</span>
+            <span class="visual-value">Locums Contract ✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Templates -->
+<section class="templates">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2>Start with a Template</h2>
+      <p>Pre-filled scenarios based on real contracts. Just plug in your numbers.</p>
+    </div>
+    <div class="templates-grid">
+      <div class="template-card" onclick="window.location.href='app.html'">
+        <div class="template-badge">Physician</div>
+        <h3>Hospitalist Locums</h3>
+        <p>Compare staff hospitalist position vs locums contracts</p>
+        <div class="template-stats">
+          <div>
+            <div class="template-stat-label">Staff Base</div>
+            <div class="template-stat-value">$280k</div>
+          </div>
+          <div>
+            <div class="template-stat-label">Locums Weekly</div>
+            <div class="template-stat-value">$6,000</div>
+          </div>
+        </div>
+      </div>
+      <div class="template-card" onclick="window.location.href='app.html'">
+        <div class="template-badge">CRNA</div>
+        <h3>Staff vs 13-Week</h3>
+        <p>Compare staff CRNA vs typical 13-week locums contract</p>
+        <div class="template-stats">
+          <div>
+            <div class="template-stat-label">Staff Base</div>
+            <div class="template-stat-value">$210k</div>
+          </div>
+          <div>
+            <div class="template-stat-label">Locums Weekly</div>
+            <div class="template-stat-value">$3,800</div>
+          </div>
+        </div>
+      </div>
+      <div class="template-card" onclick="window.location.href='app.html'">
+        <div class="template-badge">NP</div>
+        <h3>Travel vs Full-Time</h3>
+        <p>Model travel NP contracts vs your current position</p>
+        <div class="template-stats">
+          <div>
+            <div class="template-stat-label">Staff Base</div>
+            <div class="template-stat-value">$110k</div>
+          </div>
+          <div>
+            <div class="template-stat-label">Travel Weekly</div>
+            <div class="template-stat-value">$2,400</div>
+          </div>
+        </div>
+      </div>
+      <div class="template-card" onclick="window.location.href='app.html'">
+        <div class="template-badge">PA</div>
+        <h3>Per Diem vs Staff</h3>
+        <p>Calculate per diem rates vs traditional employment</p>
+        <div class="template-stats">
+          <div>
+            <div class="template-stat-label">Staff Base</div>
+            <div class="template-stat-value">$105k</div>
+          </div>
+          <div>
+            <div class="template-stat-label">Per Diem Rate</div>
+            <div class="template-stat-value">$75/hr</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2>Simple, Transparent Pricing</h2>
+      <p>Try free. Upgrade when you're ready.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <h3>Free</h3>
+        <div class="price">$0</div>
+        <ul class="pricing-features">
+          <li>All 7 calculators</li>
+          <li>Save up to 3 scenarios</li>
+          <li>Basic comparisons</li>
+        </ul>
+        <button class="pricing-cta secondary" onclick="window.location.href='app.html'">Get Started</button>
+      </div>
+      <div class="pricing-card featured">
+        <h3>Pro</h3>
+        <div class="price">$39<span> one-time</span></div>
+        <ul class="pricing-features">
+          <li>Unlimited scenarios</li>
+          <li>S-Corp Evaluator</li>
+          <li>Side-by-side comparison</li>
+          <li>PDF export (unlimited)</li>
+          <li>Lifetime access</li>
+        </ul>
+        <button class="pricing-cta" onclick="window.location.href='app.html'">Start Free</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2>Frequently Asked Questions</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <h3 class="faq-question">How accurate are the calculations?</h3>
+        <p class="faq-answer">We use simplified tax rates for estimates. For precise tax planning, consult a CPA. LocumsLab is designed to give you directional accuracy so you can make informed decisions, not replace professional tax advice.</p>
+      </div>
+      <div class="faq-item">
+        <h3 class="faq-question">What's included in the S-Corp Evaluator?</h3>
+        <p class="faq-answer">The S-Corp Evaluator compares sole proprietorship vs S-Corporation structures, showing you tax savings, optimal salary/distribution splits, retirement contribution differences, and whether forming an S-Corp makes sense for your income level.</p>
+      </div>
+      <div class="faq-item">
+        <h3 class="faq-question">Can I export my scenarios?</h3>
+        <p class="faq-answer">Yes! Pro users can export any scenario or comparison as a professional PDF report — perfect for sharing with your spouse, CPA, or financial advisor.</p>
+      </div>
+      <div class="faq-item">
+        <h3 class="faq-question">Is this only for CRNAs?</h3>
+        <p class="faq-answer">No! LocumsLab works for physicians, CRNAs, NPs, PAs, nurses, and any healthcare professional comparing staff positions vs locums/travel contracts.</p>
+      </div>
+      <div class="faq-item">
+        <h3 class="faq-question">What if I have questions?</h3>
+        <p class="faq-answer">Email us at <a href="/cdn-cgi/l/email-protection#543c3138383b14383b372139273835367a373b39" style="color: var(--blue); text-decoration: underline;"><span class="__cf_email__" data-cfemail="d7bfb2bbbbb897bbb8b4a2baa4bbb6b5f9b4b8ba">[email&#160;protected]</span></a> and we'll respond within 24 hours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="cta-final">
+  <h2>Ready to run the numbers?</h2>
+  <p>Join healthcare professionals who've used LocumsLab to make confident career decisions.</p>
+  <a href="app.html" class="cta-final-btn">Try Free Calculator</a>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-brand">
+      <h3>LocumsLab</h3>
+      <p>Financial clarity for healthcare professionals. Compare contracts, model scenarios, and make confident decisions.</p>
+    </div>
+    <div class="footer-section">
+      <h4>Product</h4>
+      <ul class="footer-links">
+        <li><a href="app.html">Calculator</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h4>Company</h4>
+      <ul class="footer-links">
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="mailto:hello@locumslab.com">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 LocumsLab. For illustrative purposes only. Consult a tax professional for personalized advice
