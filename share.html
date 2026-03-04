@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shared Results — LocumsLab</title>
+<meta name="description" content="View shared financial comparison results from LocumsLab.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #0f1419; --surface: #1a1f29; --surface2: #242b38;
+    --border: #2d3748; --accent: #10b981; --accent-dark: #059669;
+    --text: #f7fafc; --muted: #94a3b8; --danger: #ef4444;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+  header { border-bottom: 1px solid var(--border); background: var(--surface); padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-size: 1.25rem; font-weight: 800; color: var(--accent); text-decoration: none; }
+  .cta-btn { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 700; font-size: 0.9375rem; cursor: pointer; text-decoration: none; display: inline-block; }
+  .cta-btn:hover { background: var(--accent-dark); }
+  main { max-width: 720px; margin: 48px auto; padding: 0 24px 80px; }
+  .shared-header { margin-bottom: 32px; }
+  .shared-header h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 8px; }
+  .shared-header p { color: var(--muted); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .card-title { font-size: 0.75rem; font-weight: 700; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 16px; }
+  .row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .row:last-child { border-bottom: none; }
+  .row-label { color: var(--muted); font-size: 0.9375rem; }
+  .row-val { font-weight: 600; color: var(--text); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+  .compare-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .compare-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+  .highlight-val { font-size: 1.5rem; font-weight: 800; color: var(--accent); }
+  .diff-box { background: var(--surface); border: 1px solid var(--accent); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px; }
+  .diff-box .label { color: var(--muted); font-size: 0.875rem; margin-bottom: 8px; }
+  .diff-box .amount { font-size: 2.5rem; font-weight: 800; color: var(--accent); }
+  .cta-box { background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.05)); border: 1px solid var(--accent); border-radius: 12px; padding: 28px; text-align: center; margin-top: 32px; }
+  .cta-box h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; }
+  .cta-box p { color: var(--muted); margin-bottom: 20px; font-size: 0.9375rem; }
+  .loading { text-align: center; padding: 80px 0; color: var(--muted); }
+  .error { text-align: center; padding: 80px 0; }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } header { padding: 16px 20px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">LocumsLab</a>
+  <a href="/app.html" class="cta-btn">Run Your Own Numbers →</a>
+</header>
+
+<main>
+  <div id="loading" class="loading">Loading shared results...</div>
+  <div id="error" class="error hidden">
+    <h2 style="margin-bottom:12px;">Results not found</h2>
+    <p style="color:var(--muted); margin-bottom:24px;">This link may have expired or been removed.</p>
+    <a href="/app.html" class="cta-btn">Run Your Own Comparison →</a>
+  </div>
+  <div id="results" class="hidden"></div>
+</main>
+
+<script>
+const SUPABASE_URL = 'https://gqhalfzmqzlichcqubbs.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxaGFsZnptcXpsaWNoY3F1YmJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAxOTI0NjQsImV4cCI6MjA1NTc2ODQ2NH0.VvnSFsEIK7HNAnrETagXuMM4mEMDdLwC8dnmFqOAcjk';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const fmt = n => '$' + Math.round(Math.abs(n)).toLocaleString();
+
+async function loadSharedResults() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+
+  if (!id) { showError(); return; }
+
+  const { data, error } = await sb
+    .from('shared_results')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error || !data) { showError(); return; }
+
+  document.getElementById('loading').classList.add('hidden');
+  renderResults(data);
+}
+
+function renderResults(data) {
+  const el = document.getElementById('results');
+  el.classList.remove('hidden');
+  const d = data.data;
+
+  if (data.calculator === 'quickstart') {
+    const diff = d.locumsNet - d.w2Net;
+    el.innerHTML = `
+      <div class="shared-header">
+        <h1>W-2 vs Locums Comparison</h1>
+        <p>Shared via LocumsLab — run your own numbers free at locumslab.com</p>
+      </div>
+      <div class="two-col">
+        <div class="compare-card">
+          <h4>W-2 Position</h4>
+          <div class="row"><span class="row-label">Annual Salary</span><span class="row-val">${fmt(d.salary)}</span></div>
+          <div class="row"><span class="row-label">Benefits Value</span><span class="row-val">${fmt(d.benefits)}</span></div>
+          <div class="row"><span class="row-label">Est. Net Take-Home</span><span class="row-val highlight-val">${fmt(d.w2Net)}</span></div>
+        </div>
+        <div class="compare-card">
+          <h4>Locums (1099)</h4>
+          <div class="row"><span class="row-label">Gross Income</span><span class="row-val">${fmt(d.grossIncome)}</span></div>
+          <div class="row"><span class="row-label">Est. Net Take-Home</span><span class="row-val highlight-val">${fmt(d.locumsNet)}</span></div>
+        </div>
+      </div>
+      <div class="diff-box">
+        <div class="label">${diff >= 0 ? 'Estimated annual gain from going locums' : 'Estimated annual difference'}</div>
+        <div class="amount" style="color:${diff >= 0 ? 'var(--accent)' : 'var(--danger)'}">${diff >= 0 ? '+' : '-'}${fmt(Math.abs(diff))}/yr</div>
+      </div>
+      <div class="cta-box">
+        <h3>Run your own comparison</h3>
+        <p>Free calculators for physicians, CRNAs, NPs, and PAs evaluating the locums decision.</p>
+        <a href="/app.html" class="cta-btn">Try LocumsLab Free →</a>
+      </div>
+    `;
+  } else if (data.calculator === 'true-hourly') {
+    el.innerHTML = `
+      <div class="shared-header">
+        <h1>True Hourly Rate Breakdown</h1>
+        <p>Shared via LocumsLab — run your own numbers free at locumslab.com</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Rate Summary</div>
+        <div class="row"><span class="row-label">Stated Contract Rate</span><span class="row-val">$${d.contractHourly.toFixed(2)}/hr</span></div>
+        <div class="row"><span class="row-label">True Hourly Rate (after all costs)</span><span class="row-val" style="color:var(--accent);">$${Math.max(0, d.trueRate).toFixed(2)}/hr</span></div>
+        <div class="row"><span class="row-label">Rate Reduction</span><span class="row-val" style="color:var(--danger);">-${d.reductionPct}%</span></div>
+        <div class="row"><span class="row-label">Annual Gross</span><span class="row-val">${fmt(d.annualGross)}</span></div>
+      </div>
+      <div class="cta-box">
+        <h3>Calculate your true hourly rate</h3>
+        <p>Free calculators for physicians, CRNAs, NPs, and PAs evaluating locums contracts.</p>
+        <a href="/app.html" class="cta-btn">Try LocumsLab Free →</a>
+      </div>
+    `;
+  } else {
+    showError();
+  }
+}
+
+function showError() {
+  document.getElementById('loading').classList.add('hidden');
+  document.getElementById('error').classList.remove('hidden');
+}
+
+loadSharedResults();
+</script>
+</body>
+</html>
