@@ -1055,6 +1055,11 @@
 
 <!-- MAIN APP -->
 <div id="mainApp">
+  <!-- Try Free banner - always visible when not logged in -->
+  <div id="signup-banner" style="background: rgba(251, 191, 36, 0.1); border-bottom: 1px solid rgba(251, 191, 36, 0.3); padding: 10px 24px; text-align: center; display:none;">
+    <span style="color: #fbbf24; font-size: 0.875rem;">👋 You're in Try Free mode — calculators are fully unlocked. <a href="#" onclick="showAuthScreen(); return false;" style="color: #10b981; font-weight: 600; text-decoration: underline;">Sign up free</a> to save scenarios and compare contracts.</span>
+  </div>
+
   <header>
     <div class="logo">
       <div class="logo-text">LocumsLab</div>
@@ -1072,15 +1077,16 @@
   <!-- WIZARD -->
   
   <div class="wizard" id="wizard">
-    <div id="signup-banner" style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px; padding: 16px 20px; margin-bottom: 32px; text-align: center;">
-      <span style="color: #fbbf24; font-size: 0.9375rem;">👋 Try all calculators free. <a href="#" onclick="showAuthScreen(); return false;" style="color: #10b981; font-weight: 600; text-decoration: underline;">Sign up</a> to save scenarios and unlock comparison view.</span>
-    </div>
-
     <div class="wizard-header">
       <h1>Should you go <span class="highlight">locums</span>?</h1>
       <p>Compare staff positions vs travel contracts. Model your income, taxes, and financial future.</p>
     </div>
     <div class="wizard-choices">
+      <div class="choice-card" onclick="selectGoal('quickstart')" style="border-color: var(--accent); background: rgba(16,185,129,0.05);">
+        <div class="choice-emoji">🚀</div>
+        <div class="choice-title" style="color: var(--accent);">Quick Start — New to Locums?</div>
+        <div class="choice-desc">Step-by-step guided comparison from W-2 to locums. Start here if you're just exploring.</div>
+      </div>
       <div class="choice-card" onclick="selectGoal('staff-vs-locums')">
         <div class="choice-emoji">⚖️</div>
         <div class="choice-title">Staff vs Locums</div>
@@ -1088,8 +1094,8 @@
       </div>
       <div class="choice-card" onclick="selectGoal('contract-eval')">
         <div class="choice-emoji">📋</div>
-        <div class="choice-title">Evaluate a Contract</div>
-        <div class="choice-desc">Review a specific travel contract offer and see your true take-home</div>
+        <div class="choice-title">True Hourly Rate</div>
+        <div class="choice-desc">See what a contract offer really pays after taxes, insurance, malpractice, and travel</div>
       </div>
       <div class="choice-card" onclick="selectGoal('w2-1099')">
         <div class="choice-emoji">💼</div>
@@ -1100,6 +1106,7 @@
         <div class="choice-emoji">🏢</div>
         <div class="choice-title">S-Corp Evaluator</div>
         <div class="choice-desc">Should you form an S-Corporation? Compare tax implications and savings</div>
+        <div style="display:inline-block; margin-top:8px; background: var(--accent); color: white; font-size: 0.625rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em;">PRO</div>
       </div>
       <div class="choice-card" onclick="selectGoal('benchmarks')">
         <div class="choice-emoji">📊</div>
@@ -1170,8 +1177,10 @@
     </div>
 
     <nav class="nav">
+      <button class="nav-btn" onclick="switchPanel('quickstart', this)" style="background: rgba(16,185,129,0.15); border-color: var(--accent); color: var(--accent);">🚀 Quick Start</button>
       <button class="nav-btn active" onclick="switchPanel('staff-locums', this)">Staff vs Locums</button>
       <button class="nav-btn" onclick="switchPanel('w2-1099', this)">W2 vs 1099</button>
+      <button class="nav-btn" onclick="switchPanel('true-hourly', this)">True Hourly Rate</button>
       <button class="nav-btn" onclick="switchPanel('scorp', this)">S-Corp <span style="background: var(--accent); color: white; font-size: 0.625rem; padding: 2px 6px; border-radius: 4px; margin-left: 4px; font-weight: 700;">PRO</span></button>
       <button class="nav-btn" onclick="switchPanel('tax', this)">Tax Estimator</button>
       <button class="nav-btn" onclick="switchPanel('home', this)">Home Buying</button>
@@ -1181,6 +1190,147 @@
     </nav>
 
     <main>
+      <!-- QUICK START -->
+      <div class="panel" id="panel-quickstart">
+        <div class="panel-header">
+          <h2>🚀 Quick Start: W-2 to Locums</h2>
+          <p>New to locums? Answer a few questions and we'll show you exactly what your financial picture looks like.</p>
+        </div>
+
+        <!-- Step indicators -->
+        <div id="qs-steps" style="display:flex; gap:8px; margin-bottom:28px; align-items:center;">
+          <div id="qs-step-1" style="display:flex; align-items:center; gap:6px;">
+            <div style="width:28px; height:28px; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.875rem;">1</div>
+            <span style="font-size:0.875rem; font-weight:600; color:var(--accent);">Your W-2</span>
+          </div>
+          <div style="flex:1; height:2px; background:var(--border);"></div>
+          <div id="qs-step-2" style="display:flex; align-items:center; gap:6px;">
+            <div id="qs-dot-2" style="width:28px; height:28px; border-radius:50%; background:var(--border); color:var(--muted); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.875rem;">2</div>
+            <span id="qs-label-2" style="font-size:0.875rem; font-weight:600; color:var(--muted);">Locums Target</span>
+          </div>
+          <div style="flex:1; height:2px; background:var(--border);"></div>
+          <div id="qs-step-3" style="display:flex; align-items:center; gap:6px;">
+            <div id="qs-dot-3" style="width:28px; height:28px; border-radius:50%; background:var(--border); color:var(--muted); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.875rem;">3</div>
+            <span id="qs-label-3" style="font-size:0.875rem; font-weight:600; color:var(--muted);">Your Results</span>
+          </div>
+        </div>
+
+        <!-- Step 1: W-2 Details -->
+        <div id="qs-page-1" class="card">
+          <div class="card-title">STEP 1 — YOUR CURRENT W-2 POSITION</div>
+          <div class="field">
+            <label>Your Profession</label>
+            <select id="qs-profession">
+              <option value="crna">CRNA</option>
+              <option value="md_hospitalist">Physician - Hospitalist</option>
+              <option value="md_em">Physician - Emergency Medicine</option>
+              <option value="md_anesthesia">Physician - Anesthesiology</option>
+              <option value="md_fp">Physician - Family Practice</option>
+              <option value="np">Nurse Practitioner</option>
+              <option value="pa">Physician Assistant</option>
+              <option value="rn">Registered Nurse</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Annual Base Salary ($)</label>
+            <input type="number" id="qs-salary" value="140000" min="0" step="1000">
+          </div>
+          <div class="field">
+            <label>Employer Benefits Value (health, dental, vision, retirement match)</label>
+            <input type="number" id="qs-benefits" value="28000" min="0" step="1000">
+            <div style="font-size:0.8125rem; color:var(--muted); margin-top:4px;">Typical range: $20,000–$35,000/year</div>
+          </div>
+          <div class="field">
+            <label>Paid Time Off (days/year)</label>
+            <input type="number" id="qs-pto" value="20" min="0" max="60">
+          </div>
+          <div class="field">
+            <label>Annual Bonus ($)</label>
+            <input type="number" id="qs-bonus" value="0" min="0" step="1000">
+          </div>
+          <button class="calc-btn" onclick="qsNext(1)" style="margin-top:8px;">Next: Locums Target →</button>
+        </div>
+
+        <!-- Step 2: Locums Target -->
+        <div id="qs-page-2" class="card hidden">
+          <div class="card-title">STEP 2 — YOUR LOCUMS TARGET</div>
+          <div class="field">
+            <label>Expected Hourly Rate ($)</label>
+            <input type="number" id="qs-hourly" value="130" min="0">
+            <div style="font-size:0.8125rem; color:var(--muted); margin-top:4px;" id="qs-rate-hint">CRNA locums avg: $120–$160/hr</div>
+          </div>
+          <div class="field">
+            <label>Hours per Week</label>
+            <input type="number" id="qs-hours" value="40" min="0" max="80">
+          </div>
+          <div class="field">
+            <label>Weeks Working per Year</label>
+            <input type="number" id="qs-weeks" value="46" min="1" max="52">
+            <div style="font-size:0.8125rem; color:var(--muted); margin-top:4px;">Most locums providers work 44–50 weeks/year</div>
+          </div>
+          <div class="field">
+            <label>Housing/Travel Stipend (weekly, if provided)</label>
+            <input type="number" id="qs-stipend" value="1800" min="0" step="100">
+          </div>
+          <div class="field">
+            <label>Will you need to buy your own health insurance?</label>
+            <select id="qs-insurance-needed">
+              <option value="yes">Yes — I'll need to buy my own</option>
+              <option value="no">No — covered another way (spouse, etc.)</option>
+            </select>
+          </div>
+          <div class="field" id="qs-insurance-field">
+            <label>Estimated Annual Health Insurance Premium ($)</label>
+            <input type="number" id="qs-insurance" value="18000" min="0" step="500">
+            <div style="font-size:0.8125rem; color:var(--muted); margin-top:4px;">Individual market avg: $15,000–$22,000/year</div>
+          </div>
+          <div style="display:flex; gap:12px; margin-top:8px;">
+            <button class="calc-btn" onclick="qsBack(2)" style="background:var(--surface2); color:var(--text);">← Back</button>
+            <button class="calc-btn" onclick="qsNext(2)">See My Results →</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Results -->
+        <div id="qs-page-3" class="hidden">
+          <div class="two-col" style="margin-bottom:24px;">
+            <div class="compare-card" id="qs-w2-card">
+              <h4>Your W-2 Position</h4>
+              <div class="row"><span class="row-label">Base Salary</span><span class="row-val" id="qs-r-salary">—</span></div>
+              <div class="row"><span class="row-label">Benefits Value</span><span class="row-val" id="qs-r-benefits">—</span></div>
+              <div class="row"><span class="row-label">Bonus</span><span class="row-val" id="qs-r-bonus">—</span></div>
+              <div class="row"><span class="row-label">Total Compensation</span><span class="row-val" id="qs-r-totalcomp">—</span></div>
+              <div class="row"><span class="row-label">Federal + State Tax (est.)</span><span class="row-val" id="qs-r-w2tax">—</span></div>
+              <div class="row" style="border-top:2px solid var(--accent); margin-top:8px; padding-top:8px;"><span class="row-label" style="font-weight:700;">Net Take-Home</span><span class="row-val" id="qs-r-w2net">—</span></div>
+            </div>
+            <div class="compare-card" id="qs-locums-card">
+              <h4>Locums (1099)</h4>
+              <div class="row"><span class="row-label">Gross Income</span><span class="row-val" id="qs-r-gross">—</span></div>
+              <div class="row"><span class="row-label">Housing Stipend (tax-free)</span><span class="row-val" id="qs-r-stipend">—</span></div>
+              <div class="row"><span class="row-label">Health Insurance</span><span class="row-val" id="qs-r-insurance">—</span></div>
+              <div class="row"><span class="row-label">Self-Employment Tax</span><span class="row-val" id="qs-r-setax">—</span></div>
+              <div class="row"><span class="row-label">Federal Income Tax (est.)</span><span class="row-val" id="qs-r-fedtax">—</span></div>
+              <div class="row" style="border-top:2px solid var(--accent); margin-top:8px; padding-top:8px;"><span class="row-label" style="font-weight:700;">Net Take-Home</span><span class="row-val" id="qs-r-locumsnet">—</span></div>
+            </div>
+          </div>
+
+          <div class="insight" style="margin-bottom:24px;">
+            <div class="insight-label">QUICK START SUMMARY</div>
+            <p id="qs-insight"></p>
+          </div>
+
+          <div style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:24px;">
+            <div style="font-weight:700; color:var(--text); margin-bottom:12px;">💡 Your Next Steps</div>
+            <div id="qs-next-steps" style="font-size:0.9375rem; color:var(--muted); line-height:1.8;"></div>
+          </div>
+
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <button class="calc-btn" onclick="qsBack(3)" style="background:var(--surface2); color:var(--text);">← Edit Inputs</button>
+            <button class="calc-btn" onclick="shareResults('quickstart')">📋 Share Results</button>
+            <button class="calc-btn" onclick="switchPanel('scorp', document.querySelector('.nav-btn'))" style="background: rgba(16,185,129,0.15); color:var(--accent); border:1px solid var(--accent);">Check S-Corp Savings →</button>
+          </div>
+        </div>
+      </div>
+
       <!-- STAFF VS LOCUMS -->
       <div class="panel active" id="panel-staff-locums">
         <div class="panel-header">
@@ -1352,6 +1502,119 @@
             <div style="margin-top: 16px; padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; font-size: 0.875rem; color: var(--text);">
               💡 <strong>Tip:</strong> <span id="benchmark-tip">Benchmark data helps you evaluate if your offer is competitive.</span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRUE HOURLY RATE -->
+      <div class="panel" id="panel-true-hourly">
+        <div class="panel-header">
+          <h2>True Hourly Rate Calculator</h2>
+          <p>Your contract rate isn't your real rate. See what you actually earn after taxes, benefits costs, and time.</p>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">CONTRACT DETAILS</div>
+            <div class="field">
+              <label>Contract Type</label>
+              <select id="thr-type" onchange="thrToggleType()">
+                <option value="hourly">Hourly Rate</option>
+                <option value="weekly">Weekly Rate</option>
+                <option value="annual">Annual / 1099 Income</option>
+              </select>
+            </div>
+            <div class="field" id="thr-hourly-field">
+              <label>Hourly Rate ($)</label>
+              <input type="number" id="thr-hourly" value="130" min="0">
+            </div>
+            <div class="field" id="thr-weekly-field" style="display:none;">
+              <label>Weekly Rate ($)</label>
+              <input type="number" id="thr-weekly" value="5200" min="0" step="100">
+            </div>
+            <div class="field" id="thr-annual-field" style="display:none;">
+              <label>Annual Income ($)</label>
+              <input type="number" id="thr-annual" value="250000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label>Hours Worked per Week (clinical)</label>
+              <input type="number" id="thr-clinical-hours" value="40" min="1" max="80">
+            </div>
+            <div class="field">
+              <label>Weeks Worked per Year</label>
+              <input type="number" id="thr-weeks" value="46" min="1" max="52">
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">REAL COSTS TO SUBTRACT</div>
+            <div class="field">
+              <label>Travel Time per Week (hours, round trip)</label>
+              <input type="number" id="thr-travel-time" value="4" min="0" max="40">
+              <div style="font-size:0.8125rem; color:var(--muted); margin-top:4px;">Time traveling is unpaid — it reduces your true rate</div>
+            </div>
+            <div class="field">
+              <label>Annual Travel Expenses (flights, gas, lodging if not covered)</label>
+              <input type="number" id="thr-travel-cost" value="6000" min="0" step="500">
+            </div>
+            <div class="field">
+              <label>Annual Health Insurance Premium ($)</label>
+              <input type="number" id="thr-health" value="18000" min="0" step="500">
+              <div style="font-size:0.8125rem; color:var(--muted); margin-top:4px;">Individual market avg: $15,000–$22,000/year</div>
+            </div>
+            <div class="field">
+              <label>Annual Malpractice Insurance Premium ($)</label>
+              <input type="number" id="thr-malpractice" value="3000" min="0" step="500">
+              <div style="font-size:0.8125rem; color:var(--muted); margin-top:4px;">National avg: CRNAs ~$2,500–$4,000 | Physicians ~$5,000–$15,000+</div>
+            </div>
+            <div class="field">
+              <label>Annual Benefits Gap (dental, vision, disability, life)</label>
+              <input type="number" id="thr-benefits-gap" value="4000" min="0" step="500">
+              <div style="font-size:0.8125rem; color:var(--muted); margin-top:4px;">Typical: $2,000–$6,000/year</div>
+            </div>
+            <button class="calc-btn" onclick="calcTrueHourly()">Calculate True Rate →</button>
+          </div>
+        </div>
+
+        <div id="thr-results" class="hidden" style="margin-top:24px;">
+          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-bottom:24px;">
+            <div class="card" style="text-align:center; padding:20px;">
+              <div style="font-size:0.8125rem; font-weight:600; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Contract Rate</div>
+              <div style="font-size:2rem; font-weight:800; color:var(--text);" id="thr-contract-rate">—</div>
+              <div style="font-size:0.8125rem; color:var(--muted);">per hour</div>
+            </div>
+            <div class="card" style="text-align:center; padding:20px; border-color:var(--accent);">
+              <div style="font-size:0.8125rem; font-weight:600; color:var(--accent); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">True Hourly Rate</div>
+              <div style="font-size:2rem; font-weight:800; color:var(--accent);" id="thr-true-rate">—</div>
+              <div style="font-size:0.8125rem; color:var(--muted);">after all costs & time</div>
+            </div>
+            <div class="card" style="text-align:center; padding:20px;">
+              <div style="font-size:0.8125rem; font-weight:600; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Rate Reduction</div>
+              <div style="font-size:2rem; font-weight:800; color:var(--danger);" id="thr-reduction">—</div>
+              <div style="font-size:0.8125rem; color:var(--muted);">from stated rate</div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:24px;">
+            <div class="card-title">RATE BREAKDOWN</div>
+            <div class="row"><span class="row-label">Stated Contract Rate</span><span class="row-val" id="thr-b-contract">—</span></div>
+            <div class="row"><span class="row-label">SE Tax Impact (per hour)</span><span class="row-val" id="thr-b-setax" style="color:var(--danger);">—</span></div>
+            <div class="row"><span class="row-label">Health Insurance (per hour)</span><span class="row-val" id="thr-b-health" style="color:var(--danger);">—</span></div>
+            <div class="row"><span class="row-label">Malpractice (per hour)</span><span class="row-val" id="thr-b-malp" style="color:var(--danger);">—</span></div>
+            <div class="row"><span class="row-label">Benefits Gap (per hour)</span><span class="row-val" id="thr-b-benefits" style="color:var(--danger);">—</span></div>
+            <div class="row"><span class="row-label">Travel Expenses (per hour)</span><span class="row-val" id="thr-b-travel" style="color:var(--danger);">—</span></div>
+            <div class="row"><span class="row-label">Travel Time Cost (per hour)</span><span class="row-val" id="thr-b-traveltime" style="color:var(--danger);">—</span></div>
+            <div class="row" style="border-top:2px solid var(--accent); margin-top:8px; padding-top:8px;">
+              <span class="row-label" style="font-weight:700;">True Hourly Rate</span>
+              <span class="row-val" id="thr-b-true" style="color:var(--accent); font-weight:700;">—</span>
+            </div>
+          </div>
+
+          <div class="insight" style="margin-bottom:24px;">
+            <div class="insight-label">ANALYSIS</div>
+            <p id="thr-insight"></p>
+          </div>
+
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <button class="calc-btn" onclick="shareResults('true-hourly')">📋 Share Results</button>
           </div>
         </div>
       </div>
@@ -2235,7 +2498,7 @@
       </div>
     </div>
     <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 20px; font-size: 0.875rem;">
-      🚀 <strong>Pro tier launching soon!</strong> Want early access? Email <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="761e131a1a19361a1915031b051a17145815191b">[email&#160;protected]</a> with "Pro Access" in the subject.
+      🔒 Unlock the S-Corp Evaluator and all Pro features for a one-time payment of $39.
     </div>
     <div class="modal-actions">
       <button class="modal-btn secondary" onclick="hideScorpPaywall()">Maybe Later</button>
@@ -2334,32 +2597,59 @@
 <div class="modal-overlay" id="contactModal">
   <div class="modal" style="max-width: 500px;">
     <h3>Contact Us</h3>
-    <p style="margin: 20px 0; font-size: 0.9375rem; color: var(--muted); line-height: 1.7;">
-      Have questions, feedback, or need help? We'd love to hear from you.
+    <p style="margin: 16px 0; font-size: 0.9375rem; color: var(--muted); line-height: 1.7;">
+      Have questions, feedback, or need help? We typically respond within 24 hours.
     </p>
-    
-    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-      <div style="margin-bottom: 16px;">
-        <div style="font-weight: 700; margin-bottom: 4px;">Email</div>
-        <a href="/cdn-cgi/l/email-protection#523a373e3e3d123e3d31273f213e33307c313d3f" style="color: var(--accent); text-decoration: none;"><span class="__cf_email__" data-cfemail="ec8489808083ac80838f99819f808d8ec28f8381">[email&#160;protected]</span></a>
+    <div id="contactFormWrap">
+      <div style="margin-bottom: 14px;">
+        <label style="display:block; font-size:0.875rem; font-weight:600; margin-bottom:6px; color:var(--text);">Your Email</label>
+        <input type="email" id="contactEmail" placeholder="you@email.com"
+          style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:var(--text); font-size:0.9375rem; font-family:inherit; outline:none;">
       </div>
-      
-      <div>
-        <div style="font-weight: 700; margin-bottom: 4px;">Response Time</div>
-        <div style="font-size: 0.875rem; color: var(--muted);">We typically respond within 24 hours</div>
+      <div style="margin-bottom:14px;">
+        <label style="display:block; font-size:0.875rem; font-weight:600; margin-bottom:6px; color:var(--text);">Subject</label>
+        <select id="contactSubject"
+          style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:var(--text); font-size:0.9375rem; font-family:inherit; outline:none;">
+          <option value="General question">General question</option>
+          <option value="Bug report">Bug report</option>
+          <option value="Feature request">Feature request</option>
+          <option value="Billing / account">Billing / account</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="display:block; font-size:0.875rem; font-weight:600; margin-bottom:6px; color:var(--text);">Message</label>
+        <textarea id="contactMessage" rows="4" placeholder="Your message..."
+          style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:var(--text); font-size:0.9375rem; font-family:inherit; outline:none; resize:vertical;"></textarea>
+      </div>
+      <div id="contactError" style="color:#ef4444; font-size:0.875rem; margin-bottom:12px; display:none;"></div>
+      <div class="modal-actions">
+        <button class="modal-btn secondary" onclick="hideContact()">Cancel</button>
+        <button class="modal-btn primary" id="contactSubmitBtn" onclick="submitContact()">Send Message</button>
       </div>
     </div>
-    
-    <div style="font-size: 0.875rem; color: var(--muted); margin-bottom: 20px;">
-      <strong>What to include in your message:</strong><br>
-      • Your profession (CRNA, MD, NP, etc.)<br>
-      • What you're trying to calculate<br>
-      • Screenshots if reporting a bug<br>
-      • Feature requests are welcome!
-    </div>
-    
-    <div class="modal-actions">
+    <div id="contactSuccess" style="display:none; text-align:center; padding:24px 0;">
+      <div style="font-size:2rem; margin-bottom:12px;">✅</div>
+      <div style="font-weight:700; color:var(--text); margin-bottom:8px;">Message sent!</div>
+      <div style="color:var(--muted); font-size:0.9375rem; margin-bottom:24px;">We'll get back to you within 24 hours.</div>
       <button class="modal-btn primary" onclick="hideContact()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE RESULTS MODAL -->
+<div class="modal-overlay" id="shareModal">
+  <div class="modal" style="max-width: 480px;">
+    <h3>📋 Share Your Results</h3>
+    <p style="color:var(--muted); font-size:0.9375rem; margin:12px 0 20px;">A shareable link has been created. Anyone with the link can view your results.</p>
+    <div style="display:flex; gap:8px; margin-bottom:20px;">
+      <input type="text" id="shareUrlInput" readonly
+        style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:var(--text); font-size:0.875rem; font-family:inherit; outline:none;">
+      <button class="calc-btn" id="copyShareBtn" onclick="copyShareUrl()" style="padding:10px 18px; white-space:nowrap;">Copy Link</button>
+    </div>
+    <div id="shareModalLoading" style="text-align:center; padding:12px; color:var(--muted); font-size:0.875rem; display:none;">Generating link...</div>
+    <div class="modal-actions">
+      <button class="modal-btn primary" onclick="hideShareModal()">Done</button>
     </div>
   </div>
 </div>
@@ -2412,6 +2702,19 @@ if (urlParams.get('upgrade') === 'success') {
     // Reload user data to pick up is_pro = true from Supabase
     window.location.reload();
   }, 1000);
+}
+
+// Auto-launch Quick Start if coming from landing page
+const startParam = urlParams.get('start');
+if (startParam === 'quickstart') {
+  window.history.replaceState({}, '', window.location.pathname);
+  window._autoStart = 'quickstart';
+}
+
+// Auto-open contact modal if coming from landing page footer
+if (urlParams.get('contact') === 'true') {
+  window.history.replaceState({}, '', window.location.pathname);
+  window._autoContact = true;
 }
 
 // State
@@ -2925,7 +3228,7 @@ function showMainApp() {
     // Demo mode - hide email, show signup CTAs
     emailEl.textContent = '';
     emailEl.style.display = 'none';
-    badgeEl.textContent = 'Demo';
+    badgeEl.textContent = 'Try Free';
     
     // Show signup banner in demo mode
     if (signupBanner) signupBanner.style.display = 'block';
@@ -2943,6 +3246,17 @@ function showWizard() {
   document.getElementById('wizardBtn').style.display = 'none';
   document.getElementById('dashboardView').classList.add('hidden');
   document.getElementById('calculatorView').classList.add('hidden');
+  // Auto-launch if coming from landing page
+  if (window._autoStart) {
+    const target = window._autoStart;
+    window._autoStart = null;
+    setTimeout(() => selectGoal(target), 100);
+  }
+  // Auto-open contact modal if coming from landing page footer
+  if (window._autoContact) {
+    window._autoContact = false;
+    setTimeout(() => showContact(), 300);
+  }
 }
 
 // S-CORP CALCULATOR
@@ -3129,36 +3443,42 @@ function calculateIncomeTaxSingle(income) {
 function selectGoal(goal) {
   if (goal === 'explore') {
     showDashboard();
+  } else if (goal === 'quickstart') {
+    startNew();
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-quickstart').classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const btn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.textContent.includes('Quick Start'));
+    if (btn) btn.classList.add('active');
+  } else if (goal === 'contract-eval') {
+    startNew();
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-true-hourly').classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const btn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.textContent.includes('True Hourly'));
+    if (btn) btn.classList.add('active');
   } else if (goal === 'benchmarks') {
     if (!isPro) {
       showUpgradeModal();
       return;
     }
     startNew();
-    const allPanels = document.querySelectorAll('.panel');
-    allPanels.forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.getElementById('panel-benchmarks').classList.add('active');
-    const allBtns = document.querySelectorAll('.nav-btn');
-    allBtns.forEach(b => b.classList.remove('active'));
-    const benchBtn = Array.from(allBtns).find(b => b.textContent.includes('Benchmarks'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const benchBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.textContent.includes('Benchmarks'));
     if (benchBtn) benchBtn.classList.add('active');
     setTimeout(renderBenchmarks, 50);
   } else if (goal === 'scorp') {
-    // Check Pro status before allowing S-Corp access
     if (!isPro) {
       showScorpPaywall();
       return;
     }
-    // Go directly to S-Corp calculator
     startNew();
-    // Switch to S-Corp panel
-    const allPanels = document.querySelectorAll('.panel');
-    allPanels.forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.getElementById('panel-scorp').classList.add('active');
-    // Switch nav button
-    const allBtns = document.querySelectorAll('.nav-btn');
-    allBtns.forEach(b => b.classList.remove('active'));
-    const scorpBtn = Array.from(allBtns).find(b => b.textContent === 'S-Corp');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const scorpBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.textContent.includes('S-Corp'));
     if (scorpBtn) scorpBtn.classList.add('active');
   } else {
     startNew();
@@ -3519,11 +3839,49 @@ function hideFAQ() {
 }
 
 function showContact() {
+  const emailField = document.getElementById('contactEmail');
+  if (emailField && currentUser) emailField.value = currentUser;
+  document.getElementById('contactFormWrap').style.display = 'block';
+  document.getElementById('contactSuccess').style.display = 'none';
+  document.getElementById('contactError').style.display = 'none';
   document.getElementById('contactModal').classList.add('show');
 }
 
 function hideContact() {
   document.getElementById('contactModal').classList.remove('show');
+}
+
+async function submitContact() {
+  const email = document.getElementById('contactEmail').value.trim();
+  const subject = document.getElementById('contactSubject').value;
+  const message = document.getElementById('contactMessage').value.trim();
+  const errorEl = document.getElementById('contactError');
+  const btn = document.getElementById('contactSubmitBtn');
+  errorEl.style.display = 'none';
+  if (!email || !message) {
+    errorEl.textContent = 'Please fill in your email and message.';
+    errorEl.style.display = 'block';
+    return;
+  }
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+  try {
+    const res = await fetch('/.netlify/functions/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, subject, message }),
+    });
+    if (res.ok) {
+      document.getElementById('contactFormWrap').style.display = 'none';
+      document.getElementById('contactSuccess').style.display = 'block';
+      document.getElementById('contactMessage').value = '';
+    } else { throw new Error('Failed'); }
+  } catch (err) {
+    errorEl.textContent = 'Something went wrong. Please try again.';
+    errorEl.style.display = 'block';
+  }
+  btn.textContent = 'Send Message';
+  btn.disabled = false;
 }
 
 async function handleUpgrade() {
@@ -3590,6 +3948,259 @@ async function simulateProUpgrade() {
 }
 
 
+// ============================================================
+// QUICK START WIZARD
+// ============================================================
+const QS_RATE_HINTS = {
+  crna: 'CRNA locums avg: $120–$160/hr',
+  md_hospitalist: 'Hospitalist locums avg: $150–$220/hr',
+  md_em: 'EM locums avg: $200–$300/hr',
+  md_anesthesia: 'Anesthesia locums avg: $200–$350/hr',
+  md_fp: 'Family Practice locums avg: $120–$180/hr',
+  np: 'NP locums avg: $65–$95/hr',
+  pa: 'PA locums avg: $70–$100/hr',
+  rn: 'Travel RN avg: $60–$90/hr',
+};
+
+function qsNext(step) {
+  if (step === 1) {
+    const salary = parseFloat(document.getElementById('qs-salary').value) || 0;
+    if (salary < 10000) { alert('Please enter a valid annual salary.'); return; }
+    // Update rate hint based on profession
+    const prof = document.getElementById('qs-profession').value;
+    document.getElementById('qs-rate-hint').textContent = QS_RATE_HINTS[prof] || '';
+    document.getElementById('qs-page-1').classList.add('hidden');
+    document.getElementById('qs-page-2').classList.remove('hidden');
+    // Update step indicators
+    document.getElementById('qs-dot-2').style.background = 'var(--accent)';
+    document.getElementById('qs-dot-2').style.color = 'white';
+    document.getElementById('qs-label-2').style.color = 'var(--accent)';
+  } else if (step === 2) {
+    const hourly = parseFloat(document.getElementById('qs-hourly').value) || 0;
+    if (hourly < 10) { alert('Please enter a valid hourly rate.'); return; }
+    document.getElementById('qs-page-2').classList.add('hidden');
+    calcQuickStart();
+    document.getElementById('qs-page-3').classList.remove('hidden');
+    document.getElementById('qs-dot-3').style.background = 'var(--accent)';
+    document.getElementById('qs-dot-3').style.color = 'white';
+    document.getElementById('qs-label-3').style.color = 'var(--accent)';
+  }
+}
+
+function qsBack(step) {
+  if (step === 2) {
+    document.getElementById('qs-page-2').classList.add('hidden');
+    document.getElementById('qs-page-1').classList.remove('hidden');
+    document.getElementById('qs-dot-2').style.background = 'var(--border)';
+    document.getElementById('qs-dot-2').style.color = 'var(--muted)';
+    document.getElementById('qs-label-2').style.color = 'var(--muted)';
+  } else if (step === 3) {
+    document.getElementById('qs-page-3').classList.add('hidden');
+    document.getElementById('qs-page-2').classList.remove('hidden');
+    document.getElementById('qs-dot-3').style.background = 'var(--border)';
+    document.getElementById('qs-dot-3').style.color = 'var(--muted)';
+    document.getElementById('qs-label-3').style.color = 'var(--muted)';
+  }
+}
+
+function calcQuickStart() {
+  const salary = parseFloat(document.getElementById('qs-salary').value) || 0;
+  const benefits = parseFloat(document.getElementById('qs-benefits').value) || 0;
+  const pto = parseFloat(document.getElementById('qs-pto').value) || 0;
+  const bonus = parseFloat(document.getElementById('qs-bonus').value) || 0;
+  const hourly = parseFloat(document.getElementById('qs-hourly').value) || 0;
+  const hours = parseFloat(document.getElementById('qs-hours').value) || 40;
+  const weeks = parseFloat(document.getElementById('qs-weeks').value) || 46;
+  const stipend = parseFloat(document.getElementById('qs-stipend').value) || 0;
+  const needsInsurance = document.getElementById('qs-insurance-needed').value === 'yes';
+  const insurance = needsInsurance ? (parseFloat(document.getElementById('qs-insurance').value) || 0) : 0;
+
+  // W-2 calculations
+  const w2TotalComp = salary + benefits + bonus;
+  const w2TaxRate = salary > 400000 ? 0.37 : salary > 200000 ? 0.32 : salary > 150000 ? 0.28 : salary > 89000 ? 0.24 : 0.22;
+  const w2Tax = salary * w2TaxRate;
+  const w2Net = salary + bonus - w2Tax;
+
+  // Locums calculations
+  const annualStipend = stipend * weeks;
+  const grossIncome = hourly * hours * weeks;
+  const seTax = grossIncome * 0.9235 * 0.153;
+  const seTaxDeduction = seTax / 2;
+  const taxableIncome = grossIncome - seTaxDeduction - insurance;
+  const fedTaxRate = taxableIncome > 400000 ? 0.35 : taxableIncome > 200000 ? 0.32 : taxableIncome > 150000 ? 0.28 : taxableIncome > 89000 ? 0.24 : 0.22;
+  const fedTax = taxableIncome * fedTaxRate;
+  const locumsNet = grossIncome + annualStipend - seTax - fedTax - insurance;
+
+  const diff = locumsNet - w2Net;
+  const fmt = n => '$' + Math.round(n).toLocaleString();
+
+  // Populate W-2 card
+  document.getElementById('qs-r-salary').textContent = fmt(salary);
+  document.getElementById('qs-r-benefits').textContent = fmt(benefits);
+  document.getElementById('qs-r-bonus').textContent = fmt(bonus);
+  document.getElementById('qs-r-totalcomp').textContent = fmt(w2TotalComp);
+  document.getElementById('qs-r-w2tax').textContent = '-' + fmt(w2Tax);
+  document.getElementById('qs-r-w2net').textContent = fmt(w2Net);
+
+  // Populate Locums card
+  document.getElementById('qs-r-gross').textContent = fmt(grossIncome);
+  document.getElementById('qs-r-stipend').textContent = fmt(annualStipend) + ' (tax-free)';
+  document.getElementById('qs-r-insurance').textContent = needsInsurance ? '-' + fmt(insurance) : 'Covered';
+  document.getElementById('qs-r-setax').textContent = '-' + fmt(seTax);
+  document.getElementById('qs-r-fedtax').textContent = '-' + fmt(fedTax);
+  document.getElementById('qs-r-locumsnet').textContent = fmt(locumsNet);
+
+  // Insight
+  const insightEl = document.getElementById('qs-insight');
+  if (diff > 0) {
+    insightEl.textContent = `Switching to locums could put an estimated ${fmt(diff)} more in your pocket each year compared to your current W-2 position. That's before any S-Corp optimization, which could save an additional $5,000–$15,000 on top of that.`;
+  } else {
+    insightEl.textContent = `Based on these numbers, your W-2 position comes out ahead by approximately ${fmt(Math.abs(diff))}. This is often due to the strong benefits package offsetting the locums premium. Consider negotiating a higher contract rate or reducing insurance costs.`;
+  }
+
+  // Next steps
+  const ptoDays = pto;
+  const ptoValue = (salary / 260) * ptoDays;
+  document.getElementById('qs-next-steps').innerHTML = `
+    1. <strong>Get your first contract offer</strong> — use the Staff vs Locums calculator to evaluate specific offers.<br>
+    2. <strong>Budget for taxes</strong> — set aside ~${Math.round((seTax + fedTax) / grossIncome * 100)}% of gross for quarterly estimated payments.<br>
+    3. <strong>Check S-Corp potential</strong> — at $${Math.round(grossIncome/1000)}k gross, you may save significantly with an S-Corp structure.<br>
+    4. <strong>Note:</strong> Your W-2 PTO (${ptoDays} days ≈ ${fmt(ptoValue)}/yr value) disappears as 1099 — factor in unpaid time between contracts.
+  `;
+
+  // Store for share
+  window._qsShareData = { salary, benefits, bonus, w2Net, grossIncome, locumsNet, diff };
+}
+
+// ============================================================
+// TRUE HOURLY RATE CALCULATOR
+// ============================================================
+function thrToggleType() {
+  const type = document.getElementById('thr-type').value;
+  document.getElementById('thr-hourly-field').style.display = type === 'hourly' ? '' : 'none';
+  document.getElementById('thr-weekly-field').style.display = type === 'weekly' ? '' : 'none';
+  document.getElementById('thr-annual-field').style.display = type === 'annual' ? '' : 'none';
+}
+
+function calcTrueHourly() {
+  const type = document.getElementById('thr-type').value;
+  const clinicalHours = parseFloat(document.getElementById('thr-clinical-hours').value) || 40;
+  const weeks = parseFloat(document.getElementById('thr-weeks').value) || 46;
+  const travelTimeWeekly = parseFloat(document.getElementById('thr-travel-time').value) || 0;
+  const travelCost = parseFloat(document.getElementById('thr-travel-cost').value) || 0;
+  const health = parseFloat(document.getElementById('thr-health').value) || 0;
+  const malpractice = parseFloat(document.getElementById('thr-malpractice').value) || 0;
+  const benefitsGap = parseFloat(document.getElementById('thr-benefits-gap').value) || 0;
+
+  let contractHourly = 0;
+  if (type === 'hourly') {
+    contractHourly = parseFloat(document.getElementById('thr-hourly').value) || 0;
+  } else if (type === 'weekly') {
+    const weekly = parseFloat(document.getElementById('thr-weekly').value) || 0;
+    contractHourly = weekly / clinicalHours;
+  } else {
+    const annual = parseFloat(document.getElementById('thr-annual').value) || 0;
+    contractHourly = annual / (clinicalHours * weeks);
+  }
+
+  const annualGross = contractHourly * clinicalHours * weeks;
+  const totalHoursWorked = (clinicalHours + travelTimeWeekly) * weeks; // includes travel time
+
+  // Per-hour costs based on total hours (clinical + travel)
+  const seTaxAnnual = annualGross * 0.9235 * 0.153;
+  const seTaxPerHour = seTaxAnnual / totalHoursWorked;
+  const healthPerHour = health / totalHoursWorked;
+  const malpracticePerHour = malpractice / totalHoursWorked;
+  const benefitsPerHour = benefitsGap / totalHoursWorked;
+  const travelCostPerHour = travelCost / totalHoursWorked;
+
+  // Travel time cost: unpaid hours reduce effective rate
+  // We already factor travel time by using totalHoursWorked as denominator
+  const travelTimePerHour = contractHourly * (travelTimeWeekly / (clinicalHours + travelTimeWeekly));
+
+  const trueRate = contractHourly - seTaxPerHour - healthPerHour - malpracticePerHour - benefitsPerHour - travelCostPerHour - travelTimePerHour;
+  const reduction = contractHourly - trueRate;
+  const reductionPct = Math.round((reduction / contractHourly) * 100);
+
+  const fmt = n => '$' + Math.abs(n).toFixed(2);
+  const fmtR = n => '$' + Math.round(Math.abs(n)).toLocaleString();
+
+  document.getElementById('thr-contract-rate').textContent = '$' + contractHourly.toFixed(2);
+  document.getElementById('thr-true-rate').textContent = '$' + Math.max(0, trueRate).toFixed(2);
+  document.getElementById('thr-reduction').textContent = '-' + reductionPct + '%';
+
+  document.getElementById('thr-b-contract').textContent = '$' + contractHourly.toFixed(2);
+  document.getElementById('thr-b-setax').textContent = '-' + fmt(seTaxPerHour);
+  document.getElementById('thr-b-health').textContent = '-' + fmt(healthPerHour);
+  document.getElementById('thr-b-malp').textContent = '-' + fmt(malpracticePerHour);
+  document.getElementById('thr-b-benefits').textContent = '-' + fmt(benefitsPerHour);
+  document.getElementById('thr-b-travel').textContent = '-' + fmt(travelCostPerHour);
+  document.getElementById('thr-b-traveltime').textContent = '-' + fmt(travelTimePerHour);
+  document.getElementById('thr-b-true').textContent = '$' + Math.max(0, trueRate).toFixed(2);
+
+  const insightEl = document.getElementById('thr-insight');
+  insightEl.textContent = `Your stated rate of $${contractHourly.toFixed(2)}/hr becomes approximately $${Math.max(0, trueRate).toFixed(2)}/hr after accounting for self-employment taxes, benefits costs, and travel. That's a ${reductionPct}% reduction from your contract rate. Annually, your true net from this contract is approximately ${fmtR(Math.max(0, trueRate) * totalHoursWorked)}.`;
+
+  document.getElementById('thr-results').classList.remove('hidden');
+
+  window._thrShareData = { contractHourly, trueRate, reductionPct, annualGross };
+}
+
+// ============================================================
+// SHARE RESULTS
+// ============================================================
+async function shareResults(calculator) {
+  const shareData = getShareData(calculator);
+  if (!shareData) return;
+
+  document.getElementById('shareUrlInput').value = 'Generating...';
+  document.getElementById('shareModal').classList.add('show');
+  document.getElementById('shareModalLoading').style.display = 'block';
+
+  try {
+    const { data, error } = await sb
+      .from('shared_results')
+      .insert({
+        calculator,
+        data: shareData,
+        created_at: new Date().toISOString(),
+      })
+      .select('id')
+      .single();
+
+    if (error) throw error;
+
+    const url = `${window.location.origin}/share.html?id=${data.id}`;
+    document.getElementById('shareUrlInput').value = url;
+  } catch (err) {
+    console.error('Share error:', err);
+    document.getElementById('shareUrlInput').value = 'Error generating link. Please try again.';
+  }
+
+  document.getElementById('shareModalLoading').style.display = 'none';
+}
+
+function getShareData(calculator) {
+  if (calculator === 'quickstart' && window._qsShareData) return window._qsShareData;
+  if (calculator === 'true-hourly' && window._thrShareData) return window._thrShareData;
+  alert('Please run the calculator first to generate results.');
+  return null;
+}
+
+function hideShareModal() {
+  document.getElementById('shareModal').classList.remove('show');
+}
+
+function copyShareUrl() {
+  const input = document.getElementById('shareUrlInput');
+  input.select();
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = document.getElementById('copyShareBtn');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = 'Copy Link', 2000);
+  });
+}
+
 function switchPanel(id, btn) {
   // Check if trying to access S-Corp without Pro
   if (id === 'scorp' && !isPro) {
@@ -3601,11 +4212,11 @@ function switchPanel(id, btn) {
     showUpgradeModal();
     return;
   }
-  
+
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('panel-' + id).classList.add('active');
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
   if (id === 'benchmarks') { setTimeout(renderBenchmarks, 50); }
 }
 
@@ -3807,7 +4418,6 @@ function showBenchmarks(profession, staffSalary, locumsRate, rateType) {
   
   document.getElementById('benchmark-tip').textContent = tip;
   document.getElementById('sl-benchmarks').classList.remove('hidden');
-  showGuidePrompt();
 }
 
 function calcW21099() {
@@ -3850,7 +4460,6 @@ function calcW21099() {
   
   document.getElementById('w2-results').classList.remove('hidden');
   updateExportButton();
-  showGuidePrompt();
 }
 
 function calcTax() {
@@ -3878,7 +4487,6 @@ function calcTax() {
   
   document.getElementById('tx-results').classList.remove('hidden');
   updateExportButton();
-  showGuidePrompt();
 }
 
 function calcHome() {
@@ -3919,7 +4527,6 @@ function calcHome() {
   
   document.getElementById('hm-results').classList.remove('hidden');
   updateExportButton();
-  showGuidePrompt();
 }
 
 function calcLoan() {
@@ -3978,7 +4585,6 @@ function calcIncome() {
   
   document.getElementById('it-results').classList.remove('hidden');
   updateExportButton();
-  showGuidePrompt();
 }
 
 // PDF Export Functions
@@ -4629,53 +5235,5 @@ function renderBenchmarks() {
 
 
 </script>
-<!-- ── Guide Prompt Banner ─────────────────────────────────────────────── -->
-<div id="guide-prompt" style="display:none; position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:9999; width:min(560px, calc(100vw - 32px));">
-  <div style="background:white; border-radius:14px; box-shadow:0 8px 40px rgba(0,0,0,0.18); border:1.5px solid #e2e8f0; padding:20px 24px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
-    <div style="font-size:2rem; flex-shrink:0;">📄</div>
-    <div style="flex:1; min-width:180px;">
-      <div style="font-weight:700; color:#0a2540; font-size:0.9375rem; margin-bottom:2px;">Want the full financial roadmap?</div>
-      <div style="font-size:0.875rem; color:#475569;">Free guide: LLC, taxes, malpractice & retirement — all in one place.</div>
-    </div>
-    <div style="display:flex; gap:10px; align-items:center; flex-shrink:0;">
-      <a href="guide.html" target="_blank" style="background:#00a86b; color:white; padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:700; font-size:0.875rem; white-space:nowrap;">Get Free Guide →</a>
-      <button onclick="dismissGuidePrompt()" style="background:none; border:none; cursor:pointer; color:#94a3b8; font-size:1.25rem; padding:4px; line-height:1;">✕</button>
-    </div>
-  </div>
-</div>
-
-<script>
-// ── Guide prompt — shows after first calc result, once per session ─────────
-let _guidePromptShown = false;
-
-function showGuidePrompt() {
-  if (_guidePromptShown) return;
-  if (typeof isPro !== 'undefined' && isPro) return;
-  if (sessionStorage.getItem('guide_prompt_dismissed')) return;
-  _guidePromptShown = true;
-  const el = document.getElementById('guide-prompt');
-  if (!el) return;
-  setTimeout(() => {
-    el.style.display = 'block';
-    el.style.animation = 'guideSlideUp 0.35s ease';
-  }, 1200);
-}
-
-function dismissGuidePrompt() {
-  const el = document.getElementById('guide-prompt');
-  if (el) el.style.display = 'none';
-  sessionStorage.setItem('guide_prompt_dismissed', '1');
-}
-
-const _guideStyle = document.createElement('style');
-_guideStyle.textContent = `
-  @keyframes guideSlideUp {
-    from { opacity:0; transform:translateX(-50%) translateY(16px); }
-    to   { opacity:1; transform:translateX(-50%) translateY(0); }
-  }
-`;
-document.head.appendChild(_guideStyle);
-</script>
-
 </body>
 </html>
