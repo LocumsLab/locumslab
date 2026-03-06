@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Locums Financial Roadmap — Free Guide | LocumsLab</title>
+  <meta name="description" content="Free guide covering LLC setup, taxes, malpractice insurance, and retirement for healthcare providers going locums. Based on current IRS data.">
+  <meta property="og:title" content="The Locums Financial Roadmap — Free Guide">
+  <meta property="og:description" content="Everything you need to know about LLC setup, taxes, malpractice, and retirement before going 1099. Free from LocumsLab.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0a2540;
+      --blue: #0066cc;
+      --green: #00a86b;
+      --green-light: #e6f7f1;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-600: #475569;
+      --gray-900: #0f172a;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', -apple-system, sans-serif; color: var(--gray-900); background: white; line-height: 1.7; }
+
+    /* NAV */
+    header { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--gray-200); }
+    nav { max-width: 1100px; margin: 0 auto; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--navy); text-decoration: none; }
+    .nav-cta { background: var(--blue); color: white; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9375rem; transition: all 0.2s; }
+    .nav-cta:hover { background: #0052a3; transform: translateY(-1px); }
+
+    /* HERO */
+    .hero { background: linear-gradient(135deg, var(--navy) 0%, #0d3568 100%); padding: 80px 40px; text-align: center; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 60% 50%, rgba(0,168,107,0.15) 0%, transparent 70%); }
+    .hero-inner { max-width: 780px; margin: 0 auto; position: relative; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,168,107,0.2); border: 1px solid rgba(0,168,107,0.4); color: #6ee7b7; padding: 6px 16px; border-radius: 20px; font-size: 0.875rem; font-weight: 600; margin-bottom: 28px; letter-spacing: 0.05em; }
+    .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 400; color: white; line-height: 1.15; margin-bottom: 20px; letter-spacing: -0.02em; }
+    .hero h1 span { color: #6ee7b7; }
+    .hero p { font-size: 1.125rem; color: rgba(255,255,255,0.75); max-width: 560px; margin: 0 auto 40px; }
+    .hero-stats { display: flex; justify-content: center; gap: 40px; margin-bottom: 48px; flex-wrap: wrap; }
+    .hero-stat { text-align: center; }
+    .hero-stat-value { font-size: 1.75rem; font-weight: 700; color: #6ee7b7; font-family: 'DM Sans', monospace; }
+    .hero-stat-label { font-size: 0.8125rem; color: rgba(255,255,255,0.55); margin-top: 2px; }
+
+    /* FORM CARD */
+    .form-card { background: white; border-radius: 16px; padding: 40px; max-width: 480px; margin: 0 auto; box-shadow: 0 24px 64px rgba(0,0,0,0.3); }
+    .form-card h2 { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--navy); margin-bottom: 6px; font-weight: 400; }
+    .form-card p { font-size: 0.9375rem; color: var(--gray-600); margin-bottom: 24px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.875rem; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+    .form-group input, .form-group select { width: 100%; padding: 12px 16px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-size: 1rem; font-family: 'DM Sans', sans-serif; color: var(--gray-900); transition: border-color 0.2s; outline: none; }
+    .form-group input:focus, .form-group select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,102,204,0.1); }
+    .download-btn { width: 100%; padding: 15px; background: var(--green); color: white; border: none; border-radius: 10px; font-size: 1.0625rem; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 8px; }
+    .download-btn:hover { background: #008f5a; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,168,107,0.3); }
+    .download-btn:disabled { background: var(--gray-200); color: var(--gray-600); transform: none; box-shadow: none; cursor: not-allowed; }
+    .form-disclaimer { font-size: 0.8125rem; color: var(--gray-600); text-align: center; margin-top: 14px; line-height: 1.5; }
+
+    /* SUCCESS STATE */
+    .success-state { display: none; text-align: center; padding: 8px 0; }
+    .success-icon { width: 64px; height: 64px; background: var(--green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 20px; }
+    .success-state h2 { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--navy); margin-bottom: 10px; font-weight: 400; }
+    .success-state p { color: var(--gray-600); font-size: 0.9375rem; margin-bottom: 24px; }
+    .download-direct { display: inline-flex; align-items: center; gap: 8px; background: var(--green); color: white; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 1rem; transition: all 0.2s; margin-bottom: 16px; }
+    .download-direct:hover { background: #008f5a; transform: translateY(-1px); }
+    .app-nudge { font-size: 0.875rem; color: var(--gray-600); }
+    .app-nudge a { color: var(--blue); text-decoration: none; font-weight: 600; }
+
+    /* WHAT'S INSIDE */
+    .inside { padding: 80px 40px; background: var(--gray-50); }
+    .inside-inner { max-width: 900px; margin: 0 auto; }
+    .section-label { font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.1em; color: var(--green); text-transform: uppercase; margin-bottom: 12px; }
+    .inside h2 { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 400; color: var(--navy); margin-bottom: 12px; letter-spacing: -0.02em; }
+    .inside-sub { color: var(--gray-600); font-size: 1.0625rem; margin-bottom: 48px; max-width: 560px; }
+    .chapters { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+    .chapter-card { background: white; border: 1.5px solid var(--gray-200); border-radius: 12px; padding: 22px; transition: all 0.2s; }
+    .chapter-card:hover { border-color: var(--green); box-shadow: 0 4px 16px rgba(0,168,107,0.1); transform: translateY(-2px); }
+    .chapter-num { font-size: 0.75rem; font-weight: 700; color: var(--green); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+    .chapter-title { font-weight: 700; color: var(--navy); font-size: 0.9375rem; margin-bottom: 6px; }
+    .chapter-desc { font-size: 0.875rem; color: var(--gray-600); line-height: 1.5; }
+
+    /* NUMBERS SECTION */
+    .numbers { padding: 72px 40px; background: white; }
+    .numbers-inner { max-width: 900px; margin: 0 auto; }
+    .numbers h2 { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 3.5vw, 2.4rem); font-weight: 400; color: var(--navy); margin-bottom: 48px; text-align: center; letter-spacing: -0.02em; }
+    .numbers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 32px; }
+    .number-item { text-align: center; }
+    .number-value { font-size: 2.25rem; font-weight: 700; color: var(--green); font-family: 'DM Sans', monospace; line-height: 1; margin-bottom: 8px; }
+    .number-label { font-size: 0.9rem; color: var(--gray-600); line-height: 1.4; }
+
+    /* WHO IT'S FOR */
+    .for-section { padding: 72px 40px; background: var(--navy); }
+    .for-inner { max-width: 900px; margin: 0 auto; text-align: center; }
+    .for-section h2 { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 3.5vw, 2.4rem); font-weight: 400; color: white; margin-bottom: 12px; letter-spacing: -0.02em; }
+    .for-section p { color: rgba(255,255,255,0.65); font-size: 1.0625rem; margin-bottom: 48px; }
+    .for-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+    .for-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 24px; text-align: left; }
+    .for-icon { font-size: 1.75rem; margin-bottom: 12px; }
+    .for-card h3 { color: white; font-weight: 700; font-size: 0.9375rem; margin-bottom: 6px; }
+    .for-card p { color: rgba(255,255,255,0.55); font-size: 0.875rem; line-height: 1.5; }
+
+    /* BOTTOM CTA */
+    .bottom-cta { padding: 80px 40px; background: var(--green-light); text-align: center; }
+    .bottom-cta h2 { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 3.5vw, 2.4rem); font-weight: 400; color: var(--navy); margin-bottom: 12px; letter-spacing: -0.02em; }
+    .bottom-cta p { color: var(--gray-600); font-size: 1.0625rem; margin-bottom: 32px; }
+    .bottom-cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary { background: var(--green); color: white; padding: 15px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 1.0625rem; transition: all 0.2s; }
+    .btn-primary:hover { background: #008f5a; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,168,107,0.25); }
+    .btn-secondary { background: white; color: var(--navy); padding: 15px 32px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 1.0625rem; border: 1.5px solid var(--gray-200); transition: all 0.2s; }
+    .btn-secondary:hover { border-color: var(--blue); color: var(--blue); }
+
+    /* FOOTER */
+    footer { background: var(--navy); padding: 40px; text-align: center; }
+    footer p { color: rgba(255,255,255,0.4); font-size: 0.875rem; }
+    footer a { color: rgba(255,255,255,0.55); text-decoration: none; }
+    footer a:hover { color: white; }
+
+    @media (max-width: 600px) {
+      nav { padding: 16px 20px; }
+      .hero { padding: 60px 20px; }
+      .form-card { padding: 28px 20px; }
+      .inside, .numbers, .for-section, .bottom-cta { padding: 56px 20px; }
+      .hero-stats { gap: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="index.html" class="logo">LocumsLab</a>
+    <a href="app.html" class="nav-cta">Try the Calculator</a>
+  </nav>
+</header>
+
+<!-- HERO + FORM -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">📄 Free Download — No Credit Card Required</div>
+    <h1>The Locums<br><span>Financial Roadmap</span></h1>
+    <p>Everything you need to know about LLC setup, taxes, malpractice, and retirement before going 1099. Written by a provider in the trenches.</p>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-value">11</div>
+        <div class="hero-stat-label">Chapters</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">$70k</div>
+        <div class="hero-stat-label">Retirement potential/year</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">100%</div>
+        <div class="hero-stat-label">Free, always</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">2025</div>
+        <div class="hero-stat-label">IRS data</div>
+      </div>
+    </div>
+
+    <!-- FORM CARD -->
+    <div class="form-card">
+      <div id="form-state">
+        <h2>Get the free guide</h2>
+        <p>Enter your email and we'll send it instantly — plus notify you when we update it.</p>
+        <div class="form-group">
+          <label for="guide-name">First name</label>
+          <input type="text" id="guide-name" placeholder="Alex" autocomplete="given-name">
+        </div>
+        <div class="form-group">
+          <label for="guide-email">Work email</label>
+          <input type="email" id="guide-email" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="guide-role">Your role</label>
+          <select id="guide-role">
+            <option value="">Select your specialty...</option>
+            <option value="crna">CRNA</option>
+            <option value="srna">SRNA (student)</option>
+            <option value="np">Nurse Practitioner</option>
+            <option value="pa">Physician Assistant</option>
+            <option value="physician">Physician / MD / DO</option>
+            <option value="other">Other healthcare provider</option>
+          </select>
+        </div>
+        <button class="download-btn" onclick="submitGuideForm()" id="download-btn">
+          <span>📥</span> Download Free Guide
+        </button>
+        <p class="form-disclaimer">No spam. Unsubscribe anytime. Your email is used only to send the guide and occasional LocumsLab updates.</p>
+      </div>
+
+      <div class="success-state" id="success-state">
+        <div class="success-icon">✅</div>
+        <h2>It's on its way!</h2>
+        <p>Check your inbox for the guide. While you're here — run your numbers in the free calculator.</p>
+        <a href="CRNA_Guide_to_Going_Locums_LocumsLab.pdf" download class="download-direct">
+          <span>📥</span> Download Now (direct link)
+        </a>
+        <p class="app-nudge">Or <a href="app.html?start=quickstart">try the Quick Start wizard →</a></p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- WHAT'S INSIDE -->
+<section class="inside">
+  <div class="inside-inner">
+    <div class="section-label">What's inside</div>
+    <h2>The roadmap nobody gave you</h2>
+    <p class="inside-sub">11 chapters covering the financial and operational reality of going 1099 — with real numbers, verified sources, and zero fluff.</p>
+    <div class="chapters">
+      <div class="chapter-card">
+        <div class="chapter-num">Chapter 01</div>
+        <div class="chapter-title">Why This Guide Exists</div>
+        <div class="chapter-desc">The honest story behind it — written by a provider making the transition, not a CPA selling services.</div>
+      </div>
+      <div class="chapter-card">
+        <div class="chapter-num">Chapter 02</div>
+        <div class="chapter-title">Honest Considerations</div>
+        <div class="chapter-desc">Lifestyle trade-offs, benefits gap reality, and what to have in place before you take your first 1099 check.</div>
+      </div>
+      <div class="chapter-card">
+        <div class="chapter-num">Chapter 03</div>
+        <div class="chapter-title">LLC & S-Corp Explained</div>
+        <div class="chapter-desc">When to form each, how S-Corp distributions save you thousands in SE tax, and the admin fee concept.</div>
+      </div>
+      <div class="chapter-card">
+        <div class="chapter-num">Chapter 04</div>
+        <div class="chapter-title">Taxes — Day One Changes</div>
+        <div class="chapter-desc">SE tax rates, quarterly payments, and every deduction available to 1099 providers. Based on 2025 IRS guidance.</div>
+      </div>
+      <div class="chapter-card">
+        <div class="chapter-num">Chapter 05</div>
+        <div class="chapter-title">Malpractice Insurance</div>
+        <div class="chapter-desc">Claims-made vs occurrence, tail coverage, what it actually costs, and the questions to ask before every assignment.</div>
+      </div>
+      <div class="chapter-card">
+        <div class="chapter-num">Chapter 06</div>
+        <div class="chapter-title">Health, Disability & Benefits</div>
+        <div class="chapter-desc">How to calculate your true benefits gap and budget for what your employer used to cover.</div>
+      </div>
+      <div class="chapter-card">
+        <div class="chapter-num">Chapter 07</div>
+        <div class="chapter-title">Retirement Maximization</div>
+        <div class="chapter-desc">Solo 401(k) vs SEP-IRA, 2025 contribution limits, and what $70k/year compounded looks like over 20 years.</div>
+      </div>
+      <div class="chapter-card">
+        <div class="chapter-num">Chapter 08</div>
+        <div class="chapter-title">Finding Contracts</div>
+        <div class="chapter-desc">Working with agencies, evaluating offers, and the soft skills that actually get you the best assignments.</div>
+      </div>
+      <div class="chapter-card">
+        <div class="chapter-num">Chapter 09</div>
+        <div class="chapter-title">Payroll & Bookkeeping</div>
+        <div class="chapter-desc">Gusto, QuickBooks, Keeper — the tools that keep your quarterly tax routine under two hours.</div>
+      </div>
+      <div class="chapter-card">
+        <div class="chapter-num">Chapter 10</div>
+        <div class="chapter-title">Finding the Right CPA</div>
+        <div class="chapter-desc">What to look for, questions to ask, and why a specialty CPA pays for itself many times over.</div>
+      </div>
+      <div class="chapter-card">
+        <div class="chapter-num">Chapter 11</div>
+        <div class="chapter-title">Run Your Numbers</div>
+        <div class="chapter-desc">How to use LocumsLab's free calculators to model your specific scenario before making any decisions.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KEY NUMBERS -->
+<section class="numbers">
+  <div class="numbers-inner">
+    <h2>The numbers that change how you think about this</h2>
+    <div class="numbers-grid">
+      <div class="number-item">
+        <div class="number-value">15.3%</div>
+        <div class="number-label">SE tax rate you'll pay as 1099 — and how to reduce it</div>
+      </div>
+      <div class="number-item">
+        <div class="number-value">$70k</div>
+        <div class="number-label">Max Solo 401(k) contribution per year in 2025</div>
+      </div>
+      <div class="number-item">
+        <div class="number-value">$5,968</div>
+        <div class="number-label">Average CRNA malpractice premium — what to budget</div>
+      </div>
+      <div class="number-item">
+        <div class="number-value">$30–45k</div>
+        <div class="number-label">Typical annual benefits gap when leaving W-2</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IT'S FOR -->
+<section class="for-section">
+  <div class="for-inner">
+    <h2>Who this guide is for</h2>
+    <p>Any healthcare provider considering or beginning the transition to 1099 or locums work.</p>
+    <div class="for-grid">
+      <div class="for-card">
+        <div class="for-icon">💉</div>
+        <h3>CRNAs & SRNAs</h3>
+        <p>Primary audience. All numbers reference anesthesia-specific data where available.</p>
+      </div>
+      <div class="for-card">
+        <div class="for-icon">🩺</div>
+        <h3>Nurse Practitioners</h3>
+        <p>The LLC, tax, and retirement frameworks apply directly. Malpractice figures vary by specialty.</p>
+      </div>
+      <div class="for-card">
+        <div class="for-icon">📋</div>
+        <h3>Physician Assistants</h3>
+        <p>Same business structure considerations. Use as a starting point and verify specialty-specific costs.</p>
+      </div>
+      <div class="for-card">
+        <div class="for-icon">🏥</div>
+        <h3>Physicians</h3>
+        <p>Core financial concepts apply. Malpractice and contract structure differ by specialty.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOTTOM CTA -->
+<section class="bottom-cta">
+  <h2>Ready to run your actual numbers?</h2>
+  <p>The guide explains the framework. LocumsLab's free calculators show you what it means for your specific situation.</p>
+  <div class="bottom-cta-btns">
+    <a href="app.html?start=quickstart" class="btn-primary">Try the Quick Start Wizard →</a>
+    <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" class="btn-secondary">Download the Guide</a>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 LocumsLab &nbsp;|&nbsp; <a href="privacy.html">Privacy Policy</a> &nbsp;|&nbsp; <a href="app.html?contact=true">Contact</a> &nbsp;|&nbsp; For informational purposes only. Not tax or legal advice.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // ── Supabase config (match app.html) ──────────────────────────────────────
+  const SUPABASE_URL = 'https://gqhalfzmqzlichcqubbs.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxaGFsZnptcXpsaWNoY3F1YmJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1MDcwMDQsImV4cCI6MjA4NzA4MzAwNH0.XdJ0dZXbLPeRy0oIQ8SFllx1lAYr_KhaA0VBay1E7pU';
+  const RESEND_FUNCTION_URL = '/.netlify/functions/send-guide';
+
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  async function submitGuideForm() {
+    const name  = document.getElementById('guide-name').value.trim();
+    const email = document.getElementById('guide-email').value.trim();
+    const role  = document.getElementById('guide-role').value;
+    const btn   = document.getElementById('download-btn');
+
+    if (!email || !email.includes('@')) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span>⏳</span> Sending...';
+
+    try {
+      // 1. Send guide email via Netlify function
+      await fetch(RESEND_FUNCTION_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, role })
+      });
+
+      // 2. Log the lead in Supabase (guide_leads table)
+      await sb.from('guide_leads').insert([{
+        email,
+        name: name || null,
+        role: role || null,
+        source: document.referrer || 'direct'
+      }]);
+
+    } catch(e) {
+      console.warn('Lead capture error (non-blocking):', e);
+    }
+
+    // Show success regardless — don't block download on API errors
+    document.getElementById('form-state').style.display = 'none';
+    document.getElementById('success-state').style.display = 'block';
+  }
+
+  // Allow Enter key to submit
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitGuideForm();
+  });
+</script>
+</body>
+</html>
