@@ -162,46 +162,17 @@
       </div>
     </div>
 
-    <!-- FORM CARD -->
+    <!-- CTA CARD — no gate, fully free -->
     <div class="form-card">
-      <div id="form-state">
-        <h2>Get the free guide</h2>
-        <p>Enter your email and we'll send it instantly — plus notify you when we update it.</p>
-        <div class="form-group">
-          <label for="guide-name">First name</label>
-          <input type="text" id="guide-name" placeholder="Alex" autocomplete="given-name">
-        </div>
-        <div class="form-group">
-          <label for="guide-email">Work email</label>
-          <input type="email" id="guide-email" placeholder="you@example.com" autocomplete="email">
-        </div>
-        <div class="form-group">
-          <label for="guide-role">Your role</label>
-          <select id="guide-role">
-            <option value="">Select your specialty...</option>
-            <option value="crna">CRNA</option>
-            <option value="srna">SRNA (student)</option>
-            <option value="np">Nurse Practitioner</option>
-            <option value="pa">Physician Assistant</option>
-            <option value="physician">Physician / MD / DO</option>
-            <option value="other">Other healthcare provider</option>
-          </select>
-        </div>
-        <button class="download-btn" onclick="submitGuideForm()" id="download-btn">
-          <span>📥</span> Download Free Guide
-        </button>
-        <p class="form-disclaimer">No spam. Unsubscribe anytime. Your email is used only to send the guide and occasional LocumsLab updates.</p>
-      </div>
-
-      <div class="success-state" id="success-state">
-        <div class="success-icon">✅</div>
-        <h2>It's on its way!</h2>
-        <p>Check your inbox for the guide. While you're here — run your numbers in the free calculator.</p>
-        <a href="CRNA_Guide_to_Going_Locums_LocumsLab.pdf" download class="download-direct">
-          <span>📥</span> Download Now (direct link)
-        </a>
-        <p class="app-nudge">Or <a href="app.html?start=quickstart">try the Quick Start wizard →</a></p>
-      </div>
+      <h2>Free — no email required</h2>
+      <p>Download the PDF or read it inside the LocumsLab calculator app while you run your numbers.</p>
+      <a href="CRNA_Guide_to_Going_Locums_LocumsLab.pdf" download class="download-btn" style="text-decoration:none; margin-bottom: 12px;">
+        <span>📥</span> Download PDF
+      </a>
+      <a href="app.html?guide=open" class="download-btn" style="text-decoration:none; background: #0066cc;">
+        <span>📖</span> Read in LocumsLab →
+      </a>
+      <p class="form-disclaimer">Opens the guide alongside the free calculators — see the concepts in action.</p>
     </div>
 
   </div>
@@ -333,8 +304,8 @@
   <h2>Ready to run your actual numbers?</h2>
   <p>The guide explains the framework. LocumsLab's free calculators show you what it means for your specific situation.</p>
   <div class="bottom-cta-btns">
-    <a href="app.html?start=quickstart" class="btn-primary">Try the Quick Start Wizard →</a>
-    <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" class="btn-secondary">Download the Guide</a>
+    <a href="app.html?guide=open" class="btn-primary">Read Guide in LocumsLab →</a>
+    <a href="CRNA_Guide_to_Going_Locums_LocumsLab.pdf" download class="btn-secondary">Download PDF</a>
   </div>
 </section>
 
@@ -342,58 +313,8 @@
   <p>&copy; 2026 LocumsLab &nbsp;|&nbsp; <a href="privacy.html">Privacy Policy</a> &nbsp;|&nbsp; <a href="app.html?contact=true">Contact</a> &nbsp;|&nbsp; For informational purposes only. Not tax or legal advice.</p>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // ── Supabase config (match app.html) ──────────────────────────────────────
-  const SUPABASE_URL = 'https://gqhalfzmqzlichcqubbs.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxaGFsZnptcXpsaWNoY3F1YmJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1MDcwMDQsImV4cCI6MjA4NzA4MzAwNH0.XdJ0dZXbLPeRy0oIQ8SFllx1lAYr_KhaA0VBay1E7pU';
-  const RESEND_FUNCTION_URL = '/.netlify/functions/send-guide';
-
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  async function submitGuideForm() {
-    const name  = document.getElementById('guide-name').value.trim();
-    const email = document.getElementById('guide-email').value.trim();
-    const role  = document.getElementById('guide-role').value;
-    const btn   = document.getElementById('download-btn');
-
-    if (!email || !email.includes('@')) {
-      alert('Please enter a valid email address.');
-      return;
-    }
-
-    btn.disabled = true;
-    btn.innerHTML = '<span>⏳</span> Sending...';
-
-    try {
-      // 1. Send guide email via Netlify function
-      await fetch(RESEND_FUNCTION_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, role })
-      });
-
-      // 2. Log the lead in Supabase (guide_leads table)
-      await sb.from('guide_leads').insert([{
-        email,
-        name: name || null,
-        role: role || null,
-        source: document.referrer || 'direct'
-      }]);
-
-    } catch(e) {
-      console.warn('Lead capture error (non-blocking):', e);
-    }
-
-    // Show success regardless — don't block download on API errors
-    document.getElementById('form-state').style.display = 'none';
-    document.getElementById('success-state').style.display = 'block';
-  }
-
-  // Allow Enter key to submit
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Enter') submitGuideForm();
-  });
+  // No form gate — guide is fully free
 </script>
 </body>
 </html>
