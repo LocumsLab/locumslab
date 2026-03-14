@@ -1069,6 +1069,7 @@
       <span class="user-email" id="userEmail"></span>
       <button class="header-btn upgrade hidden" id="upgradeBtn" onclick="showUpgradeModal()">Upgrade to Pro</button>
       <button class="header-btn secondary" onclick="showWizard()" id="wizardBtn" style="display:none;">Should I Go Locums?</button>
+      <button class="header-btn" onclick="openGuideDrawer()" style="color: var(--accent); border-color: rgba(16,185,129,0.4);">📖 Guide</button>
       <button class="header-btn" onclick="showDashboard()">Dashboard</button>
       <button class="header-btn" onclick="handleLogout()">Logout</button>
     </div>
@@ -5264,9 +5265,157 @@ function renderBenchmarks() {
 
 
 // ============================================================
-// GUIDE PROMPT BANNER
-// Slides up 1.2s after any calc result. Once per session. Never shown to Pro.
+// GUIDE DRAWER
 // ============================================================
+(function() {
+  const drawerHTML = `
+  <!-- GUIDE DRAWER OVERLAY -->
+  <div id="guide-drawer-overlay" onclick="closeGuideDrawer()" style="
+    position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:8000;
+    display:none; opacity:0; transition:opacity 0.3s;
+  "></div>
+
+  <!-- GUIDE DRAWER -->
+  <div id="guide-drawer" style="
+    position:fixed; top:0; right:0; bottom:0; width:min(520px,100vw);
+    background:#0f1419; border-left:1px solid #2d3748;
+    z-index:8001; display:flex; flex-direction:column;
+    transform:translateX(100%); transition:transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    box-shadow:-8px 0 40px rgba(0,0,0,0.4);
+  ">
+    <!-- Drawer Header -->
+    <div style="
+      padding:20px 24px; border-bottom:1px solid #2d3748;
+      display:flex; align-items:center; justify-content:space-between;
+      flex-shrink:0; background:#1a1f29;
+    ">
+      <div>
+        <div style="font-size:1rem; font-weight:700; color:#f7fafc;">📖 CRNA Guide to Going Locums</div>
+        <div style="font-size:0.8125rem; color:#94a3b8; margin-top:2px;">11 chapters · Free · By John Fratianni</div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <a href="CRNA_Guide_to_Going_Locums_LocumsLab.pdf" download style="
+          font-size:0.8125rem; color:#10b981; font-weight:600;
+          text-decoration:none; padding:6px 12px; border:1px solid rgba(16,185,129,0.4);
+          border-radius:6px; transition:background 0.2s; white-space:nowrap;
+        " onmouseover="this.style.background='rgba(16,185,129,0.1)'" onmouseout="this.style.background='transparent'">
+          ↓ PDF
+        </a>
+        <button onclick="closeGuideDrawer()" style="
+          background:transparent; border:none; color:#94a3b8;
+          font-size:1.375rem; cursor:pointer; padding:4px; line-height:1;
+        ">✕</button>
+      </div>
+    </div>
+
+    <!-- Drawer Body — scrollable -->
+    <div style="flex:1; overflow-y:auto; padding:24px;" id="guide-drawer-body">
+
+      <!-- Intro -->
+      <div style="
+        background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(59,130,246,0.06));
+        border:1px solid rgba(16,185,129,0.2); border-radius:10px;
+        padding:18px 20px; margin-bottom:24px;
+      ">
+        <p style="font-size:0.9rem; color:#94a3b8; line-height:1.7; margin:0;">
+          1099 CRNAs have a unique opportunity most W-2 employees never access — far larger tax-advantaged accounts, S-Corp distributions, and complete control over income structure. This guide covers the financial reality of making the transition, with real numbers and zero fluff.
+        </p>
+      </div>
+
+      <!-- Chapters -->
+      ${[
+        { n:'01', title:'Why This Guide Exists', content:'The honest story behind it — written by a provider making the transition, not a CPA selling services. Most guides are written by people who profit from your confusion. This one isn\'t.' },
+        { n:'02', title:'Honest Considerations', content:'Lifestyle trade-offs, benefits gap reality, and what to have in place before you take your first 1099 check. The benefits gap is typically $30,000–$45,000/year when you account for health insurance, malpractice, retirement match, CME, disability, and PTO.' },
+        { n:'03', title:'LLC & S-Corp Explained', content:'When to form each. S-Corp distributions save you 15.3% SE tax on income above your "reasonable salary." At $250k net income with a $120k salary, that\'s roughly $19,000/year saved. Admin costs ~$3,500/yr (CPA + payroll service). Typically worth it above $80–100k net income.' },
+        { n:'04', title:'Taxes — Day One Changes', content:'As 1099 you pay both sides of FICA (15.3%) on ~92.35% of net income. You\'ll make quarterly estimated payments (April, June, September, January). Key deductions: home office, malpractice, health insurance premiums, CME, professional dues, travel between assignments, and half of SE tax.' },
+        { n:'05', title:'Malpractice Insurance', content:'Claims-made vs occurrence policies. Claims-made is cheaper annually but requires "tail coverage" (~1.5–2× annual premium) when you leave. CRNA individual policies: $6,000–$15,000/yr. Always verify your contract specifies who provides coverage and whether tail is included.' },
+        { n:'06', title:'Health, Disability & Benefits', content:'Individual ACA marketplace plans average $7,200–$21,600/yr depending on coverage level and state. Budget separately for dental, vision, life, and disability. Short-term disability is often overlooked — W-2 employer typically covers 60% of salary; you\'ll need to buy your own.' },
+        { n:'07', title:'Retirement Maximization', content:'Solo 401(k): up to $70,000/year (2025) — $23,500 employee + up to $46,500 employer contribution. SEP-IRA: simpler but no employee contribution (leaves $23,500 on the table). Backdoor Roth IRA: $7,000/yr per person. HSA if on a high-deductible plan: $4,300 single / $8,550 family. A 45-year-old CRNA with a non-working spouse can shelter up to $92,550/year tax-advantaged.' },
+        { n:'08', title:'Finding Contracts', content:'Working with agencies (CompHealth, AMN, Barton, Staff Care), evaluating offers, and the soft skills that get you the best assignments. Negotiating points beyond hourly rate: stipend structure, housing quality, scheduling flexibility, tail coverage, and completion bonuses.' },
+        { n:'09', title:'Payroll & Bookkeeping', content:'Gusto for payroll (~$500/yr) handles W-2 for S-Corp owners, 940/941 filings, and year-end forms. QuickBooks Self-Employed or Keeper for bookkeeping. Set aside 25–30% of each payment for taxes in a separate account. Bill from your LLC/S-Corp, not personally.' },
+        { n:'10', title:'Finding the Right CPA', content:'Look for CPAs who specifically work with independent healthcare providers or 1099 physicians/CRNAs. Questions to ask: Have you filed S-Corp returns for CRNAs? What\'s your recommended reasonable salary range? What bookkeeping software do you support? Budget $2,500–$5,000/yr for a specialty CPA — it pays for itself many times over.' },
+        { n:'11', title:'Run Your Numbers', content:'All of this is theory until you model your specific situation. Use LocumsLab\'s Quick Start wizard to enter your current W-2 salary and a target locums rate. The S-Corp Evaluator (Pro) shows you your exact tax savings at your income level. The Benchmarks tab gives you malpractice, retirement, and expense benchmarks by profession.' },
+      ].map(ch => `
+        <div style="margin-bottom:12px; border:1px solid #2d3748; border-radius:10px; overflow:hidden;">
+          <button onclick="toggleChapter('ch${ch.n}')" style="
+            width:100%; background:#1a1f29; border:none; padding:16px 18px;
+            display:flex; align-items:center; gap:14px; cursor:pointer;
+            text-align:left; transition:background 0.2s;
+          " onmouseover="this.style.background='#242b38'" onmouseout="this.style.background='#1a1f29'">
+            <span style="
+              font-size:0.6875rem; font-weight:700; color:#10b981;
+              letter-spacing:0.08em; min-width:28px;
+            ">CH ${ch.n}</span>
+            <span style="font-size:0.9375rem; font-weight:600; color:#f7fafc; flex:1;">${ch.title}</span>
+            <span id="ch${ch.n}-icon" style="color:#94a3b8; font-size:0.875rem; flex-shrink:0;">▶</span>
+          </button>
+          <div id="ch${ch.n}" style="display:none; padding:16px 18px 18px; background:#0f1419; border-top:1px solid #2d3748;">
+            <p style="font-size:0.875rem; color:#94a3b8; line-height:1.75; margin:0;">${ch.content}</p>
+          </div>
+        </div>
+      `).join('')}
+
+      <!-- PDF download footer -->
+      <div style="
+        margin-top:20px; padding:20px; background:#1a1f29;
+        border:1px solid #2d3748; border-radius:10px; text-align:center;
+      ">
+        <div style="font-size:0.875rem; color:#94a3b8; margin-bottom:14px;">
+          Want the full guide with all the details?
+        </div>
+        <a href="CRNA_Guide_to_Going_Locums_LocumsLab.pdf" download style="
+          display:inline-flex; align-items:center; gap:8px;
+          background:#10b981; color:white; padding:11px 24px;
+          border-radius:8px; text-decoration:none; font-weight:700;
+          font-size:0.9375rem; transition:background 0.2s;
+        " onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+          📥 Download PDF (Free)
+        </a>
+      </div>
+
+    </div>
+  </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', drawerHTML);
+
+  window.openGuideDrawer = function() {
+    document.getElementById('guide-drawer-overlay').style.display = 'block';
+    requestAnimationFrame(() => {
+      document.getElementById('guide-drawer-overlay').style.opacity = '1';
+      document.getElementById('guide-drawer').style.transform = 'translateX(0)';
+    });
+  };
+
+  window.closeGuideDrawer = function() {
+    document.getElementById('guide-drawer-overlay').style.opacity = '0';
+    document.getElementById('guide-drawer').style.transform = 'translateX(100%)';
+    setTimeout(() => {
+      document.getElementById('guide-drawer-overlay').style.display = 'none';
+    }, 350);
+  };
+
+  window.toggleChapter = function(id) {
+    const el = document.getElementById(id);
+    const icon = document.getElementById(id + '-icon');
+    const open = el.style.display !== 'none';
+    el.style.display = open ? 'none' : 'block';
+    icon.textContent = open ? '▶' : '▼';
+    icon.style.color = open ? '#94a3b8' : '#10b981';
+  };
+
+  // Auto-open if ?guide=open in URL
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('guide') === 'open') {
+    window.history.replaceState({}, '', window.location.pathname);
+    // Wait for app to finish loading
+    window.addEventListener('load', () => setTimeout(openGuideDrawer, 600));
+  }
+})();
+
+</script>
+</body>
+</html>
 (function() {
   // Inject banner HTML
   const banner = document.createElement('div');
@@ -5300,7 +5449,7 @@ function renderBenchmarks() {
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
-        <a href="/guide.html" style="
+        <a href="#" onclick="dismissGuideBanner(); openGuideDrawer(); return false;" style="
           display:inline-block;
           background:#10b981;
           color:white;
@@ -5312,7 +5461,7 @@ function renderBenchmarks() {
           white-space:nowrap;
           transition:background 0.2s;
         " onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
-          Get the Free Guide →
+          Read Free Guide →
         </a>
         <button onclick="dismissGuideBanner()" style="
           background:transparent;
