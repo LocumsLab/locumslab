@@ -8,9 +8,10 @@
   # Extend timeout to 26s for Stripe checkout and Resend email functions
   node_bundler = "esbuild"
 
+# ── Extensionless URL redirects ───────────────────────────────────────────────
+# Allows locumslab.com/app to serve app.html cleanly
+
 [[redirects]]
-  # Extensionless URLs → .html files
-  # Allows locumslab.com/app to serve app.html
   from = "/app"
   to   = "/app.html"
   status = 200
@@ -36,25 +37,34 @@
   status = 200
 
 [[redirects]]
-  # Redirect www to non-www
+  from = "/unsubscribe"
+  to   = "/unsubscribe.html"
+  status = 200
+
+# ── Canonical domain redirects ────────────────────────────────────────────────
+
+[[redirects]]
+  # www → non-www
   from = "https://www.locumslab.com/*"
   to   = "https://locumslab.com/:splat"
   status = 301
   force  = true
 
 [[redirects]]
-  # Force HTTPS
+  # HTTP → HTTPS
   from = "http://locumslab.com/*"
   to   = "https://locumslab.com/:splat"
   status = 301
   force  = true
 
 [[redirects]]
-  # Force HTTPS on www too
+  # HTTP www → HTTPS non-www
   from = "http://www.locumslab.com/*"
   to   = "https://locumslab.com/:splat"
   status = 301
   force  = true
+
+# ── Headers ───────────────────────────────────────────────────────────────────
 
 [[headers]]
   # Security headers for all routes
@@ -67,19 +77,19 @@
     Permissions-Policy     = "geolocation=(), microphone=(), camera=()"
 
 [[headers]]
-  # Do not cache HTML — users always get latest deploy
+  # Never cache HTML — users always get latest deploy
   for = "/*.html"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
-  # Cache PDFs for 7 days
+  # Cache PDFs for 7 days — rarely change
   for = "/*.pdf"
   [headers.values]
     Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
 
 [[headers]]
-  # Cache JS aggressively
+  # Cache JS aggressively — CDN scripts don't change
   for = "/*.js"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
