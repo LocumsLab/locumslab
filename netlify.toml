@@ -6,8 +6,34 @@
 
 [functions]
   # Extend timeout to 26s for Stripe checkout and Resend email functions
-  # Default 10s can cut off on cold starts
   node_bundler = "esbuild"
+
+[[redirects]]
+  # Extensionless URLs → .html files
+  # Allows locumslab.com/app to serve app.html
+  from = "/app"
+  to   = "/app.html"
+  status = 200
+
+[[redirects]]
+  from = "/guide"
+  to   = "/guide.html"
+  status = 200
+
+[[redirects]]
+  from = "/privacy"
+  to   = "/privacy.html"
+  status = 200
+
+[[redirects]]
+  from = "/terms"
+  to   = "/terms.html"
+  status = 200
+
+[[redirects]]
+  from = "/share"
+  to   = "/share.html"
+  status = 200
 
 [[redirects]]
   # Redirect www to non-www
@@ -47,13 +73,13 @@
     Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
-  # Cache PDFs for 7 days — they change rarely
+  # Cache PDFs for 7 days
   for = "/*.pdf"
   [headers.values]
     Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
 
 [[headers]]
-  # Cache JS/CSS/fonts aggressively
+  # Cache JS aggressively
   for = "/*.js"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
