@@ -4,25 +4,56 @@
   # No build step needed - pure static HTML
   publish = "."
 
+[functions]
+  # Extend timeout to 26s for Stripe checkout and Resend email functions
+  # Default 10s can cut off on cold starts
+  node_bundler = "esbuild"
+
 [[redirects]]
   # Redirect www to non-www
   from = "https://www.locumslab.com/*"
-  to = "https://locumslab.com/:splat"
+  to   = "https://locumslab.com/:splat"
   status = 301
-  force = true
+  force  = true
+
+[[redirects]]
+  # Force HTTPS
+  from = "http://locumslab.com/*"
+  to   = "https://locumslab.com/:splat"
+  status = 301
+  force  = true
+
+[[redirects]]
+  # Force HTTPS on www too
+  from = "http://www.locumslab.com/*"
+  to   = "https://locumslab.com/:splat"
+  status = 301
+  force  = true
 
 [[headers]]
-  # Security headers
+  # Security headers for all routes
   for = "/*"
   [headers.values]
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
+    X-Frame-Options        = "DENY"
+    X-XSS-Protection       = "1; mode=block"
     X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    Referrer-Policy        = "strict-origin-when-cross-origin"
+    Permissions-Policy     = "geolocation=(), microphone=(), camera=()"
 
 [[headers]]
-  # Do not cache HTML files so users always get the latest deploy
+  # Do not cache HTML — users always get latest deploy
   for = "/*.html"
   [headers.values]
-    Cache-Control = "no-cache"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  # Cache PDFs for 7 days — they change rarely
+  for = "/*.pdf"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+[[headers]]
+  # Cache JS/CSS/fonts aggressively
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
