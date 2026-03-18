@@ -2668,9 +2668,27 @@
 
 <!-- SHARE RESULTS MODAL -->
 <div class="modal-overlay" id="shareModal">
-  <div class="modal" style="max-width: 480px;">
+  <div class="modal" style="max-width: 520px;">
     <h3>📋 Share Your Results</h3>
-    <p style="color:var(--muted); font-size:0.9375rem; margin:12px 0 20px;">A shareable link has been created. Anyone with the link can view your results.</p>
+    <p style="color:var(--muted); font-size:0.9375rem; margin:12px 0 20px;">Download the image card to post on Reddit, Facebook, or anywhere — or copy the link to share directly.</p>
+
+    <!-- IMAGE CARD PREVIEW -->
+    <div style="margin-bottom:20px; border-radius:10px; overflow:hidden; border:1px solid var(--border);">
+      <canvas id="shareCanvas" style="width:100%; display:block;"></canvas>
+    </div>
+
+    <!-- ACTIONS ROW -->
+    <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+      <button class="calc-btn" onclick="downloadShareCard()" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:12px 16px;">
+        ⬇ Download Image
+      </button>
+      <button class="calc-btn" onclick="copyShareText()" id="copyTextBtn" style="flex:1; background:var(--surface2); color:var(--text); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; gap:8px; padding:12px 16px;">
+        📝 Copy Post Text
+      </button>
+    </div>
+
+    <!-- LINK ROW -->
+    <div style="font-size:0.8125rem; color:var(--muted); margin-bottom:8px; font-weight:600;">Or share a link:</div>
     <div style="display:flex; gap:8px; margin-bottom:20px;">
       <input type="text" id="shareUrlInput" readonly
         style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:var(--text); font-size:0.875rem; font-family:inherit; outline:none;">
@@ -4176,14 +4194,26 @@ function calcTrueHourly() {
 }
 
 // ============================================================
-// SHARE RESULTS
+// SHARE RESULTS — Image Card + Link
 // ============================================================
+
+let _currentShareData = null;
+let _currentCalculator = null;
+
 async function shareResults(calculator) {
   const shareData = getShareData(calculator);
   if (!shareData) return;
 
-  document.getElementById('shareUrlInput').value = 'Generating...';
+  _currentShareData = shareData;
+  _currentCalculator = calculator;
+
   document.getElementById('shareModal').classList.add('show');
+
+  // Draw image card immediately
+  drawShareCard(calculator, shareData);
+
+  // Generate shareable link in background
+  document.getElementById('shareUrlInput').value = 'Generating link...';
   document.getElementById('shareModalLoading').style.display = 'block';
 
   try {
@@ -4198,12 +4228,12 @@ async function shareResults(calculator) {
       .single();
 
     if (error) throw error;
-
-    const url = `${window.location.origin}/share.html?id=${data.id}`;
-    document.getElementById('shareUrlInput').value = url;
+    document.getElementById('shareUrlInput').value = `${window.location.origin}/share.html?id=${data.id}`;
   } catch (err) {
     console.error('Share error:', err);
-    document.getElementById('shareUrlInput').value = 'Error generating link. Please try again.';
+    // Fallback: encode data in URL params so sharing still works
+    const encoded = encodeURIComponent(JSON.stringify({ calculator, ...shareData }));
+    document.getElementById('shareUrlInput').value = `${window.location.origin}/app.html`;
   }
 
   document.getElementById('shareModalLoading').style.display = 'none';
@@ -4214,6 +4244,251 @@ function getShareData(calculator) {
   if (calculator === 'true-hourly' && window._thrShareData) return window._thrShareData;
   alert('Please run the calculator first to generate results.');
   return null;
+}
+
+// ── IMAGE CARD GENERATOR ──────────────────────────────────────────────────────
+
+function drawShareCard(calculator, data) {
+  const canvas = document.getElementById('shareCanvas');
+  const dpr = window.devicePixelRatio || 2;
+
+  // Card dimensions: 1200×630 (standard OG image ratio)
+  const W = 1200, H = 630;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width  = '100%';
+  canvas.style.height = 'auto';
+
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  // ── BACKGROUND ──
+  ctx.fillStyle = '#0f1419';
+  ctx.fillRect(0, 0, W, H);
+
+  // Subtle green glow top-right
+  const glow = ctx.createRadialGradient(W * 0.85, H * 0.15, 0, W * 0.85, H * 0.15, 380);
+  glow.addColorStop(0, 'rgba(16,185,129,0.08)');
+  glow.addColorStop(1, 'rgba(16,185,129,0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, W, H);
+
+  // ── LEFT ACCENT BAR ──
+  ctx.fillStyle = '#10b981';
+  ctx.fillRect(0, 0, 8, H);
+
+  // ── LOCUMS LAB WORDMARK ──
+  ctx.font = 'bold 32px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#10b981';
+  ctx.fillText('LocumsLab', 56, 66);
+
+  // ── TOOL LABEL ──
+  const toolLabel = calculator === 'true-hourly' ? 'True Hourly Rate Calculator' : 'Quick Start — W-2 to Locums';
+  ctx.font = '500 22px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#64748b';
+  ctx.fillText(toolLabel, 56, 102);
+
+  // ── DIVIDER ──
+  ctx.strokeStyle = '#2d3748';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(56, 120);
+  ctx.lineTo(W - 56, 120);
+  ctx.stroke();
+
+  if (calculator === 'true-hourly') {
+    drawTrueHourlyCard(ctx, data, W, H);
+  } else {
+    drawQuickStartCard(ctx, data, W, H);
+  }
+
+  // ── FOOTER ──
+  ctx.fillStyle = '#2d3748';
+  ctx.fillRect(0, H - 56, W, 56);
+
+  ctx.font = '500 20px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#64748b';
+  ctx.fillText('locumslab.com', 56, H - 20);
+
+  ctx.font = '500 20px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#64748b';
+  const disclaimer = 'Educational estimates only — not financial or tax advice.';
+  ctx.textAlign = 'right';
+  ctx.fillText(disclaimer, W - 56, H - 20);
+  ctx.textAlign = 'left';
+}
+
+function drawTrueHourlyCard(ctx, data, W, H) {
+  const { contractHourly, trueRate, reductionPct } = data;
+  const fmt2 = n => '$' + Math.max(0, n).toFixed(2);
+  const pct  = reductionPct + '%';
+
+  // ── MAIN NUMBERS ROW ──
+  const colW  = (W - 112) / 3;
+  const col1x = 56;
+  const col2x = 56 + colW;
+  const col3x = 56 + colW * 2;
+  const midY  = 155;
+
+  // Contract rate box (dim)
+  drawStatBox(ctx, col1x, midY, colW - 24, 200, '#1a1f29', '#2d3748');
+  ctx.font = '600 18px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#64748b';
+  ctx.fillText('CONTRACT RATE', col1x + 24, midY + 40);
+  ctx.font = 'bold 68px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#f7fafc';
+  ctx.fillText(fmt2(contractHourly), col1x + 24, midY + 122);
+  ctx.font = '500 20px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#64748b';
+  ctx.fillText('per hour', col1x + 24, midY + 155);
+
+  // Arrow
+  ctx.font = '500 48px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#10b981';
+  ctx.textAlign = 'center';
+  ctx.fillText('→', col1x + colW + 8, midY + 115);
+  ctx.textAlign = 'left';
+
+  // True rate box (highlighted)
+  drawStatBox(ctx, col2x, midY, colW - 24, 200, 'rgba(16,185,129,0.08)', '#10b981', 2);
+  ctx.font = '700 18px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#10b981';
+  ctx.fillText('TRUE HOURLY RATE', col2x + 24, midY + 40);
+  ctx.font = 'bold 68px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#10b981';
+  ctx.fillText(fmt2(trueRate), col2x + 24, midY + 122);
+  ctx.font = '500 20px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#64748b';
+  ctx.fillText('after all costs & time', col2x + 24, midY + 155);
+
+  // Reduction box
+  drawStatBox(ctx, col3x, midY, colW - 24, 200, '#1a1f29', '#2d3748');
+  ctx.font = '600 18px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#64748b';
+  ctx.fillText('RATE REDUCTION', col3x + 24, midY + 40);
+  ctx.font = 'bold 68px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#ef4444';
+  ctx.fillText('-' + pct, col3x + 24, midY + 122);
+  ctx.font = '500 20px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#64748b';
+  ctx.fillText('from stated rate', col3x + 24, midY + 155);
+
+  // ── INSIGHT TEXT ──
+  const insight = `Your $${contractHourly.toFixed(0)}/hr contract rate becomes $${Math.max(0, trueRate).toFixed(0)}/hr after SE taxes, benefits, malpractice & travel time.`;
+  ctx.font = '500 22px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#94a3b8';
+  wrapText(ctx, insight, 56, 408, W - 112, 34);
+}
+
+function drawQuickStartCard(ctx, data, W, H) {
+  const { salary, w2Net, grossIncome, locumsNet, diff } = data;
+  const fmtK = n => '$' + Math.round(Math.abs(n) / 1000) + 'k';
+
+  const col1x = 56;
+  const col2x = W / 2 + 28;
+  const colW  = W / 2 - 84;
+  const midY  = 155;
+
+  // W-2 box
+  drawStatBox(ctx, col1x, midY, colW, 190, '#1a1f29', '#2d3748');
+  ctx.font = '600 18px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#64748b';
+  ctx.fillText('W-2 NET TAKE-HOME', col1x + 24, midY + 40);
+  ctx.font = 'bold 64px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#f7fafc';
+  ctx.fillText(fmtK(w2Net), col1x + 24, midY + 118);
+  ctx.font = '500 20px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#64748b';
+  ctx.fillText('per year (salary ' + fmtK(salary) + ')', col1x + 24, midY + 152);
+
+  // Locums box
+  drawStatBox(ctx, col2x, midY, colW, 190, 'rgba(16,185,129,0.08)', '#10b981', 2);
+  ctx.font = '700 18px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#10b981';
+  ctx.fillText('LOCUMS NET TAKE-HOME', col2x + 24, midY + 40);
+  ctx.font = 'bold 64px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#10b981';
+  ctx.fillText(fmtK(locumsNet), col2x + 24, midY + 118);
+  ctx.font = '500 20px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#64748b';
+  ctx.fillText('per year (' + (diff >= 0 ? '+' : '') + fmtK(diff) + ' vs W-2)', col2x + 24, midY + 152);
+
+  // Insight
+  const msg = diff >= 0
+    ? `Switching to locums could add ~${fmtK(diff)}/year to take-home pay after SE taxes, insurance & expenses.`
+    : `The W-2 position comes out ahead by ~${fmtK(Math.abs(diff))}/year — consider negotiating a higher contract rate.`;
+  ctx.font = '500 22px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#94a3b8';
+  wrapText(ctx, msg, 56, 402, W - 112, 34);
+}
+
+function drawStatBox(ctx, x, y, w, h, fill, stroke, lineWidth = 1) {
+  ctx.save();
+  ctx.beginPath();
+  roundRect(ctx, x, y, w, h, 12);
+  ctx.fillStyle = fill;
+  ctx.fill();
+  ctx.strokeStyle = stroke;
+  ctx.lineWidth = lineWidth;
+  ctx.stroke();
+  ctx.restore();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = text.split(' ');
+  let line = '';
+  for (let i = 0; i < words.length; i++) {
+    const test = line + words[i] + ' ';
+    if (ctx.measureText(test).width > maxWidth && i > 0) {
+      ctx.fillText(line.trim(), x, y);
+      line = words[i] + ' ';
+      y += lineHeight;
+    } else {
+      line = test;
+    }
+  }
+  ctx.fillText(line.trim(), x, y);
+}
+
+function downloadShareCard() {
+  const canvas = document.getElementById('shareCanvas');
+  const link = document.createElement('a');
+  link.download = 'locumslab-results.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function copyShareText() {
+  if (!_currentShareData || !_currentCalculator) return;
+  const d = _currentShareData;
+  let text = '';
+
+  if (_currentCalculator === 'true-hourly') {
+    text = `Ran my locums contract through LocumsLab — my stated rate is $${d.contractHourly.toFixed(0)}/hr but my true hourly rate after SE taxes, health insurance, malpractice, and travel time is $${Math.max(0, d.trueRate).toFixed(0)}/hr. That's a ${d.reductionPct}% reduction most people don't account for before signing.\n\nlocumslab.com`;
+  } else {
+    const fmtK = n => '$' + Math.round(Math.abs(n) / 1000) + 'k';
+    const sign = d.diff >= 0 ? '+' + fmtK(d.diff) : '-' + fmtK(Math.abs(d.diff));
+    text = `Modeled my W-2 vs going locums on LocumsLab — current take-home ${fmtK(d.w2Net)}/yr, locums projection ${fmtK(d.locumsNet)}/yr (${sign}). Accounts for SE taxes, health insurance, malpractice, and benefits gap.\n\nlocumslab.com`;
+  }
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyTextBtn');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = '📝 Copy Post Text', 2500);
+  });
 }
 
 function hideShareModal() {
@@ -5294,7 +5569,7 @@ function renderBenchmarks() {
     ">
       <div>
         <div style="font-size:1rem; font-weight:700; color:#f7fafc;">📖 CRNA Guide to Going Locums</div>
-        <div style="font-size:0.8125rem; color:#94a3b8; margin-top:2px;">11 chapters · Free · LocumsLab</div>
+        <div style="font-size:0.8125rem; color:#94a3b8; margin-top:2px;">11 chapters · Free · By John Fratianni</div>
       </div>
       <div style="display:flex; gap:10px; align-items:center;">
         <a href="CRNA_Guide_to_Going_Locums_LocumsLab.pdf" download style="
