@@ -1,8 +1,9 @@
 {
-  "name": "locumslab",
+  "name": "locumslab-functions",
   "version": "1.0.0",
+  "description": "LocumsLab Netlify Functions",
   "dependencies": {
-    "stripe": "^14.0.0",
-    "@supabase/supabase-js": "^2.0.0"
+    "@anthropic-ai/sdk": "^0.32.0",
+    "stripe": "^14.0.0"
   }
 }
