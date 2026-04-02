@@ -4435,7 +4435,7 @@ async function handleContractUpload(event) {
   }
 
   // Gate on Pro - non-Pro users see the upgrade modal
-  const isPro = window.supabase && window.currentUser && window.currentUser.is_pro;
+  // isPro is the module-level variable set during auth (let isPro = false)
   if (!isPro) {
     showUpgradeModal();
     document.getElementById('contractUpload').value = '';
@@ -4488,19 +4488,18 @@ async function analyzeContractFile(file) {
 }
 
 async function recordContractScan(filename, chargedAmount) {
-  if (!window.supabase || !window.currentUser) return;
+  if (!window.supabase || !currentUserId) return;
   
   try {
     const { error } = await window.supabase
       .from('contract_scans')
       .insert({
-        user_id: window.currentUser.id,
+        user_id: currentUserId,
         filename: filename,
         charged_amount: chargedAmount
       });
     
     if (error) throw error;
-    console.log('Contract scan recorded');
   } catch (error) {
     console.error('Error recording scan:', error);
   }
