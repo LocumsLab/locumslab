@@ -4409,176 +4409,81 @@ let lastContractReviewDate = '';
 
 async function handleContractUpload(event) {
   const file = event.target.files[0];
-  
-  console.log('Contract upload triggered');
-  console.log('File:', file);
-  console.log('File type:', file?.type);
-  console.log('File name:', file?.name);
-  
+
   if (!file) {
     alert('No file selected');
     return;
   }
-  
+
   // File size limit: 10MB
-  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+  const MAX_FILE_SIZE = 10 * 1024 * 1024;
   if (file.size > MAX_FILE_SIZE) {
     alert('File too large. Maximum size is 10MB.\nYour file: ' + (file.size / 1024 / 1024).toFixed(2) + 'MB');
-    return;
-  }
-  console.log('File size OK:', (file.size / 1024 / 1024).toFixed(2) + 'MB');
-  
-  // Accept any PDF (including PDF/X, PDF/A, etc.) - check extension too
-  const isPDF = file.type === 'application/pdf' || 
-                file.type === '' || // Some browsers don't set MIME type
-                file.name.toLowerCase().endsWith('.pdf');
-  
-  if (!isPDF) {
-    alert('Please select a PDF file (selected: ' + file.type + ')');
+    document.getElementById('contractUpload').value = '';
     return;
   }
 
+  // Accept any PDF - check extension too for edge cases
+  const isPDF = file.type === 'application/pdf' ||
+                file.type === '' ||
+                file.name.toLowerCase().endsWith('.pdf');
+
+  if (!isPDF) {
+    alert('Please select a PDF file (selected: ' + file.type + ')');
+    document.getElementById('contractUpload').value = '';
+    return;
+  }
+
+  // Gate on Pro - non-Pro users see the upgrade modal
+  const isPro = window.supabase && window.currentUser && window.currentUser.is_pro;
+  if (!isPro) {
+    showUpgradeModal();
+    document.getElementById('contractUpload').value = '';
+    return;
+  }
+
+  // Pro user - go straight to analysis
   try {
-    console.log('Starting contract analysis workflow...');
-    console.log('Supabase available:', !!window.supabase);
-    console.log('Current user:', window.currentUser);
-    console.log('Is logged in:', !!window.currentUser);
-    
-    // Check if user is Pro
-    const isPro = window.supabase && window.currentUser?.is_pro;
-    console.log('User is Pro:', isPro);
-    
-    // Check scans this month
-    console.log('Checking scans this month...');
-    const scansThisMonth = await getContractScansThisMonth();
-    console.log('Scans this month:', scansThisMonth);
-    
-    let needsPayment = false;
-    
-    if (isPro) {
-      console.log('Pro user - checking free scan eligibility');
-      // Pro users get 1 free scan per month
-      if (scansThisMonth >= 1) {
-        needsPayment = true;
-        console.log('Pro user has used free scan - needs payment');
-      } else {
-        console.log('Pro user gets free scan');
-      }
-    } else {
-      // Free/non-logged-in users always pay
-      needsPayment = true;
-      console.log('Non-Pro user - needs payment');
-    }
-    
-    console.log('Needs payment:', needsPayment);
-    
-    // Show pricing modal if needed
-    if (needsPayment) {
-      console.log('Showing payment modal...');
-     if (!isPro) {
-        showUpgradeModal();
-        document.getElementById('contractUpload').value = '';
-        return;
-      }
-      
-      // Process payment
-      console.log('11. Processing payment...');
-      // Sanitize filename (remove special characters)
-      const sanitizedFilename = file.name.replace(/[^a-zA-Z0-9.-]/g, '_').substring(0, 100);
-      const paymentSuccess = await processContractPayment(sanitizedFilename);
-      console.log('12. Payment success:', paymentSuccess);
-      if (!paymentSuccess) {
-        alert('Payment failed. Please try again.');
-        document.getElementById('contractUpload').value = '';
-        return;
-      }
-    } else {
-      // Free scan for Pro user
-      console.log('13. FREE SCAN for Pro user (scan #' + (scansThisMonth + 1) + ' this month)');
-    }
-    
-    // ALWAYS analyze the file immediately
-    // Payment has already been confirmed via modal
-    const chargedAmount = needsPayment ? 9 : 0;
-    console.log('14. Starting contract analysis (charged: $' + chargedAmount + ')...');
     await analyzeContractFile(file);
-    console.log('15. Contract analysis complete!');
-    
-    // If payment was needed, record the transaction
-    if (needsPayment) {
-      console.log('Recording $9 contract scan...');
-      await recordContractScan(file.name, 9);
-    }
-    
   } catch (error) {
     console.error('Upload error:', error);
-    console.error('Error stack:', error.stack);
-    alert('Failed to process contract: ' + error.message + '. Please check console for details.');
+    alert('Failed to process contract: ' + error.message);
     document.getElementById('contractUpload').value = '';
   }
 }
 
-async function getContractScansThisMonth() {
-  if (!window.supabase || !window.currentUser) return 0;
-  
-  try {
-    const now = new Date();
-    const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    
-    const { data, error } = await window.supabase
-      .from('contract_scans')
-      .select('*')
-      .eq('user_id', window.currentUser.id)
-      .gte('scanned_at', firstOfMonth.toISOString());
-    
-    if (error) throw error;
-    return data ? data.length : 0;
-  } catch (error) {
-    console.error('Error checking scans:', error);
-    return 0;
-  }
-}
- 
-async function processContractPayment(filename) {
-  // For now, just return true - payment happens via Stripe link separately
-  // This allows the analysis to proceed immediately
-  console.log('Payment confirmed by user - analysis will proceed');
-  console.log('User will be invoiced $9 for:', filename);
-  
-  // TODO: Send payment link via email or show Stripe Payment Element
-  // For testing: analysis proceeds, payment can be collected later
-  
-  return true;
-}
+
+
+
 
 async function analyzeContractFile(file) {
   const contentDiv = document.getElementById('redFlagsContent');
   const resultsDiv = document.getElementById('redFlagsResults');
-  
+
   resultsDiv.classList.remove('hidden');
   contentDiv.innerHTML = '<div style="text-align: center; padding: 40px;"><p style="color: var(--muted);">Reviewing contract language and looking for missing terms. This can take up to a minute.</p></div>';
-  
+
   lastContractFileName = file.name;
   lastContractReviewDate = new Date().toLocaleDateString();
-  
+
   const reader = new FileReader();
-  
+
   reader.onload = async function(e) {
     try {
       const base64 = e.target.result.split(',')[1];
       const analysis = await analyzeContractWithClaude(base64, file.name);
-      
-      // Record the scan in database
-      await recordContractScan(file.name, chargedAmount);
-      
+
+      // Record the scan in database (no charge)
+      await recordContractScan(file.name, 0);
+
       displayRedFlagsResults(analysis);
-      
+
     } catch (error) {
       console.error('Analysis error:', error);
       contentDiv.innerHTML = '<div style="text-align: center; padding: 40px;"><p style="color: var(--danger);">Analysis failed. Please try again or contact support.</p></div>';
     }
   };
-  
+
   reader.readAsDataURL(file);
 }
 
@@ -4624,34 +4529,6 @@ async function analyzeContractWithClaude(base64PDF, filename) {
  throw new Error(data && data.error ? data.error : 'Analysis failed');
  }
 
- // Normalize contract analysis to ensure all required fields exist
-  // Escape HTML to prevent XSS
-  function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
- function normalizeContractAnalysis(analysis) {
-   if (!analysis) return null;
-   
-   return {
-     riskLevel: analysis.riskLevel || 'Medium',
-     issues: Array.isArray(analysis.issues) ? analysis.issues : [],
-     missingTerms: Array.isArray(analysis.missingTerms) ? analysis.missingTerms : [],
-     severityBuckets: analysis.severityBuckets || {
-       financial: 0,
-       restriction: 0,
-       ambiguity: 0,
-       termination: 0
-     },
-     summary: analysis.summary || 'Contract analysis completed',
-     recruiterQuestions: Array.isArray(analysis.recruiterQuestions) ? analysis.recruiterQuestions : [],
-     takeToAttorney: Array.isArray(analysis.takeToAttorney) ? analysis.takeToAttorney : []
-   };
- }
-
  const analysis = data && data.success ? data.analysis : data;
  if (!analysis) {
  throw new Error(data && data.error ? data.error : 'Analysis failed');
@@ -4675,20 +4552,6 @@ function renderRiskBucket(label, value) {
    </div>
  </div>`;
 }
-
-  // Normalize contract analysis response
-  function normalizeContractAnalysis(analysis) {
-    if (!analysis) return null;
-    return {
-      riskLevel: analysis.riskLevel || 'Medium',
-      issues: Array.isArray(analysis.issues) ? analysis.issues : [],
-      missingTerms: Array.isArray(analysis.missingTerms) ? analysis.missingTerms : [],
-      severityBuckets: analysis.severityBuckets || {financial: 0, restriction: 0, ambiguity: 0, termination: 0},
-      summary: analysis.summary || 'Contract analysis completed',
-      recruiterQuestions: Array.isArray(analysis.recruiterQuestions) ? analysis.recruiterQuestions : [],
-      takeToAttorney: Array.isArray(analysis.takeToAttorney) ? analysis.takeToAttorney : []
-    };
-  }
 
 function displayRedFlagsResults(rawAnalysis) {
  const contentDiv = document.getElementById('redFlagsContent');
