@@ -23,7 +23,7 @@
     {"@type":"Question","name":"Should a CRNA or physician form an S-Corp?","acceptedAnswer":{"@type":"Answer","text":"For most full-time 1099 CRNAs and physicians earning over $150,000 in net income, an S-Corporation can save $5,000-$15,000 per year in self-employment taxes by splitting income between a reasonable W-2 salary and distributions not subject to SE tax."}},
     {"@type":"Question","name":"How much can a 1099 CRNA or physician contribute to a Solo 401k?","acceptedAnswer":{"@type":"Answer","text":"In 2025, 1099 providers can contribute up to $70,000 per year to a Solo 401(k). Those aged 50+ can add $7,500 more. This far exceeds the typical W-2 401(k) limit of $23,500."}},
     {"@type":"Question","name":"What malpractice insurance costs should locums providers budget for?","acceptedAnswer":{"@type":"Answer","text":"CRNAs typically pay $3,000-$8,000/year, hospitalist MDs $8,000-$20,000/year, emergency medicine physicians $20,000-$40,000/year. Many locums contracts include malpractice -- always confirm occurrence vs claims-made coverage."}},
-    {"@type":"Question","name":"What if I have questions about LocumsLab?","acceptedAnswer":{"@type":"Answer","text":"Email hello@locumslab.com and we will respond within 24 hours."}}
+    {"@type":"Question","name":"Is the LocumsLab calculator free?","acceptedAnswer":{"@type":"Answer","text":"Yes -- all 7 calculators are free. Pro ($39 one-time) unlocks the S-Corp Evaluator, full market benchmarks, unlimited scenarios, side-by-side comparison, and PDF export."}}
   ]
 }
 </script>
@@ -44,7 +44,8 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'DM Sans', -apple-system, sans-serif; color: var(--gray-900); background: white; line-height: 1.7; }
   header { position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--gray-200); }
-  nav { max-width: 1200px; margin: 0 auto; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+  nav { max-width: 1200px; margin: 0 auto; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; gap: 24px; }
+  .nav-right { display: flex; align-items: center; gap: 24px; }
   .logo { font-family: 'DM Serif Display', serif; font-size: 1.5rem; font-weight: 400; color: var(--navy); letter-spacing: -0.02em; }
   .nav-cta { background: var(--blue); color: white; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9375rem; transition: all 0.2s; }
   .nav-cta:hover { background: #0052a3; transform: translateY(-1px); }
@@ -187,7 +188,10 @@
 <header>
   <nav>
     <div class="logo">LocumsLab</div>
-    <a href="app.html" class="nav-cta">Try Calculator</a>
+    <div class="nav-right">
+      <a href="/blog" style="color: var(--navy); text-decoration: none; font-size: 0.9375rem; font-weight: 600; border: 1.5px solid var(--gray-200); padding: 8px 18px; border-radius: 8px; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--blue)';this.style.color='var(--blue)'" onmouseout="this.style.borderColor='var(--gray-200)';this.style.color='var(--navy)'">Blog</a>
+      <a href="app.html" class="nav-cta">Try Calculator</a>
+    </div>
   </nav>
 </header>
 
@@ -472,8 +476,8 @@
         <p class="faq-answer">No. LocumsLab works for physicians, CRNAs, NPs, PAs, nurses, and any healthcare professional comparing a staff position vs a locums or travel contract.</p>
       </div>
       <div class="faq-item">
-        <h3 class="faq-question">What if I have questions about LocumsLab?</h3>
-        <p class="faq-answer">Email hello@locumslab.com and we will respond within 24 hours.</p>
+        <h3 class="faq-question">What if I have questions?</h3>
+        <p class="faq-answer">Email us at <a href="/cdn-cgi/l/email-protection#fa929f969695ba9695998f9789969b98d4999597" style="color:var(--blue);text-decoration:underline;"><span class="__cf_email__" data-cfemail="1c74797070735c70737f69716f707d7e327f7371">[email&#160;protected]</span></a> and we&rsquo;ll respond within 24 hours.</p>
       </div>
     </div>
   </div>
@@ -497,6 +501,13 @@
         <li><a href="app.html">Calculator</a></li>
         <li><a href="#pricing">Pricing</a></li>
         <li><a href="guide.html">Free Guide</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h4>Learn</h4>
+      <ul class="footer-links">
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/blog/how-to-review-locums-contract.html">Contract Review Guide</a></li>
       </ul>
     </div>
     <div class="footer-section">
