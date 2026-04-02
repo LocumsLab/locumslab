@@ -22,17 +22,16 @@ exports.handler = async (event) => {
       apiKey: process.env.ANTHROPIC_API_KEY,
     });
 
-    // Shorter, focused prompt for faster response
     const prompt = `Analyze this locums contract and provide a concise first-pass review.
 
-Focus on the TOP issues only:
+Focus on TOP issues:
 1. Non-competes and restrictive covenants
-2. Tail malpractice coverage and cost responsibility
-3. Termination language and notice periods
-4. Payment terms and timing
+2. Tail malpractice coverage
+3. Termination language
+4. Payment terms
 5. Missing critical terms
 
-For each issue: quote the exact clause, explain why it matters, what to ask.
+For each issue: quote clause, explain why it matters, what to ask.
 
 Return ONLY valid JSON (no markdown):
 {
@@ -44,21 +43,19 @@ Return ONLY valid JSON (no markdown):
     "severity": "Low|Medium|High",
     "finding": "What it says",
     "whyItMatters": "Why this matters",
-    "whatToAsk": "Question for recruiter",
+    "whatToAsk": "Question",
     "recommendation": "What to do"
   }],
-  "missingTerms": ["Critical missing item"],
+  "missingTerms": ["Missing item"],
   "severityBuckets": {"financial": 0, "restriction": 0, "ambiguity": 0, "termination": 0},
-  "summary": "2-3 sentence summary",
-  "recruiterQuestions": ["Top question"],
-  "takeToAttorney": ["Critical issue for lawyer"]
-}
-
-Keep it concise - focus on what matters most.`;
+  "summary": "Brief summary",
+  "recruiterQuestions": ["Question"],
+  "takeToAttorney": ["Issue"]
+}`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-20250514',  // Fast model
-      max_tokens: 2000,  // Concise response = under 10 seconds
+      model: 'claude-haiku-4-5-20251001',  // Claude Haiku 4.5 - fastest model
+      max_tokens: 2000,
       messages: [{
         role: 'user',
         content: [
@@ -92,7 +89,6 @@ Keep it concise - focus on what matters most.`;
       }
     }
     
-    // Ensure required fields exist
     if (!analysis.riskLevel) analysis.riskLevel = 'Medium';
     if (!Array.isArray(analysis.issues)) analysis.issues = [];
     if (!Array.isArray(analysis.missingTerms)) analysis.missingTerms = [];
