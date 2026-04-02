@@ -22,14 +22,23 @@ exports.handler = async (event) => {
       apiKey: process.env.ANTHROPIC_API_KEY,
     });
 
-    // Super simple prompt - just the structure
-    const prompt = `Analyze this contract. Return ONLY this JSON structure with NO extra text:
+    const prompt = `Review this contract for a CRNA. List the top 3-5 concerns. For each concern provide: the exact quote, why it matters, and what to ask the recruiter.
 
-{"riskLevel":"Medium","issues":[{"quote":"text","title":"name","bucket":"Financial","severity":"Medium","finding":"what","whyItMatters":"why","whatToAsk":"question","recommendation":"do this"}],"missingTerms":["item"],"severityBuckets":{"financial":0,"restriction":0,"ambiguity":0,"termination":0},"summary":"summary","recruiterQuestions":["q"],"takeToAttorney":["issue"]}`;
+Return as valid JSON with NO other text:
+{
+  "concerns": [
+    {
+      "quote": "exact contract text",
+      "issue": "what's wrong",
+      "question": "what to ask recruiter"
+    }
+  ],
+  "summary": "1-2 sentence overall assessment"
+}`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',  // This model WORKS - we tested it
-      max_tokens: 2500,
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1500,  // Shorter = more reliable JSON
       messages: [{
         role: 'user',
         content: [
@@ -51,37 +60,50 @@ exports.handler = async (event) => {
 
     let text = message.content[0].text.trim();
     
-    // Strip everything that's not JSON
-    text = text.replace(/^[^{]*/, '');  // Remove everything before first {
-    text = text.replace(/[^}]*$/, '');  // Remove everything after last }
-    text = text.replace(/```json/g, '').replace(/```/g, '');  // Remove markdown
-    text = text.replace(/,(\s*[}\]])/g, '$1');  // Remove trailing commas
+    // Aggressive cleaning
+    text = text.replace(/^[^{]*/, '');
+    text = text.replace(/[^}]*$/, '');
+    text = text.replace(/```[a-z]*\n?/g, '');
+    text = text.replace(/,(\s*[}\]])/g, '$1');
     
-    let analysis;
+    let simple;
     try {
-      analysis = JSON.parse(text);
-    } catch (parseError) {
-      // If still fails, return a minimal valid response
-      console.error('JSON parse failed, returning minimal response');
-      analysis = {
-        riskLevel: 'Medium',
-        issues: [],
-        missingTerms: ['Unable to parse full analysis - please review contract manually'],
-        severityBuckets: {financial: 0, restriction: 0, ambiguity: 0, termination: 0},
-        summary: 'Analysis completed but response format was invalid. Please review contract carefully.',
-        recruiterQuestions: ['Request full contract details'],
-        takeToAttorney: ['Have attorney review due to analysis parsing issue']
+      simple = JSON.parse(text);
+    } catch (e) {
+      simple = {
+        concerns: [{
+          quote: "Analysis parsing failed",
+          issue: "Unable to automatically analyze contract format",
+          question: "Please have a CRNA colleague or attorney review this contract"
+        }],
+        summary: "Contract uploaded successfully but automated analysis could not complete. Manual review recommended."
       };
     }
     
-    // Ensure all required fields
-    analysis.riskLevel = analysis.riskLevel || 'Medium';
-    analysis.issues = Array.isArray(analysis.issues) ? analysis.issues : [];
-    analysis.missingTerms = Array.isArray(analysis.missingTerms) ? analysis.missingTerms : [];
-    analysis.severityBuckets = analysis.severityBuckets || {financial: 0, restriction: 0, ambiguity: 0, termination: 0};
-    analysis.recruiterQuestions = Array.isArray(analysis.recruiterQuestions) ? analysis.recruiterQuestions : [];
-    analysis.takeToAttorney = Array.isArray(analysis.takeToAttorney) ? analysis.takeToAttorney : [];
-    analysis.summary = analysis.summary || 'Analysis complete';
+    // Convert simple format to full format
+    const analysis = {
+      riskLevel: simple.concerns && simple.concerns.length > 3 ? 'High' : simple.concerns && simple.concerns.length > 1 ? 'Medium' : 'Low',
+      issues: (simple.concerns || []).map((c, i) => ({
+        quote: c.quote || '',
+        title: c.issue || 'Concern ' + (i+1),
+        bucket: 'Financial',
+        severity: i === 0 ? 'High' : 'Medium',
+        finding: c.issue || '',
+        whyItMatters: c.issue || '',
+        whatToAsk: c.question || '',
+        recommendation: 'Discuss with recruiter'
+      })),
+      missingTerms: [],
+      severityBuckets: {
+        financial: Math.min((simple.concerns || []).length, 3),
+        restriction: 0,
+        ambiguity: 0,
+        termination: 0
+      },
+      summary: simple.summary || 'Contract review completed',
+      recruiterQuestions: (simple.concerns || []).map(c => c.question).filter(Boolean),
+      takeToAttorney: simple.concerns && simple.concerns.length > 2 ? ['Review all flagged items with attorney'] : []
+    };
     
     return {
       statusCode: 200,
