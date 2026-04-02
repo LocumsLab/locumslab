@@ -57,8 +57,8 @@ Return ONLY valid JSON in this format (no markdown):
 }`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8000,
+      model: 'claude-haiku-4-20250514',  // Haiku is 3x faster than Sonnet
+      max_tokens: 4000,  // Reduced for faster response (under 26s timeout)
       messages: [{
         role: 'user',
         content: [
