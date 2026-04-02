@@ -4708,6 +4708,20 @@ function renderRiskBucket(label, value) {
  </div>`;
 }
 
+  // Normalize contract analysis response
+  function normalizeContractAnalysis(analysis) {
+    if (!analysis) return null;
+    return {
+      riskLevel: analysis.riskLevel || 'Medium',
+      issues: Array.isArray(analysis.issues) ? analysis.issues : [],
+      missingTerms: Array.isArray(analysis.missingTerms) ? analysis.missingTerms : [],
+      severityBuckets: analysis.severityBuckets || {financial: 0, restriction: 0, ambiguity: 0, termination: 0},
+      summary: analysis.summary || 'Contract analysis completed',
+      recruiterQuestions: Array.isArray(analysis.recruiterQuestions) ? analysis.recruiterQuestions : [],
+      takeToAttorney: Array.isArray(analysis.takeToAttorney) ? analysis.takeToAttorney : []
+    };
+  }
+
 function displayRedFlagsResults(rawAnalysis) {
  const contentDiv = document.getElementById('redFlagsContent');
  const analysis = normalizeContractAnalysis(rawAnalysis);
