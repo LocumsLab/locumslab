@@ -4412,37 +4412,52 @@ async function handleContractUpload(event) {
     console.log('Starting contract analysis workflow...');
     console.log('Supabase available:', !!window.supabase);
     console.log('Current user:', window.currentUser);
+    console.log('Is logged in:', !!window.currentUser);
     
     // Check if user is Pro
     const isPro = window.supabase && window.currentUser?.is_pro;
     console.log('User is Pro:', isPro);
     
     // Check scans this month
+    console.log('Checking scans this month...');
     const scansThisMonth = await getContractScansThisMonth();
+    console.log('Scans this month:', scansThisMonth);
     
     let needsPayment = false;
     
     if (isPro) {
+      console.log('Pro user - checking free scan eligibility');
       // Pro users get 1 free scan per month
       if (scansThisMonth >= 1) {
         needsPayment = true;
+        console.log('Pro user has used free scan - needs payment');
+      } else {
+        console.log('Pro user gets free scan');
       }
     } else {
-      // Free users always pay
+      // Free/non-logged-in users always pay
       needsPayment = true;
+      console.log('Non-Pro user - needs payment');
     }
+    
+    console.log('Needs payment:', needsPayment);
     
     // Show pricing modal if needed
     if (needsPayment) {
+      console.log('Showing payment modal...');
       const userConfirmed = await showPaymentModal(isPro, scansThisMonth);
+      console.log('9. User confirmed payment:', userConfirmed);
       if (!userConfirmed) {
+        console.log('10. User cancelled - aborting');
         // User cancelled
         document.getElementById('contractUpload').value = '';
         return;
       }
       
       // Process payment
+      console.log('11. Processing payment...');
       const paymentSuccess = await processContractPayment(file.name);
+      console.log('12. Payment success:', paymentSuccess);
       if (!paymentSuccess) {
         alert('Payment failed. Please try again.');
         document.getElementById('contractUpload').value = '';
@@ -4450,15 +4465,18 @@ async function handleContractUpload(event) {
       }
     } else {
       // Free scan for Pro user
-      console.log('Free scan for Pro user (scan #' + (scansThisMonth + 1) + ' this month)');
+      console.log('13. FREE SCAN for Pro user (scan #' + (scansThisMonth + 1) + ' this month)');
     }
     
     // Proceed with analysis
+    console.log('14. Starting contract analysis...');
     await analyzeContractFile(file, needsPayment ? 9 : 0);
+    console.log('15. Contract analysis complete!');
     
   } catch (error) {
     console.error('Upload error:', error);
-    alert('Failed to process contract. Please try again.');
+    console.error('Error stack:', error.stack);
+    alert('Failed to process contract: ' + error.message + '. Please check console for details.');
     document.getElementById('contractUpload').value = '';
   }
 }
