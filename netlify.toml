@@ -1,95 +1,98 @@
-# Netlify configuration for LocumsLab
-
+# Netlify configuration
 [build]
-  # No build step needed - pure static HTML
   publish = "."
-
+  
 [functions]
-  # Extend timeout to 26s for Stripe checkout and Resend email functions
+  directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# ── Extensionless URL redirects ───────────────────────────────────────────────
-# Allows locumslab.com/app to serve app.html cleanly
-
+# Redirects for clean URLs
 [[redirects]]
   from = "/app"
-  to   = "/app.html"
+  to = "/app.html"
   status = 200
 
 [[redirects]]
   from = "/guide"
-  to   = "/guide.html"
+  to = "/guide.html"
   status = 200
 
 [[redirects]]
   from = "/privacy"
-  to   = "/privacy.html"
+  to = "/privacy.html"
   status = 200
 
 [[redirects]]
   from = "/terms"
-  to   = "/terms.html"
+  to = "/terms.html"
   status = 200
 
 [[redirects]]
   from = "/share"
-  to   = "/share.html"
+  to = "/share.html"
   status = 200
 
 [[redirects]]
   from = "/unsubscribe"
-  to   = "/unsubscribe.html"
+  to = "/unsubscribe.html"
   status = 200
 
-# ── Canonical domain redirects ────────────────────────────────────────────────
-
+# Force HTTPS
 [[redirects]]
-  # www → non-www
   from = "https://www.locumslab.com/*"
-  to   = "https://locumslab.com/:splat"
+  to = "https://locumslab.com/:splat"
   status = 301
-  force  = true
+  force = true
 
 [[redirects]]
-  # HTTP → HTTPS
   from = "http://locumslab.com/*"
-  to   = "https://locumslab.com/:splat"
+  to = "https://locumslab.com/:splat"
   status = 301
-  force  = true
+  force = true
 
 [[redirects]]
-  # HTTP www → HTTPS non-www
   from = "http://www.locumslab.com/*"
-  to   = "https://locumslab.com/:splat"
+  to = "https://locumslab.com/:splat"
   status = 301
-  force  = true
+  force = true
 
-# ── Headers ───────────────────────────────────────────────────────────────────
-
+# Security headers - PERMISSIVE CSP that allows eval for Chart.js, Stripe, jsPDF
 [[headers]]
-  # Security headers for all routes
   for = "/*"
   [headers.values]
-    X-Frame-Options        = "DENY"
-    X-XSS-Protection       = "1; mode=block"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
-    Referrer-Policy        = "strict-origin-when-cross-origin"
-    Permissions-Policy     = "geolocation=(), microphone=(), camera=()"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    # Permissive CSP that allows unsafe-eval for Chart.js, Stripe, jsPDF
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://js.stripe.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co https://api.anthropic.com https://api.stripe.com https://*.stripe.com; frame-src https://js.stripe.com;"
 
+# Cache HTML files - no cache
 [[headers]]
-  # Never cache HTML — users always get latest deploy
   for = "/*.html"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
 
+# Cache PDFs
 [[headers]]
-  # Cache PDFs for 7 days — rarely change
   for = "/*.pdf"
   [headers.values]
     Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
 
+# Cache JS files
 [[headers]]
-  # Cache JS aggressively — CDN scripts don't change
   for = "/*.js"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Environment variables needed
+[build.environment]
+  ANTHROPIC_API_KEY = ""
+  STRIPE_SECRET_KEY = ""
+  STRIPE_PRICE_ID = ""
+  STRIPE_WEBHOOK_SECRET = ""
+  SUPABASE_URL = ""
+  SUPABASE_SERVICE_ROLE_KEY = ""
+  RESEND_API_KEY = ""
+  NOTIFY_EMAIL = ""
