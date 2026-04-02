@@ -4624,17 +4624,7 @@ async function processContractPayment(filename) {
       return false;
     }
     
-    return true;
-      },
-      redirect: 'if_required'
-    });
-    
-    if (error) {
-      console.error('Payment error:', error);
-      return false;
-    }
-    
-    // Payment successful
+    // Payment successful - user will be redirected to Stripe
     return true;
     
   } catch (error) {
