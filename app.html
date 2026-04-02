@@ -4475,11 +4475,8 @@ async function handleContractUpload(event) {
     // Show pricing modal if needed
     if (needsPayment) {
       console.log('Showing payment modal...');
-      const userConfirmed = await showPaymentModal(isPro, scansThisMonth);
-      console.log('9. User confirmed payment:', userConfirmed);
-      if (!userConfirmed) {
-        console.log('10. User cancelled - aborting');
-        // User cancelled
+     if (!isPro) {
+        showUpgradeModal();
         document.getElementById('contractUpload').value = '';
         return;
       }
@@ -4504,7 +4501,7 @@ async function handleContractUpload(event) {
     // Payment has already been confirmed via modal
     const chargedAmount = needsPayment ? 9 : 0;
     console.log('14. Starting contract analysis (charged: $' + chargedAmount + ')...');
-    await analyzeContractFile(file, chargedAmount);
+    await analyzeContractFile(file);
     console.log('15. Contract analysis complete!');
     
     // If payment was needed, record the transaction
@@ -4541,65 +4538,7 @@ async function getContractScansThisMonth() {
     return 0;
   }
 }
-
-function showPaymentModal(isPro, scansThisMonth) {
-  return new Promise((resolve) => {
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.style.cssText = `
-      display: flex;
-      position: fixed;
-      z-index: 10000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.75);
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(4px);
-    `;
-    
-    const message = isPro 
-      ? `You've used your 1 free review this month (${scansThisMonth} scans).<br><br>Additional reviews are $9 each.`
-      : `Contract reviews are $9 per scan.<br><br>Or upgrade to Pro for 1 free review/month + all Pro features.`;
-    
-    modal.innerHTML = `
-      <div class="modal-content" style="max-width: 480px;">
-        <div class="modal-header">
-          <h2>Contract Review - $9</h2>
-        </div>
-        <div class="modal-body">
-          <p style="line-height: 1.7; margin-bottom: 24px;">
-            ${message}
-          </p>
-          <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
-            <div style="font-weight: 700; margin-bottom: 12px;">What You Get:</div>
-            <div style="font-size: 0.9375rem; color: var(--muted); line-height: 1.8;">
-              ✓ Clause-by-clause risk analysis<br>
-              ✓ Missing terms checklist<br>
-              ✓ Questions to ask your recruiter<br>
-              ✓ Downloadable PDF report
-            </div>
-          </div>
-          <div style="display: flex; gap: 12px;">
-            <button class="modal-btn secondary" onclick="this.closest('.modal').remove(); window.contractPaymentResolve(false);" style="flex: 1;">
-              Cancel
-            </button>
-            <button class="modal-btn primary" onclick="this.closest('.modal').remove(); window.contractPaymentResolve(true);" style="flex: 1;">
-              Pay $9 & Review
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    window.contractPaymentResolve = resolve;
-  });
-}
-
+ 
 async function processContractPayment(filename) {
   // For now, just return true - payment happens via Stripe link separately
   // This allows the analysis to proceed immediately
@@ -4612,7 +4551,7 @@ async function processContractPayment(filename) {
   return true;
 }
 
-async function analyzeContractFile(file, chargedAmount) {
+async function analyzeContractFile(file) {
   const contentDiv = document.getElementById('redFlagsContent');
   const resultsDiv = document.getElementById('redFlagsResults');
   
