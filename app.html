@@ -1201,7 +1201,7 @@ let currentUser = null; // email string
 let currentUserId = null; // uuid from auth
 let currentScenarioId = null;
 let isPro = false;
-const stripe = Stripe('pk_test_REPLACE_WITH_YOUR_STRIPE_KEY');
+const stripe = Stripe('pk_live_51SuOgW3g8otgFFrlOgNPeMdNLeOhMUaTCk1Bhr1ZLMEoQOvrwqXqaXR4w5i6CXNiDbKoCnCznKZ8rvIpuwPbqE3t00nlXeVuv4');
 
 // ============================================================================
 // MARKET BENCHMARKS - UPDATE ANNUALLY
@@ -4412,7 +4412,7 @@ async function handleContractUpload(event) {
  // Display results
  displayRedFlagsResults(analysis);
  
- // Charge $5 (in production: Stripe payment)
+ // Charge $9 (in production: Stripe payment)
  await recordRedFlagsScan(file.name);
  
  } catch (error) {
