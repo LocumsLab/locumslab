@@ -35,8 +35,8 @@ exports.handler = async (event) => {
 }`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',  // More reliable than Haiku, still under timeout
-      max_tokens: 3000,  // Enough for good analysis
+      model: 'claude-3-5-sonnet-20250116',  // CORRECT Sonnet 3.5 model
+      max_tokens: 3000,
       messages: [{
         role: 'user',
         content: [
