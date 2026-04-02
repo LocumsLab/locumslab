@@ -4479,10 +4479,26 @@ async function handleContractUpload(event) {
       console.log('13. FREE SCAN for Pro user (scan #' + (scansThisMonth + 1) + ' this month)');
     }
     
-    // Proceed with analysis
-    console.log('14. Starting contract analysis...');
-    await analyzeContractFile(file, needsPayment ? 9 : 0);
-    console.log('15. Contract analysis complete!');
+    // Store file info for post-payment analysis
+    if (needsPayment) {
+      console.log('14. Storing file for post-payment analysis...');
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        sessionStorage.setItem('pendingContract', JSON.stringify({
+          name: file.name,
+          type: file.type,
+          data: e.target.result,
+          timestamp: Date.now()
+        }));
+        console.log('✓ File stored in session storage');
+      };
+      reader.readAsDataURL(file);
+    } else {
+      // Free scan - analyze immediately
+      console.log('14. Starting contract analysis...');
+      await analyzeContractFile(file, 0);
+      console.log('15. Contract analysis complete!');
+    }
     
   } catch (error) {
     console.error('Upload error:', error);
@@ -4608,6 +4624,17 @@ async function processContractPayment(filename) {
       return false;
     }
     
+    return true;
+      },
+      redirect: 'if_required'
+    });
+    
+    if (error) {
+      console.error('Payment error:', error);
+      return false;
+    }
+    
+    // Payment successful
     return true;
     
   } catch (error) {
@@ -4928,6 +4955,62 @@ document.addEventListener('DOMContentLoaded', function() {
   if (contractUploadInput) {
     contractUploadInput.addEventListener('change', handleContractUpload);
     console.log('✓ Contract upload handler attached');
+  }
+  
+  // Handle return from Stripe Checkout
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('payment') === 'success') {
+    const sessionId = urlParams.get('session_id');
+    console.log('Payment successful! Session:', sessionId);
+    
+    // Clean up URL first
+    window.history.replaceState({}, document.title, window.location.pathname);
+    
+    // Navigate to contract review panel
+    document.getElementById('wizard').classList.add('hidden');
+    document.getElementById('dashboardView').classList.add('hidden');
+    document.getElementById('calculatorView').classList.remove('hidden');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-red-flags').classList.add('active');
+    
+    // Check for pending contract from before payment
+    const pendingContract = sessionStorage.getItem('pendingContract');
+    
+    if (pendingContract) {
+      console.log('✓ Found pending contract, analyzing now...');
+      
+      setTimeout(async () => {
+        try {
+          const contractData = JSON.parse(pendingContract);
+          
+          // Convert back to File object
+          const response = await fetch(contractData.data);
+          const blob = await response.blob();
+          const file = new File([blob], contractData.name, { type: contractData.type });
+          
+          // Clear storage
+          sessionStorage.removeItem('pendingContract');
+          
+          // Analyze the contract (payment already done)
+          alert('✅ Payment successful! Analyzing your contract now...');
+          await analyzeContractFile(file, 9); // $9 was charged
+          
+        } catch (error) {
+          console.error('Error analyzing stored contract:', error);
+          alert('✅ Payment successful!\n\nPlease upload your contract PDF to begin the analysis.');
+        }
+      }, 500);
+      
+    } else {
+      // No pending contract - prompt for upload
+      setTimeout(() => {
+        alert('✅ Payment successful!\n\nNow please upload your contract PDF to begin the analysis.');
+      }, 500);
+    }
+  } else if (urlParams.get('payment') === 'cancelled') {
+    console.log('Payment cancelled by user');
+    alert('Payment cancelled. No charges were made.');
+    window.history.replaceState({}, document.title, window.location.pathname);
   }
 });
 
