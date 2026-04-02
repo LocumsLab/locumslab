@@ -4057,12 +4057,7 @@ calcTrueHourly = function() {
  showSignupNudge();
 };
 
-const _origCalc10yr = calc10yr;
-calc10yr = function() {
- _origCalc10yr.apply(this, arguments);
- logCalculatorRun('10yr-income', null);
- showSignupNudge();
-};
+// calc10yr function removed - feature no longer exists
 
 
 
