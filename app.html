@@ -1969,9 +1969,16 @@ function selectGoal(goal) {
  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
  const scorpBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.textContent.includes('S-Corp'));
  if (scorpBtn) scorpBtn.classList.add('active');
- } else {
- startNew();
- }
+ } else if (goal === 'red-flags') {
+    startNew();
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-red-flags').classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const contractBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.textContent.includes('Contract Review'));
+    if (contractBtn) contractBtn.classList.add('active');
+  } else {
+    startNew();
+  }
 }
 
 function showDashboard() {
@@ -4380,14 +4387,35 @@ let lastContractReviewDate = '';
 
 async function handleContractUpload(event) {
   const file = event.target.files[0];
-  if (!file || file.type !== 'application/pdf') {
-    alert('Please select a PDF file');
+  
+  console.log('Contract upload triggered');
+  console.log('File:', file);
+  console.log('File type:', file?.type);
+  console.log('File name:', file?.name);
+  
+  if (!file) {
+    alert('No file selected');
+    return;
+  }
+  
+  // Accept any PDF (including PDF/X, PDF/A, etc.) - check extension too
+  const isPDF = file.type === 'application/pdf' || 
+                file.type === '' || // Some browsers don't set MIME type
+                file.name.toLowerCase().endsWith('.pdf');
+  
+  if (!isPDF) {
+    alert('Please select a PDF file (selected: ' + file.type + ')');
     return;
   }
 
   try {
+    console.log('Starting contract analysis workflow...');
+    console.log('Supabase available:', !!window.supabase);
+    console.log('Current user:', window.currentUser);
+    
     // Check if user is Pro
     const isPro = window.supabase && window.currentUser?.is_pro;
+    console.log('User is Pro:', isPro);
     
     // Check scans this month
     const scansThisMonth = await getContractScansThisMonth();
