@@ -22,21 +22,19 @@ exports.handler = async (event) => {
       apiKey: process.env.ANTHROPIC_API_KEY,
     });
 
-    const prompt = `You are a contract analysis assistant for healthcare locums professionals. Analyze this locums contract and provide a structured first-pass review.
+    // Shorter, focused prompt for faster response
+    const prompt = `Analyze this locums contract and provide a concise first-pass review.
 
-Focus on:
-1. Restrictive covenants and non-competes
-2. Tail malpractice coverage
-3. Termination and cancellation language
-4. Payment terms
-5. Auto-renewal clauses
-6. Vague or ambiguous language
-7. Housing, travel, CME, credentialing
-8. Call burden, rate differentials, overtime
+Focus on the TOP issues only:
+1. Non-competes and restrictive covenants
+2. Tail malpractice coverage and cost responsibility
+3. Termination language and notice periods
+4. Payment terms and timing
+5. Missing critical terms
 
-For each issue provide: quote, title, bucket, severity, finding, whyItMatters, whatToAsk, recommendation.
+For each issue: quote the exact clause, explain why it matters, what to ask.
 
-Return ONLY valid JSON in this format (no markdown):
+Return ONLY valid JSON (no markdown):
 {
   "riskLevel": "Low|Medium|High",
   "issues": [{
@@ -44,21 +42,23 @@ Return ONLY valid JSON in this format (no markdown):
     "title": "Issue name",
     "bucket": "Financial|Restriction|Ambiguity|Termination",
     "severity": "Low|Medium|High",
-    "finding": "Plain language",
+    "finding": "What it says",
     "whyItMatters": "Why this matters",
     "whatToAsk": "Question for recruiter",
     "recommendation": "What to do"
   }],
-  "missingTerms": ["Missing item 1"],
+  "missingTerms": ["Critical missing item"],
   "severityBuckets": {"financial": 0, "restriction": 0, "ambiguity": 0, "termination": 0},
-  "summary": "Brief summary",
-  "recruiterQuestions": ["Question 1"],
-  "takeToAttorney": ["Issue 1"]
-}`;
+  "summary": "2-3 sentence summary",
+  "recruiterQuestions": ["Top question"],
+  "takeToAttorney": ["Critical issue for lawyer"]
+}
+
+Keep it concise - focus on what matters most.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-20250514',  // Haiku is 3x faster than Sonnet
-      max_tokens: 4000,  // Reduced for faster response (under 26s timeout)
+      model: 'claude-haiku-4-20250514',  // Fast model
+      max_tokens: 2000,  // Concise response = under 10 seconds
       messages: [{
         role: 'user',
         content: [
@@ -92,6 +92,7 @@ Return ONLY valid JSON in this format (no markdown):
       }
     }
     
+    // Ensure required fields exist
     if (!analysis.riskLevel) analysis.riskLevel = 'Medium';
     if (!Array.isArray(analysis.issues)) analysis.issues = [];
     if (!Array.isArray(analysis.missingTerms)) analysis.missingTerms = [];
@@ -110,7 +111,10 @@ Return ONLY valid JSON in this format (no markdown):
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ success: false, error: 'Analysis failed' })
+      body: JSON.stringify({ 
+        success: false, 
+        error: 'Analysis failed. Please try again.' 
+      })
     };
   }
 };
