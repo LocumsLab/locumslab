@@ -1140,6 +1140,12 @@
 // Supabase
 const SUPABASE_URL = 'https://gqhalfzmqzlichcqubbs.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxaGFsZnptcXpsaWNoY3F1YmJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1MDcwMDQsImV4cCI6MjA4NzA4MzAwNH0.XdJ0dZXbLPeRy0oIQ8SFllx1lAYr_KhaA0VBay1E7pU';
+
+// Stripe Configuration
+// IMPORTANT: Replace with your actual Stripe publishable key
+// Get this from: https://dashboard.stripe.com/apikeys
+// Use pk_test_... for testing, pk_live_... for production
+window.stripePublicKey = 'pk_live_51T6cnH41xSRMn4Y3V1luUgSF0yMgJJKT47d1DrOlPiAG1doQwsRUJp7nCz0t6niC33OMLxQRKpzATxA5RoNeJCyY00nEbypEbG';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ── CALCULATOR RUN LOGGING ──
@@ -1206,7 +1212,7 @@ let currentUser = null; // email string
 let currentUserId = null; // uuid from auth
 let currentScenarioId = null;
 let isPro = false;
-const stripe = Stripe('pk_test_REPLACE_WITH_YOUR_STRIPE_KEY');
+const stripe = Stripe('pk_live_51T6cnH41xSRMn4Y3V1luUgSF0yMgJJKT47d1DrOlPiAG1doQwsRUJp7nCz0t6niC33OMLxQRKpzATxA5RoNeJCyY00nEbypEbG');
 
 // ============================================================================
 // MARKET BENCHMARKS - UPDATE ANNUALLY
@@ -4511,7 +4517,19 @@ function showPaymentModal(isPro, scansThisMonth) {
   return new Promise((resolve) => {
     const modal = document.createElement('div');
     modal.className = 'modal';
-    modal.style.display = 'flex';
+    modal.style.cssText = `
+      display: flex;
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    `;
     
     const message = isPro 
       ? `You've used your 1 free review this month (${scansThisMonth} scans).<br><br>Additional reviews are $9 each.`
