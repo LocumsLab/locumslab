@@ -999,7 +999,12 @@
  gtag('js', new Date());
  gtag('config', 'G-XXXXXXX');
 </script>
---><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="https://js.stripe.com/v3/"></script><script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script></head><body><!-- AUTH --><div class="auth-screen hidden" id="authScreen"><div class="auth-box"><div class="auth-logo">LocumsLab</div><div class="auth-tagline">Compare contracts. Model your future. Make confident decisions.</div><div class="auth-tabs"><div class="auth-tab active" onclick="switchAuthTab('login')">Log In</div><div class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</div></div><div class="auth-error" id="authError"></div><form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)"><input type="email" class="auth-input" placeholder="Email" required id="loginEmail"><input type="password" class="auth-input" placeholder="Password" required id="loginPassword"><button type="submit" class="auth-btn">Log In</button></form><form class="auth-form" id="signupForm" onsubmit="handleSignup(event)"><input type="email" class="auth-input" placeholder="Email" required id="signupEmail"><input type="password" class="auth-input" placeholder="Password (min 6 characters)" required id="signupPassword" minlength="6"><input type="password" class="auth-input" placeholder="Confirm Password" required id="signupPasswordConfirm"><button type="submit" class="auth-btn">Create Account</button></form></div></div><!-- MAIN APP --><div id="mainApp"><!-- Try Free banner - always visible when not logged in --><div id="signup-banner" style="background: rgba(251, 191, 36, 0.1); border-bottom: 1px solid rgba(251, 191, 36, 0.3); padding: 10px 24px; text-align: center; display:none;"><span style="color: #fbbf24; font-size: 0.875rem;"> You're in Try Free mode - calculators are fully unlocked. <a href="#" onclick="showAuthScreen(); return false;" style="color: #10b981; font-weight: 600; text-decoration: underline;">Sign up free</a> to save scenarios and compare contracts.</span></div><header><div class="logo"><div class="logo-text">LocumsLab</div><div class="logo-badge" id="planBadge">Free</div></div><div class="header-right"><span class="user-email" id="userEmail"></span><button class="header-btn upgrade hidden" id="upgradeBtn" onclick="showUpgradeModal()">Upgrade to Pro</button><button class="header-btn secondary" onclick="showWizard()" id="wizardBtn" style="display:none;">Should I Go Locums?</button><button class="header-btn" onclick="openGuideDrawer()" style="color: var(--accent); border-color: rgba(16,185,129,0.4);"> Guide</button><button class="header-btn" onclick="showDashboard()">Dashboard</button><button class="header-btn hidden" id="logoutBtn" onclick="handleLogout()">Logout</button></div></header><!-- WIZARD --><div class="wizard" id="wizard"><div class="wizard-header"><h1>Should you go <span class="highlight">locums</span>?</h1><p>Compare staff positions vs travel contracts. Model your income, taxes, and financial future.</p></div><div class="wizard-choices"><div class="choice-card" onclick="selectGoal('quickstart')" style="border-color: var(--accent); background: rgba(16,185,129,0.05);"><div class="choice-emoji"></div><div class="choice-title" style="color: var(--accent);">Quick Start - New to Locums?</div><div class="choice-desc">Step-by-step guided comparison from W-2 to locums. Start here if you're just exploring.</div></div><div class="choice-card" onclick="selectGoal('staff-vs-locums')"><div class="choice-emoji"></div><div class="choice-title">Staff vs Locums</div><div class="choice-desc">Compare your current staff position against locums/travel contracts</div></div><div class="choice-card" onclick="selectGoal('contract-eval')"><div class="choice-emoji"></div><div class="choice-title">True Hourly Rate</div><div class="choice-desc">See what a contract offer really pays after taxes, insurance, malpractice, and travel</div></div><div class="choice-card" onclick="selectGoal('w2-1099')"><div class="choice-emoji"></div><div class="choice-title">W2 vs 1099</div><div class="choice-desc">Understand the tax and income differences between employment types</div></div><div class="choice-card" onclick="selectGoal('scorp')"><div class="choice-emoji"></div><div class="choice-title">S-Corp Evaluator</div><div class="choice-desc">Should you form an S-Corporation? Compare tax implications and savings</div><div style="display:inline-block; margin-top:8px; background: var(--accent); color: white; font-size: 0.625rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em;">PRO</div></div><div class="choice-card" onclick="selectGoal('benchmarks')"><div class="choice-emoji"></div><div class="choice-title">Market Benchmarks</div><div class="choice-desc">Salary, malpractice, retirement & tax data by profession - sourced from BLS 2024</div><div style="display:inline-block; margin-top:8px; background: var(--accent); color: white; font-size: 0.625rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em;">PRO</div></div><div class="choice-card" onclick="selectGoal('explore')"><div class="choice-emoji"></div><div class="choice-title">Explore All Tools</div><div class="choice-desc">Access all calculators including home affordability, loans, and more</div></div></div></div><!-- DASHBOARD --><div class="dashboard hidden" id="dashboardView"><div class="dashboard-header"><h1>Your Scenarios</h1><div class="dashboard-actions"><button class="dash-btn" onclick="showComparisonView()"> Compare Scenarios</button><button class="dash-btn" onclick="startNew()">+ New Scenario</button><button class="dash-btn secondary" onclick="loadScenarios()">Refresh</button></div></div><!-- Pre-populated Templates --><div class="template-section"><h2>Start from a Template</h2><div class="scenarios-grid" id="templatesContainer"></div></div><!-- User Scenarios --><div class="template-section"><h2>My Scenarios</h2><div id="scenariosContainer"></div></div><!-- Comparison View --><div class="comparison-view hidden" id="comparisonView"><div class="comparison-header"><h2>CompareYour Scenarios</h2><button class="export-btn" onclick="exportComparison()"><span></span><span>Export to PDF</span></button></div><div class="comparison-table"><table id="comparisonTable"></table></div><!-- ENHANCED COMPARISON VIEW --><div class="enhanced-comparison hidden" id="enhancedComparison"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;"><h2 style="margin: 0;">Contract Comparison</h2><div><button onclick="exportComparisonCSV()" style="background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 20px; border-radius: 6px; margin-right: 12px; cursor: pointer; font-weight: 600;">
+--><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="https://js.stripe.com/v3/"></script><script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script></head><body><!-- AUTH --><div class="auth-screen hidden" id="authScreen"><div class="auth-box"><div class="auth-logo">LocumsLab</div><div class="auth-tagline">Compare contracts. Model your future. Make confident decisions.</div><div class="auth-tabs"><div class="auth-tab active" onclick="switchAuthTab('login')">Log In</div><div class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</div></div><div class="auth-error" id="authError"></div><form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)"><input type="email" class="auth-input" placeholder="Email" required id="loginEmail"><input type="password" class="auth-input" placeholder="Password" required id="loginPassword"><button type="submit" class="auth-btn">Log In</button></form><form class="auth-form" id="signupForm" onsubmit="handleSignup(event)"><input type="email" class="auth-input" placeholder="Email" required id="signupEmail"><input type="password" class="auth-input" placeholder="Password (min 6 characters)" required id="signupPassword" minlength="6"><input type="password" class="auth-input" placeholder="Confirm Password" required id="signupPasswordConfirm"><button type="submit" class="auth-btn">Create Account</button></form></div></div><!-- MAIN APP --><div id="mainApp"><!-- Try Free banner - always visible when not logged in --><div id="signup-banner" style="background: rgba(251, 191, 36, 0.1); border-bottom: 1px solid rgba(251, 191, 36, 0.3); padding: 10px 24px; text-align: center; display:none;"><span style="color: #fbbf24; font-size: 0.875rem;"> You're in Try Free mode - calculators are fully unlocked. <a href="#" onclick="showAuthScreen(); return false;" style="color: #10b981; font-weight: 600; text-decoration: underline;">Sign up free</a> to save scenarios and compare contracts.</span></div><header><div class="logo"><div class="logo-text">LocumsLab</div><div class="logo-badge" id="planBadge">Free</div></div><div class="header-right"><span class="user-email" id="userEmail"></span><button class="header-btn upgrade hidden" id="upgradeBtn" onclick="showUpgradeModal()">Upgrade to Pro</button><button class="header-btn secondary" onclick="showWizard()" id="wizardBtn" style="display:none;">Should I Go Locums?</button><button class="header-btn" onclick="openGuideDrawer()" style="color: var(--accent); border-color: rgba(16,185,129,0.4);"> Guide</button><button class="header-btn" onclick="showDashboard()">Dashboard</button><button class="header-btn hidden" id="logoutBtn" onclick="handleLogout()">Logout</button></div></header><!-- WIZARD --><div class="wizard" id="wizard"><div class="wizard-header"><h1>Should you go <span class="highlight">locums</span>?</h1><p>Compare staff positions vs travel contracts. Model your income, taxes, and financial future.</p></div><div class="wizard-choices"><div class="choice-card" onclick="selectGoal('quickstart')" style="border-color: var(--accent); background: rgba(16,185,129,0.05);"><div class="choice-emoji"></div><div class="choice-title" style="color: var(--accent);">Quick Start - New to Locums?</div><div class="choice-desc">Step-by-step guided comparison from W-2 to locums. Start here if you're just exploring.</div></div><div class="choice-card" onclick="selectGoal('staff-vs-locums')"><div class="choice-emoji"></div><div class="choice-title">Staff vs Locums</div><div class="choice-desc">Compare your current staff position against locums/travel contracts</div></div><div class="choice-card" onclick="selectGoal('contract-eval')"><div class="choice-emoji"></div><div class="choice-title">True Hourly Rate</div><div class="choice-desc">See what a contract offer really pays after taxes, insurance, malpractice, and travel</div></div><div class="choice-card" onclick="selectGoal('w2-1099')"><div class="choice-emoji"></div><div class="choice-title">W2 vs 1099</div><div class="choice-desc">Understand the tax and income differences between employment types</div></div><div class="choice-card" onclick="selectGoal('scorp')"><div class="choice-emoji"></div><div class="choice-title">S-Corp Evaluator</div><div class="choice-desc">Should you form an S-Corporation? Compare tax implications and savings</div><div style="display:inline-block; margin-top:8px; background: var(--accent); color: white; font-size: 0.625rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em;">PRO</div></div><div class="choice-card" onclick="selectGoal('red-flags')">
+<div class="choice-emoji"></div>
+<div class="choice-title">Contract Review</div>
+<div class="choice-desc">First-pass review of restrictive clauses, missing terms, and issues worth clarifying</div>
+<div style="display:inline-block; margin-top:8px; background: var(--accent); color: white; font-size: 0.625rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em;">PRO</div>
+</div><div class="choice-card" onclick="selectGoal('benchmarks')"><div class="choice-emoji"></div><div class="choice-title">Market Benchmarks</div><div class="choice-desc">Salary, malpractice, retirement & tax data by profession - sourced from BLS 2024</div><div style="display:inline-block; margin-top:8px; background: var(--accent); color: white; font-size: 0.625rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em;">PRO</div></div><div class="choice-card" onclick="selectGoal('explore')"><div class="choice-emoji"></div><div class="choice-title">Explore All Tools</div><div class="choice-desc">Access all calculators including home affordability, loans, and more</div></div></div></div><!-- DASHBOARD --><div class="dashboard hidden" id="dashboardView"><div class="dashboard-header"><h1>Your Scenarios</h1><div class="dashboard-actions"><button class="dash-btn" onclick="showComparisonView()"> Compare Scenarios</button><button class="dash-btn" onclick="startNew()">+ New Scenario</button><button class="dash-btn secondary" onclick="loadScenarios()">Refresh</button></div></div><!-- Pre-populated Templates --><div class="template-section"><h2>Start from a Template</h2><div class="scenarios-grid" id="templatesContainer"></div></div><!-- User Scenarios --><div class="template-section"><h2>My Scenarios</h2><div id="scenariosContainer"></div></div><!-- Comparison View --><div class="comparison-view hidden" id="comparisonView"><div class="comparison-header"><h2>CompareYour Scenarios</h2><button class="export-btn" onclick="exportComparison()"><span></span><span>Export to PDF</span></button></div><div class="comparison-table"><table id="comparisonTable"></table></div><!-- ENHANCED COMPARISON VIEW --><div class="enhanced-comparison hidden" id="enhancedComparison"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;"><h2 style="margin: 0;">Contract Comparison</h2><div><button onclick="exportComparisonCSV()" style="background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 20px; border-radius: 6px; margin-right: 12px; cursor: pointer; font-weight: 600;">
  Export CSV
  </button><button onclick="closeEnhancedComparison()" style="background: var(--border); border: none; color: var(--text); padding: 10px 20px; border-radius: 6px; cursor: pointer;">
  Close
@@ -1201,7 +1206,7 @@ let currentUser = null; // email string
 let currentUserId = null; // uuid from auth
 let currentScenarioId = null;
 let isPro = false;
-const stripe = Stripe('pk_live_51SuOgW3g8otgFFrlOgNPeMdNLeOhMUaTCk1Bhr1ZLMEoQOvrwqXqaXR4w5i6CXNiDbKoCnCznKZ8rvIpuwPbqE3t00nlXeVuv4');
+const stripe = Stripe('pk_test_REPLACE_WITH_YOUR_STRIPE_KEY');
 
 // ============================================================================
 // MARKET BENCHMARKS - UPDATE ANNUALLY
@@ -4374,104 +4379,222 @@ let lastContractFileName = '';
 let lastContractReviewDate = '';
 
 async function handleContractUpload(event) {
- const file = event.target.files[0];
- if (!file) return;
- lastContractFileName = file.name || 'Contract PDF';
- lastContractReviewDate = new Date().toLocaleDateString();
- 
- // Check Pro status
- if (!isPro) {
- showUpgradeModal();
- return;
- }
- 
- if (file.type !== 'application/pdf') {
- alert('Please upload a PDF file');
- return;
- }
- 
- // Show loading state
- const resultsDiv = document.getElementById('redFlagsResults');
- const contentDiv = document.getElementById('redFlagsContent');
- 
- resultsDiv.classList.remove('hidden');
- contentDiv.innerHTML = '<div style="text-align: center; padding: 40px;"><p style="color: var(--muted);">Reviewing contract language and looking for missing terms. This can take up to a minute.</p></div>';
- 
- try {
- // Read PDF as base64
- const base64 = await new Promise((resolve, reject) => {
- const reader = new FileReader();
- reader.onload = () => resolve(reader.result.split(',')[1]);
- reader.onerror = reject;
- reader.readAsDataURL(file);
- });
- 
- // Call Claude API to analyze contract
- const analysis = await analyzeContractWithClaude(base64, file.name);
- 
- // Display results
- displayRedFlagsResults(analysis);
- 
- // Charge $9 (in production: Stripe payment)
- await recordRedFlagsScan(file.name);
- 
- } catch (error) {
- console.error('Contract analysis error:', error);
- contentDiv.innerHTML = `<div style="text-align: center; padding: 40px;"><p style="color: #ef4444; margin-bottom: 10px;">Contract review is unavailable right now.</p><p style="color: var(--muted); font-size: 0.9375rem;">${error && error.message ? error.message : 'Please try again later or contact support.'}</p></div>`;
- }
+  const file = event.target.files[0];
+  if (!file || file.type !== 'application/pdf') {
+    alert('Please select a PDF file');
+    return;
+  }
+
+  try {
+    // Check if user is Pro
+    const isPro = window.supabase && window.currentUser?.is_pro;
+    
+    // Check scans this month
+    const scansThisMonth = await getContractScansThisMonth();
+    
+    let needsPayment = false;
+    
+    if (isPro) {
+      // Pro users get 1 free scan per month
+      if (scansThisMonth >= 1) {
+        needsPayment = true;
+      }
+    } else {
+      // Free users always pay
+      needsPayment = true;
+    }
+    
+    // Show pricing modal if needed
+    if (needsPayment) {
+      const userConfirmed = await showPaymentModal(isPro, scansThisMonth);
+      if (!userConfirmed) {
+        // User cancelled
+        document.getElementById('contractUpload').value = '';
+        return;
+      }
+      
+      // Process payment
+      const paymentSuccess = await processContractPayment(file.name);
+      if (!paymentSuccess) {
+        alert('Payment failed. Please try again.');
+        document.getElementById('contractUpload').value = '';
+        return;
+      }
+    } else {
+      // Free scan for Pro user
+      console.log('Free scan for Pro user (scan #' + (scansThisMonth + 1) + ' this month)');
+    }
+    
+    // Proceed with analysis
+    await analyzeContractFile(file, needsPayment ? 9 : 0);
+    
+  } catch (error) {
+    console.error('Upload error:', error);
+    alert('Failed to process contract. Please try again.');
+    document.getElementById('contractUpload').value = '';
+  }
 }
 
-function escapeHtml(value) {
- return String(value == null ? '' : value)
- .replace(/&/g, '&amp;')
- .replace(/</g, '&lt;')
- .replace(/>/g, '&gt;')
- .replace(/"/g, '&quot;')
- .replace(/'/g, '&#39;');
+async function getContractScansThisMonth() {
+  if (!window.supabase || !window.currentUser) return 0;
+  
+  try {
+    const now = new Date();
+    const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    const { data, error } = await window.supabase
+      .from('contract_scans')
+      .select('*')
+      .eq('user_id', window.currentUser.id)
+      .gte('scanned_at', firstOfMonth.toISOString());
+    
+    if (error) throw error;
+    return data ? data.length : 0;
+  } catch (error) {
+    console.error('Error checking scans:', error);
+    return 0;
+  }
 }
 
-function titleCaseRisk(value) {
- const text = String(value || '').trim().toLowerCase();
- if (!text) return 'Review Needed';
- if (text.includes('high')) return 'High';
- if (text.includes('medium')) return 'Medium';
- if (text.includes('low')) return 'Low';
- return text.charAt(0).toUpperCase() + text.slice(1);
+function showPaymentModal(isPro, scansThisMonth) {
+  return new Promise((resolve) => {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    
+    const message = isPro 
+      ? `You've used your 1 free review this month (${scansThisMonth} scans).<br><br>Additional reviews are $9 each.`
+      : `Contract reviews are $9 per scan.<br><br>Or upgrade to Pro for 1 free review/month + all Pro features.`;
+    
+    modal.innerHTML = `
+      <div class="modal-content" style="max-width: 480px;">
+        <div class="modal-header">
+          <h2>Contract Review - $9</h2>
+        </div>
+        <div class="modal-body">
+          <p style="line-height: 1.7; margin-bottom: 24px;">
+            ${message}
+          </p>
+          <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+            <div style="font-weight: 700; margin-bottom: 12px;">What You Get:</div>
+            <div style="font-size: 0.9375rem; color: var(--muted); line-height: 1.8;">
+              ✓ Clause-by-clause risk analysis<br>
+              ✓ Missing terms checklist<br>
+              ✓ Questions to ask your recruiter<br>
+              ✓ Downloadable PDF report
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px;">
+            <button class="modal-btn secondary" onclick="this.closest('.modal').remove(); window.contractPaymentResolve(false);" style="flex: 1;">
+              Cancel
+            </button>
+            <button class="modal-btn primary" onclick="this.closest('.modal').remove(); window.contractPaymentResolve(true);" style="flex: 1;">
+              Pay $9 & Review
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    window.contractPaymentResolve = resolve;
+  });
 }
 
-function normalizeContractAnalysis(raw) {
- const analysis = raw && typeof raw === 'object' ? raw : {};
- const issues = Array.isArray(analysis.redFlags) ? analysis.redFlags : Array.isArray(analysis.issues) ? analysis.issues : [];
- const missingItems = Array.isArray(analysis.missingTerms) ? analysis.missingTerms : Array.isArray(analysis.notSpecified) ? analysis.notSpecified : [];
- const buckets = analysis.severityBuckets || analysis.riskBuckets || {};
- const attorneyItems = Array.isArray(analysis.takeToAttorney) ? analysis.takeToAttorney : [];
- const recruiterQuestions = Array.isArray(analysis.questionsToAsk) ? analysis.questionsToAsk : [];
- const emailLanguage = analysis.suggestedEmailLanguage || analysis.emailLanguage || analysis.emailDraft || '';
- return {
- riskLevel: titleCaseRisk(analysis.riskLevel || analysis.overallRisk || analysis.overall_level),
- summary: analysis.summary || analysis.overview || 'Review completed.',
- issues: issues.map((item, idx) => ({
- title: item.category || item.title || item.issue || `Issue ${idx + 1}`,
- severity: titleCaseRisk(item.severity || item.risk || item.level),
- bucket: item.bucket || item.riskType || item.type || 'General',
- finding: item.finding || item.description || item.details || '',
- quote: item.quote || item.snippet || item.clauseText || item.contractLanguage || '',
- whyItMatters: item.whyItMatters || item.impact || item.why || '',
- whatToAsk: item.whatToAsk || item.question || item.questions || item.ask || '',
- emailLanguage: item.emailLanguage || item.suggestedEmailLanguage || '',
- recommendation: item.recommendation || item.nextStep || item.action || ''
- })),
- missingItems: missingItems.map((item) => typeof item === 'string' ? item : (item.term || item.item || item.title || 'Unspecified term')),
- severityBuckets: {
- financial: Number(buckets.financial || buckets.money || 0),
- restriction: Number(buckets.restriction || buckets.restrictive || 0),
- ambiguity: Number(buckets.ambiguity || buckets.unclear || 0),
- termination: Number(buckets.termination || buckets.exit || 0)
- },
- recruiterQuestions: recruiterQuestions,
- attorneyItems: attorneyItems,
- suggestedEmailLanguage: emailLanguage
- };
+async function processContractPayment(filename) {
+  try {
+    if (!window.stripe) {
+      window.stripe = Stripe(window.stripePublicKey);
+    }
+    
+    // Create payment intent
+    const response = await fetch('/.netlify/functions/charge-scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: window.currentUser?.id || 'guest',
+        filename: filename
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (!data.success || !data.clientSecret) {
+      throw new Error('Failed to create payment');
+    }
+    
+    // Show payment form
+    const { error } = await window.stripe.confirmPayment({
+      clientSecret: data.clientSecret,
+      confirmParams: {
+        return_url: window.location.href,
+      },
+      redirect: 'if_required'
+    });
+    
+    if (error) {
+      console.error('Payment error:', error);
+      return false;
+    }
+    
+    // Payment successful
+    return true;
+    
+  } catch (error) {
+    console.error('Payment processing error:', error);
+    return false;
+  }
+}
+
+async function analyzeContractFile(file, chargedAmount) {
+  const contentDiv = document.getElementById('redFlagsContent');
+  const resultsDiv = document.getElementById('redFlagsResults');
+  
+  resultsDiv.classList.remove('hidden');
+  contentDiv.innerHTML = '<div style="text-align: center; padding: 40px;"><p style="color: var(--muted);">Reviewing contract language and looking for missing terms. This can take up to a minute.</p></div>';
+  
+  lastContractFileName = file.name;
+  lastContractReviewDate = new Date().toLocaleDateString();
+  
+  const reader = new FileReader();
+  
+  reader.onload = async function(e) {
+    try {
+      const base64 = e.target.result.split(',')[1];
+      const analysis = await analyzeContractWithClaude(base64, file.name);
+      
+      // Record the scan in database
+      await recordContractScan(file.name, chargedAmount);
+      
+      displayRedFlagsResults(analysis);
+      
+    } catch (error) {
+      console.error('Analysis error:', error);
+      contentDiv.innerHTML = '<div style="text-align: center; padding: 40px;"><p style="color: var(--danger);">Analysis failed. Please try again or contact support.</p></div>';
+    }
+  };
+  
+  reader.readAsDataURL(file);
+}
+
+async function recordContractScan(filename, chargedAmount) {
+  if (!window.supabase || !window.currentUser) return;
+  
+  try {
+    const { error } = await window.supabase
+      .from('contract_scans')
+      .insert({
+        user_id: window.currentUser.id,
+        filename: filename,
+        charged_amount: chargedAmount
+      });
+    
+    if (error) throw error;
+    console.log('Contract scan recorded');
+  } catch (error) {
+    console.error('Error recording scan:', error);
+  }
 }
 
 async function analyzeContractWithClaude(base64PDF, filename) {
