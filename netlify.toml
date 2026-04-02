@@ -5,7 +5,10 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
-  timeout = 26  # Increase timeout for contract analysis (max allowed)
+
+# Increase timeout for all functions
+[functions."*"]
+  max_duration = 26
 
 # Redirects for clean URLs
 [[redirects]]
