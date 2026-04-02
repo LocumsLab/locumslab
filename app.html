@@ -4573,41 +4573,41 @@ function showPaymentModal(isPro, scansThisMonth) {
 
 async function processContractPayment(filename) {
   try {
-    if (!window.stripe) {
-      window.stripe = Stripe(window.stripePublicKey);
-    }
-    
-    // Create payment intent
-    const response = await fetch('/.netlify/functions/charge-scan', {
+    // Create Stripe Checkout session
+    const response = await fetch('/.netlify/functions/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         userId: window.currentUser?.id || 'guest',
-        filename: filename
+        filename: filename,
+        product: 'contract_scan',
+        amount: 900, // $9.00
+        returnUrl: window.location.href
       })
     });
     
     const data = await response.json();
     
-    if (!data.success || !data.clientSecret) {
-      throw new Error('Failed to create payment');
+    if (!data.success || !data.sessionId) {
+      throw new Error('Failed to create checkout session');
     }
     
-    // Show payment form
-    const { error } = await window.stripe.confirmPayment({
-      clientSecret: data.clientSecret,
-      confirmParams: {
-        return_url: window.location.href,
-      },
-      redirect: 'if_required'
+    // Initialize Stripe if needed
+    if (!window.stripe) {
+      window.stripe = Stripe(window.stripePublicKey);
+    }
+    
+    // Redirect to Stripe Checkout
+    const { error } = await window.stripe.redirectToCheckout({
+      sessionId: data.sessionId
     });
     
     if (error) {
-      console.error('Payment error:', error);
+      console.error('Stripe checkout error:', error);
+      alert('Payment failed: ' + error.message);
       return false;
     }
     
-    // Payment successful
     return true;
     
   } catch (error) {
