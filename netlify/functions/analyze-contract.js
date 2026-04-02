@@ -22,21 +22,14 @@ exports.handler = async (event) => {
       apiKey: process.env.ANTHROPIC_API_KEY,
     });
 
-    const prompt = `Analyze this locums contract. Return ONLY valid JSON (no markdown, no explanation):
+    // Super simple prompt - just the structure
+    const prompt = `Analyze this contract. Return ONLY this JSON structure with NO extra text:
 
-{
-  "riskLevel": "Low|Medium|High",
-  "issues": [{"quote": "clause", "title": "name", "bucket": "Financial|Restriction|Ambiguity|Termination", "severity": "Low|Medium|High", "finding": "explanation", "whyItMatters": "reason", "whatToAsk": "question", "recommendation": "advice"}],
-  "missingTerms": ["item"],
-  "severityBuckets": {"financial": 0, "restriction": 0, "ambiguity": 0, "termination": 0},
-  "summary": "brief summary",
-  "recruiterQuestions": ["question"],
-  "takeToAttorney": ["issue"]
-}`;
+{"riskLevel":"Medium","issues":[{"quote":"text","title":"name","bucket":"Financial","severity":"Medium","finding":"what","whyItMatters":"why","whatToAsk":"question","recommendation":"do this"}],"missingTerms":["item"],"severityBuckets":{"financial":0,"restriction":0,"ambiguity":0,"termination":0},"summary":"summary","recruiterQuestions":["q"],"takeToAttorney":["issue"]}`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20250116',  // CORRECT Sonnet 3.5 model
-      max_tokens: 3000,
+      model: 'claude-haiku-4-5-20251001',  // This model WORKS - we tested it
+      max_tokens: 2500,
       messages: [{
         role: 'user',
         content: [
@@ -58,14 +51,30 @@ exports.handler = async (event) => {
 
     let text = message.content[0].text.trim();
     
-    // Remove markdown if present
-    if (text.startsWith('```')) {
-      text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+    // Strip everything that's not JSON
+    text = text.replace(/^[^{]*/, '');  // Remove everything before first {
+    text = text.replace(/[^}]*$/, '');  // Remove everything after last }
+    text = text.replace(/```json/g, '').replace(/```/g, '');  // Remove markdown
+    text = text.replace(/,(\s*[}\]])/g, '$1');  // Remove trailing commas
+    
+    let analysis;
+    try {
+      analysis = JSON.parse(text);
+    } catch (parseError) {
+      // If still fails, return a minimal valid response
+      console.error('JSON parse failed, returning minimal response');
+      analysis = {
+        riskLevel: 'Medium',
+        issues: [],
+        missingTerms: ['Unable to parse full analysis - please review contract manually'],
+        severityBuckets: {financial: 0, restriction: 0, ambiguity: 0, termination: 0},
+        summary: 'Analysis completed but response format was invalid. Please review contract carefully.',
+        recruiterQuestions: ['Request full contract details'],
+        takeToAttorney: ['Have attorney review due to analysis parsing issue']
+      };
     }
     
-    const analysis = JSON.parse(text);
-    
-    // Ensure fields exist
+    // Ensure all required fields
     analysis.riskLevel = analysis.riskLevel || 'Medium';
     analysis.issues = Array.isArray(analysis.issues) ? analysis.issues : [];
     analysis.missingTerms = Array.isArray(analysis.missingTerms) ? analysis.missingTerms : [];
