@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A CRNA's guide to reviewing locums contracts. 12 red flags to check before you sign, negotiation questions to ask, and a free contract analyzer.">
+<meta name="keywords" content="CRNA contract review, locums contract checklist, travel CRNA contract, 1099 contract red flags, locum tenens agreement, contract negotiation CRNA">
+<meta property="og:title" content="How to Review a Locums Contract: 12 Things CRNAs Miss">
+<meta property="og:description" content="Don't sign until you check these 12 clauses. Free contract analyzer included.">
+<meta property="og:type" content="article">
+<title>How to Review a Locums Contract: 12 Things CRNAs Miss | LocumsLab</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a2540;
+    --blue: #0066cc;
+    --green: #10b981;
+    --red: #dc2626;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-600: #475569;
+    --gray-900: #0f172a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', -apple-system, sans-serif; color: var(--gray-900); background: white; line-height: 1.8; }
+
+  header { position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--gray-200); }
+  nav { max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--navy); text-decoration: none; }
+  .nav-link { color: var(--gray-600); text-decoration: none; font-size: 0.9375rem; }
+  .nav-link:hover { color: var(--blue); }
+
+  article { max-width: 720px; margin: 60px auto; padding: 0 24px; }
+  .article-meta { color: var(--gray-600); font-size: 0.9375rem; margin-bottom: 24px; }
+  h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 2.75rem); line-height: 1.2; color: var(--navy); margin-bottom: 16px; letter-spacing: -0.02em; }
+  .article-intro { font-size: 1.25rem; color: var(--gray-600); margin-bottom: 40px; line-height: 1.7; }
+
+  h2 { font-family: 'DM Serif Display', serif; font-size: 1.75rem; color: var(--navy); margin: 48px 0 20px; letter-spacing: -0.01em; }
+  h3 { font-size: 1.125rem; font-weight: 700; color: var(--navy); margin: 32px 0 16px; }
+
+  p { margin-bottom: 24px; font-size: 1.0625rem; line-height: 1.8; }
+
+  .tool-cta { background: var(--navy); border-radius: 12px; padding: 36px 40px; margin: 48px 0; color: white; }
+  .tool-cta h3 { color: white; margin: 0 0 10px; font-size: 1.25rem; }
+  .tool-cta p { color: rgba(255,255,255,0.8); margin-bottom: 24px; }
+  .tool-cta-btn { display: inline-block; background: var(--green); color: white; padding: 13px 28px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 1rem; transition: background 0.2s; }
+  .tool-cta-btn:hover { background: #059669; }
+
+  .red-flag { background: var(--gray-50); border-left: 4px solid var(--red); padding: 24px; margin: 24px 0; border-radius: 0 8px 8px 0; }
+  .red-flag-label { display: inline-block; background: var(--red); color: white; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; margin-bottom: 12px; }
+  .red-flag h4 { color: var(--gray-900); font-size: 1.0625rem; margin-bottom: 10px; font-weight: 700; }
+  .red-flag .contract-language { background: white; border: 1px solid var(--gray-200); border-radius: 6px; padding: 12px 16px; margin: 14px 0; font-style: italic; color: var(--gray-600); font-size: 0.9375rem; line-height: 1.6; }
+  .red-flag .contract-language::before { content: 'Actual contract language:'; display: block; font-style: normal; font-size: 0.75rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .red-flag .ask-this { color: var(--navy); font-weight: 600; margin-top: 12px; font-size: 0.9375rem; }
+  .red-flag .ask-this::before { content: 'Ask: '; color: var(--blue); }
+
+  .checklist { background: var(--gray-50); padding: 32px; border-radius: 12px; margin: 32px 0; }
+  .checklist h3 { margin-top: 0; margin-bottom: 20px; }
+  .checklist ul { list-style: none; }
+  .checklist li { padding: 12px 0; border-bottom: 1px solid var(--gray-200); display: flex; align-items: flex-start; gap: 12px; font-size: 1rem; }
+  .checklist li:last-child { border-bottom: none; }
+  .check-box { width: 18px; height: 18px; border: 2px solid var(--gray-300); border-radius: 4px; flex-shrink: 0; margin-top: 3px; }
+
+  ul, ol { margin: 24px 0; padding-left: 28px; }
+  li { margin-bottom: 10px; line-height: 1.7; }
+
+  strong { color: var(--navy); }
+
+  .footer-cta { background: var(--navy); color: white; text-align: center; padding: 60px 24px; margin-top: 80px; }
+  .footer-cta h2 { color: white; margin-bottom: 16px; }
+  .footer-cta p { color: rgba(255,255,255,0.75); margin-bottom: 32px; max-width: 560px; margin-left: auto; margin-right: auto; }
+  .footer-cta-btn { display: inline-block; background: var(--green); color: white; padding: 15px 36px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 1.0625rem; transition: background 0.2s; }
+  .footer-cta-btn:hover { background: #059669; }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="/" class="logo">LocumsLab</a>
+    <a href="/app.html" class="nav-link">Open Calculator</a>
+  </nav>
+</header>
+
+<article>
+  <div class="article-meta">April 2, 2026 &middot; 8 min read &middot; By Gregory Olyansky, CRNA</div>
+
+  <h1>How to Review a Locums Contract: 12 Things CRNAs Miss</h1>
+
+  <p class="article-intro">You've been offered a locums contract at $225/hour. It looks good on paper. Then you dig into the language and find out the facility can cancel with 24 hours notice, you're on the hook for tail coverage, and there's a non-compete locking you out of a 50-mile radius for a year. Here's what to look for before you sign anything.</p>
+
+  <div class="tool-cta">
+    <h3>Scan Your Contract Before You Sign</h3>
+    <p>Upload your PDF and get an instant first-pass review. Red flags, missing terms, negotiation points -- in under 30 seconds.</p>
+    <a href="/app.html" class="tool-cta-btn">Review Your Contract Free</a>
+  </div>
+
+  <h2>Why This Matters More Than You Think</h2>
+
+  <p>Most CRNAs spend more time picking their next travel bag than reading the contracts that govern their income and liability. That's not a knock -- these documents are dense, the language is deliberately vague in spots, and agencies count on you signing quickly before the position fills.</p>
+
+  <p>The average locums contract runs 12 to 25 pages. One missed clause can cost you tens of thousands of dollars or lock you out of work in your preferred area for a year. This is worth an hour of your time.</p>
+
+  <h2>The 12 Things to Check</h2>
+
+  <div class="red-flag">
+    <span class="red-flag-label">Red Flag 1</span>
+    <h4>Vague Termination Language</h4>
+    <p>Who can end this contract, under what conditions, and with how much notice?</p>
+    <div class="contract-language">"Either party may terminate this agreement at any time for any reason."</div>
+    <p>If the facility can cancel you with 24 hours notice but you're required to give 30 days, you're absorbing all the risk. You could relocate for a 13-week assignment and be sent home after three days with no recourse and an apartment lease you're still on the hook for.</p>
+    <p class="ask-this">"What notice is required from each party? Are there penalties for early termination?"</p>
+  </div>
+
+  <div class="red-flag">
+    <span class="red-flag-label">Red Flag 2</span>
+    <h4>Tail Coverage Left Undefined</h4>
+    <p>If you're on a claims-made malpractice policy, tail coverage is what protects you after the contract ends. Who's paying for it?</p>
+    <div class="contract-language">"CRNA is responsible for obtaining and maintaining malpractice insurance throughout the term of this agreement."</div>
+    <p>Tail coverage can run $5,000 to $20,000 depending on specialty and years of coverage needed. If the contract doesn't address it, you may be assuming that cost entirely.</p>
+    <p class="ask-this">"Is malpractice coverage occurrence-based or claims-made? If claims-made, who pays for tail?"</p>
+  </div>
+
+  <div class="red-flag">
+    <span class="red-flag-label">Red Flag 3</span>
+    <h4>Broad Non-Compete Clause</h4>
+    <p>Non-competes in locums contracts are common and often aggressive. Check the radius, the time period, and whether it covers direct hire by the facility.</p>
+    <div class="contract-language">"Provider agrees not to work for or contract directly with the facility or any affiliated entity within 50 miles for a period of 24 months following the end of this agreement."</div>
+    <p>In most states, locums non-competes are difficult to enforce against independent contractors, but "difficult" is not the same as unenforceable. If a facility you love tries to hire you directly and the agency threatens legal action, you'll spend time and money you didn't plan on.</p>
+    <p class="ask-this">"What is the geographic scope and duration of the non-compete? Does it apply if the facility recruits me directly?"</p>
+  </div>
+
+  <div class="red-flag">
+    <span class="red-flag-label">Red Flag 4</span>
+    <h4>Licensing and Credentialing Costs Not Addressed</h4>
+    <p>If you're working in a new state, you'll need a license. If the facility requires credentialing, that takes time and sometimes money. Who covers it?</p>
+    <div class="contract-language">"Provider is responsible for obtaining all necessary licensure prior to commencement of services."</div>
+    <p>Out-of-state license applications run $150 to $400 and take 6 to 12 weeks. If you're starting in 3 weeks and this isn't covered, that's your problem.</p>
+    <p class="ask-this">"Will licensing and credentialing costs be reimbursed? What is the expected timeline for credentialing?"</p>
+  </div>
+
+  <div class="red-flag">
+    <span class="red-flag-label">Red Flag 5</span>
+    <h4>Call Requirements Missing or Vague</h4>
+    <p>Is there call? How often? What does it pay?</p>
+    <div class="contract-language">"Provider may be required to take call as reasonably requested by the facility."</div>
+    <p>"Reasonably requested" is doing a lot of heavy lifting in that sentence. It could mean every other weekend at half your hourly rate, or it could mean no additional compensation at all. If call is a realistic part of this role, it needs to be spelled out.</p>
+    <p class="ask-this">"What is the call rate? How many weekends per month am I expected to cover?"</p>
+  </div>
+
+  <div class="red-flag">
+    <span class="red-flag-label">Red Flag 6</span>
+    <h4>No Defined Payment Schedule</h4>
+    <p>When do you get paid, and how do you submit hours?</p>
+    <div class="contract-language">"Contractor will be paid within 30 days of invoice submission."</div>
+    <p>"Within 30 days" means they can pay on day 29. If you invoice monthly, that's two months of working before you see your first check. Cash flow matters more than most CRNAs realize until they're three weeks into an assignment and watching their personal account drain.</p>
+    <p class="ask-this">"What is the exact pay schedule? Can I invoice weekly or bi-weekly?"</p>
+  </div>
+
+  <div class="red-flag">
+    <span class="red-flag-label">Red Flag 7</span>
+    <h4>Housing and Travel Caps That Don't Match Reality</h4>
+    <p>Are housing and travel covered? What are the ceilings?</p>
+    <div class="contract-language">"Facility will reimburse up to $1,200/month for housing."</div>
+    <p>$1,200 a month doesn't cover a furnished apartment in most mid-sized cities. If you're paying $2,000 and getting $1,200 back, that's $800 a month out of pocket on a 13-week assignment, over $10,000 in costs that weren't in the rate you agreed to.</p>
+    <p class="ask-this">"Is the housing stipend realistic for this market? Can it be renegotiated based on actual costs?"</p>
+  </div>
+
+  <div class="red-flag">
+    <span class="red-flag-label">Red Flag 8</span>
+    <h4>One-Sided Indemnification</h4>
+    <p>Are you being asked to indemnify the facility or agency?</p>
+    <div class="contract-language">"Contractor agrees to indemnify and hold harmless the facility from any claims arising from contractor's performance."</div>
+    <p>This language shifts liability to you. If something goes wrong -- even if the facility's equipment, staffing ratio, or policies contributed -- you may be financially exposed. This is worth a lawyer's eyes if you see it.</p>
+    <p class="ask-this">"Can the indemnification clause be made mutual? I want to confirm this is covered under malpractice."</p>
+  </div>
+
+  <div class="red-flag">
+    <span class="red-flag-label">Red Flag 9</span>
+    <h4>Scope of Practice Left Open-Ended</h4>
+    <p>What cases will you be expected to handle? Is anything excluded?</p>
+    <div class="contract-language">"Contractor will provide anesthesia services as requested by the facility."</div>
+    <p>"As requested" could include pediatric cardiac, OB, trauma, or anything else the facility does. If you haven't worked a particular case type in five years, you need that defined before you're on-site -- not after you've turned something down and created a staffing crisis.</p>
+    <p class="ask-this">"What case types will I be expected to cover? Can cases outside my recent experience be excluded?"</p>
+  </div>
+
+  <div class="red-flag">
+    <span class="red-flag-label">Red Flag 10</span>
+    <h4>No CME or Time Off Provisions</h4>
+    <p>Is there a CME allowance? What about unpaid time off?</p>
+    <div class="contract-language">"No provision for continuing education or paid time off."</div>
+    <p>As a 1099 contractor you're not entitled to PTO, but many contracts include an unpaid week or two and a CME allowance. If it's not there, you're either working 52 weeks straight or losing income for every day off you need to take for conferences, license renewals, or anything else.</p>
+    <p class="ask-this">"Is there a CME allowance or provision for unpaid time off built into the agreement?"</p>
+  </div>
+
+  <div class="red-flag">
+    <span class="red-flag-label">Red Flag 11</span>
+    <h4>Force Majeure Without Minimum Compensation</h4>
+    <p>What happens if the facility shuts down due to circumstances outside their control?</p>
+    <div class="contract-language">"Facility may suspend or terminate services without compensation in the event of force majeure."</div>
+    <p>COVID showed us that "force majeure" can cover anything from a pandemic to a ransomware attack. If you've relocated, signed a lease, and the facility shuts down, you could be out of work and still paying housing costs with zero notice and zero compensation.</p>
+    <p class="ask-this">"Is there a minimum notice period or compensation guarantee if services are suspended?"</p>
+  </div>
+
+  <div class="red-flag">
+    <span class="red-flag-label">Red Flag 12</span>
+    <h4>Dispute Resolution Favoring the Other Side</h4>
+    <p>If there's a dispute, where does it get resolved and under what state's law?</p>
+    <div class="contract-language">"Any disputes arising under this agreement shall be resolved by binding arbitration in [Agency Home State], under the laws of [Agency Home State]."</div>
+    <p>If you're working in Texas and the agency is headquartered in New Jersey, a dispute could require you to arbitrate under New Jersey law. Mandatory arbitration also waives your right to sue in court, which limits your options significantly.</p>
+    <p class="ask-this">"Which state's law governs this contract? Can disputes be resolved in the state where I'm working?"</p>
+  </div>
+
+  <h2>What Should Be In Every Contract</h2>
+
+  <div class="checklist">
+    <h3>Contract Essentials Checklist</h3>
+    <ul>
+      <li><div class="check-box"></div><span><strong>Hourly rate clearly stated</strong> -- including overtime, call, and weekend differentials</span></li>
+      <li><div class="check-box"></div><span><strong>Assignment duration</strong> -- start date, end date, hours per week</span></li>
+      <li><div class="check-box"></div><span><strong>Malpractice coverage details</strong> -- occurrence vs claims-made, who pays tail</span></li>
+      <li><div class="check-box"></div><span><strong>Termination terms</strong> -- notice period for both parties, early termination penalties</span></li>
+      <li><div class="check-box"></div><span><strong>Payment schedule</strong> -- when and how you get paid, invoicing frequency</span></li>
+      <li><div class="check-box"></div><span><strong>Reimbursements</strong> -- housing caps, travel, licensing, credentialing</span></li>
+      <li><div class="check-box"></div><span><strong>Scope of practice</strong> -- case types, patient population, autonomy level</span></li>
+      <li><div class="check-box"></div><span><strong>Non-compete terms</strong> -- geographic radius, time period, direct hire provisions</span></li>
+      <li><div class="check-box"></div><span><strong>Call requirements</strong> -- frequency, rate, backup coverage expectations</span></li>
+      <li><div class="check-box"></div><span><strong>CME and time off</strong> -- allowances or unpaid leave provisions</span></li>
+    </ul>
+  </div>
+
+  <h2>How to Use the Contract Review Tool</h2>
+
+  <p>LocumsLab's contract review tool reads your PDF and flags the issues above automatically. It catches restrictive non-competes, vague termination language, missing tail coverage, undefined payment schedules, and clauses that may warrant legal review. It's a first pass, not a substitute for an attorney -- but it tells you what to ask before you pay $400/hour for someone else to tell you the same thing.</p>
+
+  <h2>When You Actually Need an Attorney</h2>
+
+  <p>Not every locums contract needs legal review. You should get one if the contract has a non-compete affecting your future work, an indemnification clause shifting liability to you, termination terms that are clearly one-sided, anything involving intellectual property rights, or if you're signing for longer than six months or any kind of partnership arrangement.</p>
+
+  <p>Healthcare employment attorneys typically charge $300 to $500 an hour, but catching a bad non-compete or a missing tail coverage clause before you sign is a much smaller bill than dealing with either one after.</p>
+
+  <h2>Before You Sign</h2>
+
+  <ol>
+    <li><strong>Read the whole thing</strong> -- not just the rate and dates</li>
+    <li><strong>Run it through the scanner</strong> -- get a first-pass review in 30 seconds</li>
+    <li><strong>Bring questions to the recruiter</strong> -- everything above is negotiable</li>
+    <li><strong>Push back</strong> -- on the rate, call expectations, non-compete, tail coverage</li>
+    <li><strong>Get legal review if it's complex</strong> -- for long assignments or anything with partnership language</li>
+  </ol>
+
+  <p>Your negotiating position is strongest before you sign. Once you're on-site, it's gone.</p>
+
+</article>
+
+<div class="footer-cta">
+  <h2>Review Your Contract Before You Sign</h2>
+  <p>Upload your PDF and get an instant analysis covering red flags, missing terms, and negotiation points. Free for all users.</p>
+  <a href="/app.html" class="footer-cta-btn">Scan Your Contract</a>
+</div>
+
+</body>
+</html>
