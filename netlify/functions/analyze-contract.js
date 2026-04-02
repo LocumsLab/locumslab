@@ -22,34 +22,21 @@ exports.handler = async (event) => {
       apiKey: process.env.ANTHROPIC_API_KEY,
     });
 
-    const prompt = `Analyze this locums contract. Return ONLY valid JSON with this EXACT structure (no extra text, no markdown):
+    const prompt = `Analyze this locums contract. Return ONLY valid JSON (no markdown, no explanation):
 
 {
-  "riskLevel": "Medium",
-  "issues": [
-    {
-      "quote": "exact clause text",
-      "title": "Issue name",
-      "bucket": "Financial",
-      "severity": "High",
-      "finding": "What it says",
-      "whyItMatters": "Why this matters",
-      "whatToAsk": "Question to ask",
-      "recommendation": "What to do"
-    }
-  ],
-  "missingTerms": ["Missing item 1", "Missing item 2"],
-  "severityBuckets": {"financial": 1, "restriction": 0, "ambiguity": 0, "termination": 0},
-  "summary": "Brief summary of contract",
-  "recruiterQuestions": ["Question 1"],
-  "takeToAttorney": ["Critical issue 1"]
-}
-
-CRITICAL: Return ONLY the JSON object. No markdown, no code blocks, no extra text.`;
+  "riskLevel": "Low|Medium|High",
+  "issues": [{"quote": "clause", "title": "name", "bucket": "Financial|Restriction|Ambiguity|Termination", "severity": "Low|Medium|High", "finding": "explanation", "whyItMatters": "reason", "whatToAsk": "question", "recommendation": "advice"}],
+  "missingTerms": ["item"],
+  "severityBuckets": {"financial": 0, "restriction": 0, "ambiguity": 0, "termination": 0},
+  "summary": "brief summary",
+  "recruiterQuestions": ["question"],
+  "takeToAttorney": ["issue"]
+}`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2000,
+      model: 'claude-3-5-sonnet-20241022',  // More reliable than Haiku, still under timeout
+      max_tokens: 3000,  // Enough for good analysis
       messages: [{
         role: 'user',
         content: [
@@ -69,52 +56,23 @@ CRITICAL: Return ONLY the JSON object. No markdown, no code blocks, no extra tex
       }]
     });
 
-    let text = message.content[0].text;
-    let analysis;
+    let text = message.content[0].text.trim();
     
-    // Try multiple parsing strategies
-    try {
-      // Strategy 1: Direct parse
-      analysis = JSON.parse(text);
-    } catch (e1) {
-      try {
-        // Strategy 2: Extract from markdown code blocks
-        const jsonMatch = text.match(/```(?:json)?\s*({[\s\S]*?})\s*```/);
-        if (jsonMatch) {
-          analysis = JSON.parse(jsonMatch[1]);
-        } else {
-          // Strategy 3: Find JSON object in text
-          const objectMatch = text.match(/{[\s\S]*}/);
-          if (objectMatch) {
-            // Clean up common issues
-            let cleaned = objectMatch[0]
-              .replace(/,\s*}/g, '}')  // Remove trailing commas
-              .replace(/,\s*]/g, ']')  // Remove trailing commas in arrays
-              .replace(/\n/g, ' ')     // Remove newlines
-              .replace(/\t/g, ' ')     // Remove tabs
-              .replace(/  +/g, ' ');    // Collapse multiple spaces
-            
-            analysis = JSON.parse(cleaned);
-          } else {
-            throw new Error('No JSON found in response');
-          }
-        }
-      } catch (e2) {
-        console.error('Failed to parse JSON:', text.substring(0, 500));
-        throw new Error('Could not parse contract analysis');
-      }
+    // Remove markdown if present
+    if (text.startsWith('```')) {
+      text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '');
     }
     
-    // Validate and set defaults
-    if (!analysis.riskLevel) analysis.riskLevel = 'Medium';
-    if (!Array.isArray(analysis.issues)) analysis.issues = [];
-    if (!Array.isArray(analysis.missingTerms)) analysis.missingTerms = [];
-    if (!analysis.severityBuckets) {
-      analysis.severityBuckets = { financial: 0, restriction: 0, ambiguity: 0, termination: 0 };
-    }
-    if (!Array.isArray(analysis.recruiterQuestions)) analysis.recruiterQuestions = [];
-    if (!Array.isArray(analysis.takeToAttorney)) analysis.takeToAttorney = [];
-    if (!analysis.summary) analysis.summary = 'Contract analysis completed';
+    const analysis = JSON.parse(text);
+    
+    // Ensure fields exist
+    analysis.riskLevel = analysis.riskLevel || 'Medium';
+    analysis.issues = Array.isArray(analysis.issues) ? analysis.issues : [];
+    analysis.missingTerms = Array.isArray(analysis.missingTerms) ? analysis.missingTerms : [];
+    analysis.severityBuckets = analysis.severityBuckets || {financial: 0, restriction: 0, ambiguity: 0, termination: 0};
+    analysis.recruiterQuestions = Array.isArray(analysis.recruiterQuestions) ? analysis.recruiterQuestions : [];
+    analysis.takeToAttorney = Array.isArray(analysis.takeToAttorney) ? analysis.takeToAttorney : [];
+    analysis.summary = analysis.summary || 'Analysis complete';
     
     return {
       statusCode: 200,
@@ -123,14 +81,11 @@ CRITICAL: Return ONLY the JSON object. No markdown, no code blocks, no extra tex
     };
     
   } catch (error) {
-    console.error('Contract analysis error:', error);
+    console.error('Analysis error:', error.message);
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        success: false, 
-        error: 'Analysis failed: ' + error.message 
-      })
+      body: JSON.stringify({ success: false, error: 'Analysis failed' })
     };
   }
 };
