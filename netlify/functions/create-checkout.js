@@ -1,49 +1,73 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 exports.handler = async (event) => {
+  // Only allow POST
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+    return { 
+      statusCode: 405, 
+      body: JSON.stringify({ error: 'Method Not Allowed' })
+    };
   }
 
   try {
-    console.log('STRIPE_SECRET_KEY present:', !!process.env.STRIPE_SECRET_KEY);
-    console.log('STRIPE_SECRET_KEY length:', process.env.STRIPE_SECRET_KEY?.length);
-    console.log('STRIPE_SECRET_KEY starts with:', process.env.STRIPE_SECRET_KEY?.substring(0, 12));
-    console.log('STRIPE_PRICE_ID:', process.env.STRIPE_PRICE_ID);
+    const { userId, filename, product, amount, returnUrl } = JSON.parse(event.body);
 
-    const { userId, email } = JSON.parse(event.body);
-    console.log('userId:', userId, 'email:', email);
+    if (!userId) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'User ID required' })
+      };
+    }
 
+    // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
         {
-          price: process.env.STRIPE_PRICE_ID,
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'Contract First-Pass Review',
+              description: 'AI-powered analysis of locums contract',
+            },
+            unit_amount: amount || 900, // $9.00 default
+          },
           quantity: 1,
         },
       ],
       mode: 'payment',
-      customer_email: email,
-      client_reference_id: userId,
-      success_url: 'https://locumslab.com/app.html?upgrade=success',
-      cancel_url: 'https://locumslab.com/app.html?upgrade=cancelled',
+      success_url: `${returnUrl}?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${returnUrl}?payment=cancelled`,
       metadata: {
         userId: userId,
+        filename: filename || 'contract.pdf',
+        product: product || 'contract_scan'
       },
     });
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ url: session.url }),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        success: true,
+        sessionId: session.id,
+        url: session.url
+      })
     };
 
-  } catch (err) {
-    console.error('Checkout error type:', err.type);
-    console.error('Checkout error message:', err.message);
-    console.error('Checkout error status:', err.statusCode);
+  } catch (error) {
+    console.error('Stripe checkout error:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: err.message }),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        success: false,
+        error: error.message || 'Checkout creation failed'
+      })
     };
   }
 };
