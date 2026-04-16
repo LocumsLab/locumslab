@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Financial guides for locums CRNAs and physicians. Contract review, taxes, S-Corp strategy, and take-home pay.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="LocumsLab Blog -- Locums Finance for CRNAs and Physicians">
+<meta property="og:description" content="Financial guides for locums CRNAs and physicians. Contract review, taxes, S-Corp strategy, and take-home pay.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://locumslab.com/blog">
+<link rel="canonical" href="https://locumslab.com/blog">
+<title>Blog -- LocumsLab</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "LocumsLab Blog",
+  "description": "Financial guides for locums CRNAs and physicians.",
+  "url": "https://locumslab.com/blog",
+  "publisher": {
+    "@type": "Organization",
+    "name": "LocumsLab",
+    "url": "https://locumslab.com"
+  }
+}
+</script>
+<style>
+  :root {
+    --navy: #0a2540;
+    --blue: #0066cc;
+    --green: #00a86b;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-600: #475569;
+    --gray-900: #0f172a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', -apple-system, sans-serif; color: var(--gray-900); background: white; line-height: 1.7; }
+
+  header { position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--gray-200); }
+  nav { max-width: 1200px; margin: 0 auto; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-family: 'DM Serif Display', serif; font-size: 1.5rem; font-weight: 400; color: var(--navy); letter-spacing: -0.02em; text-decoration: none; }
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-link { color: var(--gray-600); text-decoration: none; font-size: 0.9375rem; }
+  .nav-link:hover { color: var(--navy); }
+  .nav-cta { background: var(--blue); color: white; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9375rem; transition: all 0.2s; }
+  .nav-cta:hover { background: #0052a3; }
+
+  .page-header { max-width: 760px; margin: 0 auto; padding: 72px 24px 48px; }
+  .section-label { font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.1em; color: var(--green); text-transform: uppercase; margin-bottom: 12px; }
+  .page-header h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 400; color: var(--navy); margin-bottom: 16px; letter-spacing: -0.02em; line-height: 1.2; }
+  .page-header p { font-size: 1.125rem; color: var(--gray-600); max-width: 560px; }
+
+  .posts { max-width: 760px; margin: 0 auto; padding: 0 24px 80px; }
+  .divider { border: none; border-top: 1px solid var(--gray-200); margin-bottom: 48px; }
+
+  .post-card { display: grid; grid-template-columns: 1fr; gap: 12px; padding-bottom: 48px; margin-bottom: 48px; border-bottom: 1px solid var(--gray-200); }
+  .post-card:last-child { border-bottom: none; }
+  .post-meta { font-size: 0.875rem; color: var(--gray-600); display: flex; gap: 16px; align-items: center; }
+  .post-tag { background: var(--gray-100); color: var(--gray-600); padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+  .post-card h2 { font-family: 'DM Serif Display', serif; font-size: 1.75rem; font-weight: 400; color: var(--navy); letter-spacing: -0.01em; line-height: 1.25; }
+  .post-card h2 a { color: inherit; text-decoration: none; }
+  .post-card h2 a:hover { color: var(--blue); }
+  .post-excerpt { font-size: 1.0625rem; color: var(--gray-600); line-height: 1.8; }
+  .post-read-more { display: inline-block; color: var(--blue); font-weight: 600; font-size: 0.9375rem; text-decoration: none; margin-top: 4px; }
+  .post-read-more:hover { text-decoration: underline; }
+
+  .cta-strip { background: var(--navy); color: white; padding: 64px 40px; text-align: center; }
+  .cta-strip h2 { font-family: 'DM Serif Display', serif; font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 400; margin-bottom: 16px; letter-spacing: -0.02em; }
+  .cta-strip p { font-size: 1.125rem; opacity: 0.8; margin-bottom: 32px; }
+  .cta-strip a { background: var(--green); color: white; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 1rem; display: inline-block; transition: background 0.2s; }
+  .cta-strip a:hover { background: #008f5a; }
+
+  footer { padding: 48px 40px 32px; background: var(--navy); color: white; }
+  .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; flex-wrap: wrap; margin-bottom: 32px; }
+  .footer-brand h3 { font-family: 'DM Serif Display', serif; font-size: 1.25rem; font-weight: 400; margin-bottom: 8px; }
+  .footer-brand p { opacity: 0.7; font-size: 0.875rem; max-width: 280px; line-height: 1.6; }
+  .footer-links-group h4 { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; margin-bottom: 12px; }
+  .footer-links-group ul { list-style: none; }
+  .footer-links-group li { margin-bottom: 8px; }
+  .footer-links-group a { color: white; text-decoration: none; font-size: 0.9375rem; opacity: 0.8; }
+  .footer-links-group a:hover { opacity: 1; }
+  .footer-bottom { max-width: 1200px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8125rem; opacity: 0.6; }
+
+  @media (max-width: 640px) {
+    nav { padding: 16px 20px; }
+    .nav-links { gap: 16px; }
+    .page-header { padding: 48px 20px 32px; }
+    .posts { padding: 0 20px 60px; }
+    .cta-strip { padding: 48px 20px; }
+    footer { padding: 40px 20px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="/" class="logo">LocumsLab</a>
+    <div class="nav-links">
+      <a href="/blog" class="nav-link" style="color: var(--navy); font-weight: 600;">Blog</a>
+      <a href="/app.html" class="nav-cta">Open Calculator</a>
+    </div>
+  </nav>
+</header>
+
+<div class="page-header">
+  <div class="section-label">LocumsLab Blog</div>
+  <h1>Locums finance, explained plainly</h1>
+  <p>Contract review, taxes, S-Corp strategy, and take-home pay. Practical guides for CRNAs navigating the move to locums.</p>
+</div>
+
+<div class="posts">
+  <hr class="divider">
+
+  <article class="post-card">
+    <div class="post-meta">
+      <span class="post-tag">Getting Started</span>
+      <span>April 15, 2026</span>
+      <span>9 min read</span>
+    </div>
+    <h2><a href="/blog/locums-crna-dos-and-donts.html">Locums CRNA: What to Do, What to Avoid, and What to Know Before Your First Gig</a></h2>
+    <p class="post-excerpt">The first locums assignment has a learning curve nobody warns you about. The clinical side you can handle. It's the contract language, the facility red flags, and the financial setup where most CRNAs get burned early.</p>
+    <a href="/blog/locums-crna-dos-and-donts.html" class="post-read-more">Read the full guide</a>
+  </article>
+
+  <article class="post-card">
+    <div class="post-meta">
+      <span class="post-tag">Taxes &amp; Income</span>
+      <span>April 3, 2026</span>
+      <span>7 min read</span>
+    </div>
+    <h2><a href="/blog/w2-vs-1099-crna-physician.html">W-2 vs 1099 for CRNAs: What the Difference Actually Means</a></h2>
+    <p class="post-excerpt">When you take a locums contract, you stop being a W-2 employee and become a 1099 independent contractor. That one change touches nearly every part of your financial life: taxes, take-home pay, retirement contributions, malpractice coverage, and benefits. Here's what it actually means in practice.</p>
+    <a href="/blog/w2-vs-1099-crna-physician.html" class="post-read-more">Read the full guide</a>
+  </article>
+
+  <article class="post-card">
+    <div class="post-meta">
+      <span class="post-tag">Contract Review</span>
+      <span>April 2, 2026</span>
+      <span>8 min read</span>
+    </div>
+    <h2><a href="/blog/how-to-review-locums-contract.html">How to Review a Locums Contract: 12 Things CRNAs Miss</a></h2>
+    <p class="post-excerpt">You've been offered a locums contract at $225/hour. It looks good on paper. Then you dig into the language and find out the facility can cancel with 24 hours notice, you're on the hook for tail coverage, and there's a non-compete locking you out of a 50-mile radius for a year. Here's what to look for before you sign anything.</p>
+    <a href="/blog/how-to-review-locums-contract.html" class="post-read-more">Read the full guide</a>
+  </article>
+
+</div>
+
+<div class="cta-strip">
+  <h2>Run the numbers before you decide</h2>
+  <p>Free calculators for staff vs locums, true hourly rate, taxes, S-Corp savings, and more.</p>
+  <a href="/app.html">Open Free Calculator</a>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <h3>LocumsLab</h3>
+      <p>Financial clarity for healthcare professionals making the move to locums.</p>
+    </div>
+    <div class="footer-links-group">
+      <h4>Product</h4>
+      <ul>
+        <li><a href="/app.html">Calculator</a></li>
+        <li><a href="/#pricing">Pricing</a></li>
+        <li><a href="/guide.html">Free Guide</a></li>
+      </ul>
+    </div>
+    <div class="footer-links-group">
+      <h4>Content</h4>
+      <ul>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/blog/how-to-review-locums-contract.html">Contract Review Guide</a></li>
+      </ul>
+    </div>
+    <div class="footer-links-group">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="/#faq">FAQ</a></li>
+        <li><a href="/app.html?contact=true">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 LocumsLab. For illustrative purposes only. Not tax or legal advice.</p>
+  </div>
+</footer>
+
+</body>
+</html>
