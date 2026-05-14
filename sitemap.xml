@@ -10,8 +10,22 @@
 
   <url>
     <loc>https://locumslab.com/blog/</loc>
-    <lastmod>2026-05-10</lastmod>
+    <lastmod>2026-05-12</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://locumslab.com/blog/hottest-locums-crna-markets-2026.html</loc>
+    <lastmod>2026-05-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://locumslab.com/blog/how-to-evaluate-locums-agency-crna.html</loc>
+    <lastmod>2026-05-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
