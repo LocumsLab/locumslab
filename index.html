@@ -181,14 +181,16 @@
   .guide-card-chips { display: flex; gap: 8px; flex-wrap: wrap; }
   .guide-card-chips span { background: rgba(0,168,107,0.2); border: 1px solid rgba(0,168,107,0.4); color: #6ee7b7; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
 </style>
-<script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" data-beehiiv-form="ae4c662f-c04c-4bed-af24-6368e2ed1715"></script>
 </head>
 <body>
 
 <header>
   <nav>
     <div class="logo">LocumsLab</div>
-    <a href="app.html" class="nav-cta">Try Calculator</a>
+    <div style="display:flex; align-items:center; gap:24px;">
+      <a href="/blog" style="color: var(--navy); text-decoration: none; font-size: 0.9375rem; font-weight: 600; border: 1.5px solid var(--gray-200); padding: 8px 18px; border-radius: 8px; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--blue)';this.style.color='var(--blue)'" onmouseout="this.style.borderColor='var(--gray-200)';this.style.color='var(--navy)'">Blog</a>
+      <a href="app.html" class="nav-cta">Try Calculator</a>
+    </div>
   </nav>
 </header>
 
@@ -207,17 +209,17 @@
     </div>
     <div class="problem-grid">
       <div class="problem-card">
-        <div class="problem-icon" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">$</div>
+        <div class="problem-icon"></div>
         <h3>Will I actually make more?</h3>
         <p>Locums rates look good on paper. But what about self-employment tax, malpractice, health insurance, and the weeks you won't work?</p>
       </div>
       <div class="problem-card">
-        <div class="problem-icon" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:white;">%</div>
+        <div class="problem-icon"></div>
         <h3>How hard will taxes hit?</h3>
         <p>Self-employment tax plus federal plus state. Estimating this wrong is one of the most common and expensive mistakes new 1099 providers make.</p>
       </div>
       <div class="problem-card">
-        <div class="problem-icon" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:white;">S</div>
+        <div class="problem-icon"></div>
         <h3>Is an S-Corp worth it for me?</h3>
         <p>It can save thousands in SE tax, but there are real costs and complexity involved. The answer depends on your income level and how you structure your work.</p>
       </div>
@@ -412,6 +414,7 @@
   </div>
 </section>
 
+
 <!-- NEWSLETTER SIGNUP SECTION -->
 <section style="padding: 80px 40px; background: var(--navy); text-align: center;">
   <div style="max-width: 640px; margin: 0 auto;">
@@ -429,7 +432,6 @@
   </div>
 </section>
 <!-- END NEWSLETTER SIGNUP SECTION -->
-
 
 <!-- RATE SUBMISSION SECTION -->
 <section id="rate-submission" style="padding: 80px 40px; background: var(--gray-50); text-align: center;">
@@ -562,6 +564,13 @@ document.addEventListener('keydown', function(e) {
       </ul>
     </div>
     <div class="footer-section">
+      <h4>Learn</h4>
+      <ul class="footer-links">
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/blog/how-to-review-locums-contract.html">Contract Review Guide</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
       <h4>Company</h4>
       <ul class="footer-links">
         <li><a href="#faq">FAQ</a></li>
@@ -569,4 +578,10 @@ document.addEventListener('keydown', function(e) {
       </ul>
     </div>
   </div>
-  <div class="footer-b
+  <div class="footer-bottom">
+    <p>&copy; 2026 LocumsLab. For illustrative purposes only. Not tax or legal advice.</p>
+  </div>
+</footer>
+
+</body>
+</html>
