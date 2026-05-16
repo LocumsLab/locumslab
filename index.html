@@ -13,7 +13,6 @@
 <link rel="canonical" href="https://locumslab.com">
 <title>LocumsLab -- Financial Tools for CRNAs and Physicians</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" data-beehiiv-form="ae4c662f-c04c-4bed-af24-6368e2ed1715"></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -45,8 +44,7 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'DM Sans', -apple-system, sans-serif; color: var(--gray-900); background: white; line-height: 1.7; }
   header { position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--gray-200); }
-  nav { max-width: 1200px; margin: 0 auto; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; gap: 24px; }
-  .nav-right { display: flex; align-items: center; gap: 24px; }
+  nav { max-width: 1200px; margin: 0 auto; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
   .logo { font-family: 'DM Serif Display', serif; font-size: 1.5rem; font-weight: 400; color: var(--navy); letter-spacing: -0.02em; }
   .nav-cta { background: var(--blue); color: white; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9375rem; transition: all 0.2s; }
   .nav-cta:hover { background: #0052a3; transform: translateY(-1px); }
@@ -118,26 +116,6 @@
   .bench-unlock-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--blue); color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 1rem; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,102,204,0.2); }
   .bench-unlock-btn:hover { background: #0052a3; transform: translateY(-2px); }
   .bench-source { text-align: center; margin-top: 20px; font-size: 0.8rem; color: #94a3b8; }
-  .guide-section { padding: 100px 40px; background: var(--gray-50); }
-  .guide-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; max-width: 1100px; margin: 0 auto; }
-  @media (max-width: 900px) { .guide-inner { grid-template-columns: 1fr; } }
-  .section-label { font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.1em; color: var(--green); text-transform: uppercase; margin-bottom: 12px; }
-  .guide-text h2 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 400; color: var(--navy); margin-bottom: 20px; letter-spacing: -0.02em; }
-  .guide-text p { font-size: 1.0625rem; color: var(--gray-600); margin-bottom: 24px; line-height: 1.8; }
-  .guide-chapters { list-style: none; margin-bottom: 32px; }
-  .guide-chapters li { padding: 8px 0; font-size: 0.9375rem; color: var(--gray-600); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--gray-200); }
-  .guide-chapters li::before { content: 'v'; color: var(--green); font-weight: 700; flex-shrink: 0; font-family: monospace; }
-  .guide-cta { display: inline-block; background: var(--green); color: white; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 1rem; transition: all 0.2s; }
-  .guide-cta:hover { background: #008f5a; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,168,107,0.25); }
-  .guide-note { font-size: 0.8125rem; color: var(--gray-600); margin-top: 12px; margin-bottom: 0; }
-  .guide-card-preview { background: var(--navy); border-radius: 16px; padding: 40px; color: white; box-shadow: 0 24px 64px rgba(10,37,64,0.2); }
-  .guide-card-header { display: flex; gap: 12px; margin-bottom: 32px; }
-  .guide-badge { background: var(--green); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; }
-  .guide-badge-sub { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; }
-  .guide-card-title { font-family: 'DM Serif Display', serif; font-size: 2.5rem; line-height: 1.15; color: white; margin-bottom: 16px; letter-spacing: -0.02em; }
-  .guide-card-sub { font-size: 0.875rem; color: rgba(255,255,255,0.55); margin-bottom: 32px; }
-  .guide-card-chips { display: flex; gap: 8px; flex-wrap: wrap; }
-  .guide-card-chips span { background: rgba(0,168,107,0.2); border: 1px solid rgba(0,168,107,0.4); color: #6ee7b7; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
   .pricing { padding: 100px 40px; background: var(--gray-50); }
   .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; max-width: 900px; margin: 64px auto 0; }
   @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
@@ -178,10 +156,30 @@
   @media (max-width: 768px) {
     .hero { padding: 60px 24px 40px; }
     nav { padding: 20px 24px; }
-    .problem, .solution, .templates, .benchmarks, .guide-section, .pricing, .faq, .cta-final { padding: 60px 24px; }
+    .problem, .solution, .templates, .benchmarks, .pricing, .faq, .cta-final { padding: 60px 24px; }
     .bench-table { font-size: 0.8rem; }
     .bench-table thead th, .bench-table tbody td { padding: 12px 10px; }
   }
+  .guide-section { padding: 100px 40px; background: var(--gray-50); }
+  .guide-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; max-width: 1100px; margin: 0 auto; }
+  @media (max-width: 900px) { .guide-inner { grid-template-columns: 1fr; } }
+  .section-label { font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.1em; color: var(--green); text-transform: uppercase; margin-bottom: 12px; }
+  .guide-text h2 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 400; color: var(--navy); margin-bottom: 20px; letter-spacing: -0.02em; }
+  .guide-text p { font-size: 1.0625rem; color: var(--gray-600); margin-bottom: 24px; line-height: 1.8; }
+  .guide-chapters { list-style: none; margin-bottom: 32px; }
+  .guide-chapters li { padding: 8px 0; font-size: 0.9375rem; color: var(--gray-600); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--gray-200); }
+  .guide-chapters li::before { content: 'v'; color: var(--green); font-weight: 700; flex-shrink: 0; font-family: monospace; }
+  .guide-cta { display: inline-block; background: var(--green); color: white; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 1rem; transition: all 0.2s; }
+  .guide-cta:hover { background: #008f5a; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,168,107,0.25); }
+  .guide-note { font-size: 0.8125rem; color: var(--gray-600); margin-top: 12px; margin-bottom: 0; }
+  .guide-card-preview { background: var(--navy); border-radius: 16px; padding: 40px; color: white; box-shadow: 0 24px 64px rgba(10,37,64,0.2); }
+  .guide-card-header { display: flex; gap: 12px; margin-bottom: 32px; }
+  .guide-badge { background: var(--green); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; }
+  .guide-badge-sub { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; }
+  .guide-card-title { font-family: 'DM Serif Display', serif; font-size: 2.5rem; line-height: 1.15; color: white; margin-bottom: 16px; letter-spacing: -0.02em; }
+  .guide-card-sub { font-size: 0.875rem; color: rgba(255,255,255,0.55); margin-bottom: 32px; }
+  .guide-card-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .guide-card-chips span { background: rgba(0,168,107,0.2); border: 1px solid rgba(0,168,107,0.4); color: #6ee7b7; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -189,10 +187,7 @@
 <header>
   <nav>
     <div class="logo">LocumsLab</div>
-    <div class="nav-right">
-      <a href="/blog" style="color: var(--navy); text-decoration: none; font-size: 0.9375rem; font-weight: 600; border: 1.5px solid var(--gray-200); padding: 8px 18px; border-radius: 8px; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--blue)';this.style.color='var(--blue)'" onmouseout="this.style.borderColor='var(--gray-200)';this.style.color='var(--navy)'">Blog</a>
-      <a href="app.html" class="nav-cta">Try Calculator</a>
-    </div>
+    <a href="app.html" class="nav-cta">Try Calculator</a>
   </nav>
 </header>
 
@@ -416,18 +411,6 @@
   </div>
 </section>
 
-<!-- NEWSLETTER SIGNUP SECTION -->
-<section style="padding: 80px 40px; background: var(--navy); text-align: center;">
-  <div style="max-width: 640px; margin: 0 auto;">
-    <div style="display: inline-block; background: rgba(0,168,107,0.2); color: #6ee7b7; padding: 6px 16px; border-radius: 20px; font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 20px;">Free Monthly Report</div>
-    <h2 style="font-family: 'DM Serif Display', serif; font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 400; color: white; margin-bottom: 16px; letter-spacing: -0.02em;">CRNA Locums Market Report</h2>
-    <p style="font-size: 1.0625rem; color: rgba(255,255,255,0.75); margin-bottom: 32px; line-height: 1.7;">Open positions by state. Rate intel from major agencies. What's moving in the market. One email per month, free.</p>
-    <div data-beehiiv-form="ae4c662f-c04c-4bed-af24-6368e2ed1715" style="max-width: 480px; margin: 0 auto;"></div>
-    <p style="font-size: 0.8125rem; color: rgba(255,255,255,0.45); margin-top: 16px;">No spam. Unsubscribe anytime.</p>
-  </div>
-</section>
-<!-- END NEWSLETTER SIGNUP SECTION -->
-
 <section class="pricing" id="pricing">
   <div class="section-inner">
     <div class="section-header">
@@ -490,7 +473,7 @@
       </div>
       <div class="faq-item">
         <h3 class="faq-question">What if I have questions?</h3>
-        <p class="faq-answer">Email us at <a href="mailto:contact@locumslab.com" style="color:var(--blue);text-decoration:underline;">contact@locumslab.com</a> and we'll respond within 24 hours.</p>
+        <p class="faq-answer">Email us at <a href="mailto:hello@locumslab.com" style="color:var(--blue);text-decoration:underline;">hello@locumslab.com</a> and we&rsquo;ll respond within 24 hours.</p>
       </div>
     </div>
   </div>
@@ -517,13 +500,6 @@
       </ul>
     </div>
     <div class="footer-section">
-      <h4>Learn</h4>
-      <ul class="footer-links">
-        <li><a href="/blog">Blog</a></li>
-        <li><a href="/blog/how-to-review-locums-contract">Contract Review Guide</a></li>
-      </ul>
-    </div>
-    <div class="footer-section">
       <h4>Company</h4>
       <ul class="footer-links">
         <li><a href="#faq">FAQ</a></li>
@@ -538,3 +514,4 @@
 
 </body>
 </html>
+
