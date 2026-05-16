@@ -430,6 +430,49 @@
 </section>
 <!-- END NEWSLETTER SIGNUP SECTION -->
 
+
+<!-- RATE SUBMISSION SECTION -->
+<section id="rate-submission" style="padding: 80px 40px; background: var(--gray-50); text-align: center;">
+  <div style="max-width: 680px; margin: 0 auto;">
+    <div style="display: inline-block; background: rgba(0,102,204,0.1); color: var(--blue); padding: 6px 16px; border-radius: 20px; font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 20px;">Community Data</div>
+    <h2 style="font-family: 'DM Serif Display', serif; font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 400; color: var(--navy); margin-bottom: 16px; letter-spacing: -0.02em;">What are you seeing out there?</h2>
+    <p style="font-size: 1.0625rem; color: var(--gray-600); margin-bottom: 12px; line-height: 1.7;">Anonymous. Takes 2 minutes. Every submission helps build the market rate picture for the monthly report.</p>
+    <p style="font-size: 0.9375rem; color: var(--gray-600); margin-bottom: 32px;">State, setting, case mix, rate offered, agency or direct, malpractice covered.</p>
+    <button onclick="openRateForm()" style="background: var(--blue); color: white; border: none; padding: 14px 36px; border-radius: 10px; font-size: 1rem; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 4px 12px rgba(0,102,204,0.2);" onmouseover="this.style.background='#0052a3'" onmouseout="this.style.background='var(--blue)'">
+      Submit a Rate
+    </button>
+    <p style="font-size: 0.8125rem; color: var(--gray-600); margin-top: 14px;">No login. No personal info. 100% anonymous.</p>
+  </div>
+</section>
+
+<!-- Rate Form Modal -->
+<div id="rate-form-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(4px);" onclick="if(event.target===this){closeRateForm();}">
+  <div style="background:white; border-radius:16px; width:min(680px,95vw); height:min(85vh,760px); display:flex; flex-direction:column; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.3);">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:18px 24px; border-bottom:1px solid #e2e8f0; flex-shrink:0;">
+      <div>
+        <div style="font-weight:700; font-size:1rem; color:#0a2540;">Submit a Locums Rate</div>
+        <div style="font-size:0.8125rem; color:#475569; margin-top:2px;">Anonymous &middot; 2 minutes &middot; Helps every CRNA reading the market report</div>
+      </div>
+      <button onclick="closeRateForm()" style="background:none; border:none; font-size:1.5rem; color:#94a3b8; cursor:pointer; padding:4px; line-height:1;">&times;</button>
+    </div>
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfTO6ffR2XUEDcLFE58E0tbtKLE9cbLx4OCxW007eQweBiSVg/viewform?embedded=true" style="flex:1; border:none; width:100%;" loading="lazy" title="LocumsLab Rate Submission">Loading...</iframe>
+  </div>
+</div>
+<script>
+function openRateForm() {
+  document.getElementById('rate-form-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeRateForm() {
+  document.getElementById('rate-form-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeRateForm();
+});
+</script>
+<!-- END RATE SUBMISSION SECTION -->
+
 <section class="pricing" id="pricing">
   <div class="section-inner">
     <div class="section-header">
