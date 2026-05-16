@@ -1016,7 +1016,11 @@
 <div class="choice-title">Contract Review</div>
 <div class="choice-desc">First-pass review of restrictive clauses, missing terms, and issues worth clarifying</div>
 <div style="display:inline-block; margin-top:8px; background: var(--accent); color: white; font-size: 0.625rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em;">PRO</div>
-</div><div class="choice-card" onclick="selectGoal('benchmarks')"><div class="choice-emoji"></div><div class="choice-title">Market Benchmarks</div><div class="choice-desc">Salary, malpractice, retirement & tax data by profession - sourced from BLS 2024</div><div style="display:inline-block; margin-top:8px; background: var(--accent); color: white; font-size: 0.625rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em;">PRO</div></div><div class="choice-card" onclick="selectGoal('explore')"><div class="choice-emoji"></div><div class="choice-title">Explore All Tools</div><div class="choice-desc">Access all calculators including home affordability, loans, and more</div></div></div></div><!-- DASHBOARD --><div class="dashboard hidden" id="dashboardView"><div class="dashboard-header"><h1>Your Scenarios</h1><div class="dashboard-actions"><button class="dash-btn" onclick="showComparisonView()"> Compare Scenarios</button><button class="dash-btn" onclick="startNew()">+ New Scenario</button><button class="dash-btn secondary" onclick="loadScenarios()">Refresh</button></div></div><!-- Pre-populated Templates --><div class="template-section"><h2>Start from a Template</h2><div class="scenarios-grid" id="templatesContainer"></div></div><!-- User Scenarios --><div class="template-section"><h2>My Scenarios</h2><div id="scenariosContainer"></div></div><!-- Comparison View --><div class="comparison-view hidden" id="comparisonView"><div class="comparison-header"><h2>CompareYour Scenarios</h2><button class="export-btn" onclick="exportComparison()"><span></span><span>Export to PDF</span></button></div><div class="comparison-table"><table id="comparisonTable"></table></div><!-- ENHANCED COMPARISON VIEW --><div class="enhanced-comparison hidden" id="enhancedComparison"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;"><h2 style="margin: 0;">Contract Comparison</h2><div><button onclick="exportComparisonCSV()" style="background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 20px; border-radius: 6px; margin-right: 12px; cursor: pointer; font-weight: 600;">
+</div><div class="choice-card" onclick="selectGoal('benchmarks')"><div class="choice-emoji"></div><div class="choice-title">Market Benchmarks</div><div class="choice-desc">Salary, malpractice, retirement & tax data by profession - sourced from BLS 2024</div><div style="display:inline-block; margin-top:8px; background: var(--accent); color: white; font-size: 0.625rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em;">PRO</div></div><div class="choice-card" onclick="selectGoal('explore')"><div class="choice-emoji"></div><div class="choice-title">Explore All Tools</div><div class="choice-desc">Access all calculators including home affordability, loans, and more<div class="choice-card" onclick="openRateForm()" style="border-color: rgba(0,102,204,0.3); background: rgba(0,102,204,0.03);">
+<div class="choice-emoji"></div>
+<div class="choice-title" style="color: var(--blue);">Submit a Rate</div>
+<div class="choice-desc">Seen a locums offer? Share it anonymously. Helps build the market rate picture for the community.</div>
+</div></div></div></div></div><!-- DASHBOARD --><div class="dashboard hidden" id="dashboardView"><div class="dashboard-header"><h1>Your Scenarios</h1><div class="dashboard-actions"><button class="dash-btn" onclick="showComparisonView()"> Compare Scenarios</button><button class="dash-btn" onclick="startNew()">+ New Scenario</button><button class="dash-btn secondary" onclick="loadScenarios()">Refresh</button></div></div><!-- Pre-populated Templates --><div class="template-section"><h2>Start from a Template</h2><div class="scenarios-grid" id="templatesContainer"></div></div><!-- User Scenarios --><div class="template-section"><h2>My Scenarios</h2><div id="scenariosContainer"></div></div><!-- Comparison View --><div class="comparison-view hidden" id="comparisonView"><div class="comparison-header"><h2>CompareYour Scenarios</h2><button class="export-btn" onclick="exportComparison()"><span></span><span>Export to PDF</span></button></div><div class="comparison-table"><table id="comparisonTable"></table></div><!-- ENHANCED COMPARISON VIEW --><div class="enhanced-comparison hidden" id="enhancedComparison"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;"><h2 style="margin: 0;">Contract Comparison</h2><div><button onclick="exportComparisonCSV()" style="background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 20px; border-radius: 6px; margin-right: 12px; cursor: pointer; font-weight: 600;">
  Export CSV
  </button><button onclick="closeEnhancedComparison()" style="background: var(--border); border: none; color: var(--text); padding: 10px 20px; border-radius: 6px; cursor: pointer;">
  Close
@@ -4831,4 +4835,32 @@ document.addEventListener('DOMContentLoaded', function() {
   // No redirect handler needed - analysis happens immediately
 });
 
-</script></body></html>
+</script>
+<!-- Rate Form Modal -->
+<div id="rate-form-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(4px);" onclick="if(event.target===this){closeRateForm();}">
+  <div style="background:#1a1f29; border:1px solid #2d3748; border-radius:16px; width:min(680px,95vw); height:min(85vh,760px); display:flex; flex-direction:column; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:18px 24px; border-bottom:1px solid #2d3748; flex-shrink:0;">
+      <div>
+        <div style="font-weight:700; font-size:1rem; color:#f7fafc;">Submit a Locums Rate</div>
+        <div style="font-size:0.8125rem; color:#94a3b8; margin-top:2px;">Anonymous &middot; 2 minutes &middot; Helps every CRNA reading the market report</div>
+      </div>
+      <button onclick="closeRateForm()" style="background:none; border:none; font-size:1.5rem; color:#94a3b8; cursor:pointer; padding:4px; line-height:1;">&times;</button>
+    </div>
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfTO6ffR2XUEDcLFE58E0tbtKLE9cbLx4OCxW007eQweBiSVg/viewform?embedded=true" style="flex:1; border:none; width:100%; background:white;" loading="lazy" title="LocumsLab Rate Submission">Loading...</iframe>
+  </div>
+</div>
+<script>
+function openRateForm() {
+  document.getElementById('rate-form-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeRateForm() {
+  document.getElementById('rate-form-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeRateForm();
+});
+</script>
+
+</body></html>
