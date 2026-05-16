@@ -1002,7 +1002,11 @@
 --><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="https://js.stripe.com/v3/"></script><script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script></head><body><!-- NEWSLETTER BAR -->
 <div id="newsletter-bar" style="background: #0a2540; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 10px 24px; display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;">
   <span style="color: rgba(255,255,255,0.8); font-size: 0.875rem;">Free monthly CRNA locums market report — rates by state, open positions, market intel.</span>
-  <div data-beehiiv-form="ae4c662f-c04c-4bed-af24-6368e2ed1715" style="display: inline-block;"></div>
+  <form action="https://app.beehiiv.com/subscribe" method="POST" target="_blank" style="display:inline-flex; gap:8px; align-items:center;">
+    <input type="hidden" name="publication_id" value="ae4c662f-c04c-4bed-af24-6368e2ed1715">
+    <input type="email" name="email" required placeholder="Your email" style="padding:7px 14px; border-radius:6px; border:none; font-size:0.875rem; font-family:'Inter',sans-serif; color:#0f1419; outline:none; width:210px;">
+    <button type="submit" style="background:#10b981; color:white; border:none; padding:7px 16px; border-radius:6px; font-size:0.875rem; font-weight:600; font-family:'Inter',sans-serif; cursor:pointer; white-space:nowrap;">Subscribe</button>
+  </form>
   <button onclick="document.getElementById('newsletter-bar').style.display='none'; localStorage.setItem('nl_bar_dismissed','1');" style="background: transparent; border: none; color: rgba(255,255,255,0.4); font-size: 1rem; cursor: pointer; padding: 4px; line-height: 1;">&#10005;</button>
 </div>
 <script>if (localStorage.getItem('nl_bar_dismissed')) { document.getElementById('newsletter-bar').style.display = 'none'; }</script>
