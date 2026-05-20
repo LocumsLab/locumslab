@@ -3,26 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="LocumsLab helps clinicians compare W-2 and 1099 offers, estimate take-home pay, model S-Corp savings, review contract terms, and understand the financial tradeoffs before taking a locums contract.">
-<meta name="keywords" content="locums calculator, CRNA locums calculator, 1099 vs W2 calculator, physician locums tax, S-Corp CRNA, contract review, locum tenens take home pay, healthcare contractor calculator, solo 401k calculator">
+<meta name="description" content="Before you sign the locums contract, run the numbers. Upload your contract for a red-flag review, compare W-2 vs 1099 offers after taxes and expenses, and see whether 1099 work actually makes sense.">
+<meta name="keywords" content="locums contract review, CRNA locums calculator, 1099 vs W2 calculator, physician locums tax, S-Corp CRNA, contract analyzer, locum tenens take home pay, healthcare contractor calculator, solo 401k calculator 2026">
 <meta name="robots" content="index, follow">
-<meta property="og:title" content="LocumsLab — Run the numbers before you take the contract">
-<meta property="og:description" content="Compare W-2 vs 1099 offers, estimate taxes and expenses, model S-Corp savings, and review contract terms before you commit.">
+<meta property="og:title" content="LocumsLab — Before you sign the locums contract, run the numbers">
+<meta property="og:description" content="Upload your contract, check for red flags, compare W-2 vs 1099 offers, estimate taxes and expenses, and see whether 1099 work actually makes sense.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://locumslab.com">
 <link rel="canonical" href="https://locumslab.com">
-<title>LocumsLab — Financial Tools for Locums Clinicians</title>
+<title>LocumsLab — Contract review and offer comparison for locums clinicians</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {"@type":"Question","name":"How much more do locums physicians make compared to staff?","acceptedAnswer":{"@type":"Answer","text":"Locums physicians may earn more in gross income, but the net advantage depends on weeks worked, taxes, malpractice coverage, health insurance, retirement contributions, unpaid time off, and business expenses."}},
-    {"@type":"Question","name":"What is the self-employment tax for 1099 CRNAs and physicians?","acceptedAnswer":{"@type":"Answer","text":"1099 independent contractors generally pay self-employment tax in addition to federal and state income tax. LocumsLab estimates the impact so clinicians can compare W-2 and 1099 offers directionally before speaking with a CPA."}},
-    {"@type":"Question","name":"Should a CRNA or physician form an S-Corp?","acceptedAnswer":{"@type":"Answer","text":"An S-Corporation can reduce self-employment tax for some higher-earning 1099 clinicians, but it also adds payroll, bookkeeping, reasonable salary requirements, and tax filing complexity. The right answer depends on income, expenses, and work structure."}},
-    {"@type":"Question","name":"How much can a 1099 CRNA or physician contribute to a Solo 401k?","acceptedAnswer":{"@type":"Answer","text":"Solo 401(k) contribution limits change by year and depend on income, age, and entity structure. LocumsLab helps users estimate retirement contribution scenarios, but users should confirm final numbers with a tax professional."}},
-    {"@type":"Question","name":"Is the LocumsLab calculator free?","acceptedAnswer":{"@type":"Answer","text":"LocumsLab offers free calculators with optional Pro access for unlimited scenarios, full benchmarks, S-Corp evaluation, side-by-side comparisons, and PDF exports."}}
+    {"@type":"Question","name":"What does the Contract Analyzer actually do?","acceptedAnswer":{"@type":"Answer","text":"Upload a locums contract PDF and the analyzer flags common red-flag clauses, missing protections, payment terms, cancellation language, and malpractice concerns, along with questions to clarify with the recruiter or attorney before signing. It is a first-pass educational review, not legal advice."}},
+    {"@type":"Question","name":"How much more do locums clinicians make compared to staff?","acceptedAnswer":{"@type":"Answer","text":"Locums clinicians may earn more in gross income, but the net advantage depends on weeks worked, taxes, malpractice coverage, health insurance, retirement contributions, unpaid time off, and business expenses. LocumsLab models these directionally so the comparison is based on net, not gross."}},
+    {"@type":"Question","name":"Should a CRNA or physician form an S-Corp?","acceptedAnswer":{"@type":"Answer","text":"An S-Corporation can reduce self-employment tax for some higher-earning 1099 clinicians, but it also adds payroll, bookkeeping, reasonable salary requirements, and tax filing complexity. The S-Corp Worth-It Check estimates whether the likely savings justify the extra admin at your income level."}},
+    {"@type":"Question","name":"How much can a 1099 CRNA or physician contribute to a Solo 401(k) in 2026?","acceptedAnswer":{"@type":"Answer","text":"For 2026, the combined employee and employer Solo 401(k) contribution limit is $72,000 (or up to $80,000 with catch-up contributions for those 50 and older). Higher earners with prior-year wages over $150,000 must make catch-up contributions as Roth starting in 2026. LocumsLab helps estimate retirement scenarios, but final numbers should be confirmed with a tax professional."}},
+    {"@type":"Question","name":"Is the LocumsLab calculator free?","acceptedAnswer":{"@type":"Answer","text":"The core calculators are free. Pro ($39 one-time) unlocks the PDF Contract Analyzer, S-Corp Worth-It Check, full benchmarks, side-by-side scenario comparison, and unlimited PDF exports."}}
   ]
 }
 </script>
@@ -32,14 +32,13 @@
   "@type":"SoftwareApplication",
   "name":"LocumsLab",
   "applicationCategory":"FinanceApplication",
-  "description":"A financial calculator for healthcare professionals comparing staff positions, locums contracts, W-2 income, 1099 income, taxes, retirement contributions, and business expenses.",
+  "description":"Contract review and offer-comparison tools for locums clinicians. Upload contracts for red-flag analysis, compare W-2 vs 1099, model S-Corp scenarios, and estimate take-home pay before signing.",
   "url":"https://locumslab.com",
-  "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
+  "offers":{"@type":"Offer","price":"39","priceCurrency":"USD"},
   "operatingSystem":"Web"
 }
 </script>
 <style>
-  /* Logo is embedded from the supplied LocumsLab image. */
   :root {
     --ink: #111827;
     --navy: #10253f;
@@ -228,6 +227,12 @@
     color: var(--muted);
     font-size: 0.9rem;
   }
+  .hero-disclaimer {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-style: italic;
+  }
 
   .receipt-wrap {
     position: relative;
@@ -306,6 +311,39 @@
     margin-top: 6px;
     font-size: 0.92rem;
   }
+  .flag-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0ece4;
+    color: var(--slate);
+    font-size: 0.93rem;
+  }
+  .flag-row:last-of-type { border-bottom: 0; }
+  .flag-row .label { display: flex; align-items: center; gap: 10px; }
+  .flag-row .dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 99px;
+    flex-shrink: 0;
+  }
+  .flag-row .dot.red { background: #d4504a; }
+  .flag-row .dot.amber { background: #d49a3a; }
+  .flag-row .dot.green { background: var(--green); }
+  .flag-row .tag-mini {
+    font-size: 0.74rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    border-radius: 99px;
+  }
+  .flag-row .tag-mini.red { color: #b03a35; background: rgba(212, 80, 74, 0.12); }
+  .flag-row .tag-mini.amber { color: #8a6420; background: rgba(212, 154, 58, 0.16); }
+  .flag-row .tag-mini.green { color: var(--green); background: var(--green-soft); }
 
   .strip {
     padding: 20px 0 66px;
@@ -399,6 +437,10 @@
     padding: 24px;
     min-height: 225px;
   }
+  .tool-card.featured {
+    border: 2px solid var(--blue);
+    background: linear-gradient(180deg, white, #f7faff);
+  }
   .tool-number {
     width: 34px;
     height: 34px;
@@ -410,12 +452,28 @@
     font-weight: 800;
     margin-bottom: 22px;
   }
+  .tool-card.featured .tool-number {
+    background: var(--blue);
+    color: white;
+  }
   .tool-card h3 {
     color: var(--navy);
     margin-bottom: 8px;
     font-size: 1.12rem;
   }
   .tool-card p { color: var(--slate); font-size: 0.95rem; }
+  .tool-tag {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--blue);
+    background: rgba(31, 111, 235, 0.09);
+    padding: 4px 10px;
+    border-radius: 99px;
+  }
 
   .quickstart {
     padding: 0;
@@ -601,6 +659,7 @@
   .price-card p { color: var(--slate); }
   .price-card ul { list-style: none; margin: 26px 0; display: grid; gap: 12px; }
   .price-card li { color: var(--slate); padding-left: 24px; position: relative; }
+  .price-card li strong { color: var(--ink); font-weight: 800; }
   .price-card li::before { content: "✓"; color: var(--green); position: absolute; left: 0; font-weight: 900; }
   .price-card .button { width: 100%; }
 
@@ -727,7 +786,7 @@
         <a class="nav-link" href="#about">About</a>
         <a class="nav-link" href="/blog">Blog</a>
         <a class="nav-link" href="#pricing">Pricing</a>
-        <a class="button button-primary" href="app.html">Run the numbers</a>
+        <a class="button button-primary" href="app.html">Analyze a contract</a>
       </div>
     </nav>
   </div>
@@ -737,45 +796,50 @@
   <section class="hero">
     <div class="wrap hero-grid">
       <div>
-        <div class="eyebrow">For locums-curious clinicians</div>
-        <h1>Run the numbers before you take the contract.</h1>
-        <p class="hero-copy">The hourly rate is only part of the story. LocumsLab helps clinicians compare W-2 and 1099 offers after taxes, benefits, expenses, retirement options, and the contract details people usually notice too late.</p>
+        <div class="eyebrow">For locums clinicians</div>
+        <h1>Before you sign the locums contract, run the numbers.</h1>
+        <p class="hero-copy">Upload your contract, check for red flags, compare the offer against W-2 income, estimate taxes and expenses, and see whether 1099 work actually makes sense.</p>
         <div class="hero-actions">
-          <a href="app.html" class="button button-primary">Run the numbers</a>
-          <a href="guide.html" class="button button-secondary">Read the free roadmap</a>
+          <a href="app.html" class="button button-primary">Analyze a contract</a>
+          <a href="app.html?start=quickstart" class="button button-secondary">Try the free calculators</a>
         </div>
-        <p class="microcopy">Built for physicians, CRNAs, NPs, PAs, RNs, and other clinicians comparing staff work against 1099 or travel income.</p>
+        <p class="microcopy">Built for CRNAs, physicians, NPs, PAs, and other clinicians comparing staff work against 1099 or travel income.</p>
+        <p class="hero-disclaimer">Educational first-pass review only. Not legal, tax, or financial advice.</p>
       </div>
 
       <div class="receipt-wrap">
-        <div class="receipt-card" aria-label="Example LocumsLab calculation preview">
+        <div class="receipt-card" aria-label="Example LocumsLab contract review preview">
           <div class="receipt-top">
             <div>
-              <div class="receipt-title">Offer comparison</div>
-              <div class="receipt-sub">Example only · Not tax advice</div>
+              <div class="receipt-title">Contract review</div>
+              <div class="receipt-sub">Example only · Educational review</div>
             </div>
-            <span class="pill">1099 check</span>
+            <span class="pill">First pass</span>
           </div>
-          <div class="line-item">
-            <span>W-2 net estimate</span>
-            <strong>$142,000</strong>
+          <div class="flag-row">
+            <span class="label"><span class="dot red"></span>Tail malpractice coverage</span>
+            <span class="tag-mini red">Missing</span>
           </div>
-          <div class="line-item">
-            <span>1099 net estimate</span>
-            <strong>$156,400</strong>
+          <div class="flag-row">
+            <span class="label"><span class="dot amber"></span>Cancellation notice</span>
+            <span class="tag-mini amber">Asymmetric</span>
           </div>
-          <div class="line-item">
-            <span>Malpractice + admin costs</span>
-            <strong>-$7,800</strong>
+          <div class="flag-row">
+            <span class="label"><span class="dot amber"></span>Payment timing</span>
+            <span class="tag-mini amber">Net 45</span>
           </div>
-          <div class="line-item">
-            <span>Solo 401(k) room</span>
-            <strong class="positive">Higher</strong>
+          <div class="flag-row">
+            <span class="label"><span class="dot green"></span>Travel and lodging</span>
+            <span class="tag-mini green">Covered</span>
+          </div>
+          <div class="flag-row">
+            <span class="label"><span class="dot green"></span>Hourly rate vs state benchmark</span>
+            <span class="tag-mini green">Above median</span>
           </div>
           <div class="result-box">
-            <span>Estimated annual difference</span>
-            <strong>+$14,400</strong>
-            <p>The contract may still be worth a closer look, especially if malpractice, travel, and cancellation language are favorable.</p>
+            <span>Worth a closer look</span>
+            <strong>4 questions to ask</strong>
+            <p>Tail coverage, cancellation symmetry, and net-45 payment terms are worth clarifying before signing.</p>
           </div>
         </div>
       </div>
@@ -785,9 +849,9 @@
   <div class="strip">
     <div class="wrap">
       <div class="strip-inner">
-        <div class="strip-item"><b>Take-home pay</b><span>W-2 vs 1099 after tax</span></div>
-        <div class="strip-item"><b>S-Corp scenarios</b><span>Salary, distributions, tradeoffs</span></div>
-        <div class="strip-item"><b>Contract review</b><span>Red flags and negotiation notes</span></div>
+        <div class="strip-item"><b>Contract review</b><span>Red flags and questions to ask</span></div>
+        <div class="strip-item"><b>W-2 vs 1099</b><span>Compare net, not gross</span></div>
+        <div class="strip-item"><b>S-Corp worth-it check</b><span>Is the hassle worth the savings?</span></div>
         <div class="strip-item"><b>Market context</b><span>Rates, benefits, and benchmarks</span></div>
       </div>
     </div>
@@ -801,20 +865,20 @@
       </div>
       <div class="question-list">
         <div class="question-card">
-          <h3>“Will I actually make more?”</h3>
+          <h3>"What's in this contract that I should ask about?"</h3>
+          <p>Upload the PDF for a first-pass review of malpractice, cancellation, payment timing, call requirements, and other terms that locums clinicians commonly notice too late.</p>
+        </div>
+        <div class="question-card">
+          <h3>"Will I actually make more?"</h3>
           <p>Locums rates can look great until you factor in unpaid weeks, health insurance, malpractice, licensing, travel gaps, and quarterly taxes.</p>
         </div>
         <div class="question-card">
-          <h3>“What should I set aside for taxes?”</h3>
-          <p>LocumsLab gives you a practical estimate of federal, state, and self-employment tax so you are not guessing after the money hits your account.</p>
+          <h3>"What should I set aside for taxes?"</h3>
+          <p>Get a practical estimate of federal, state, and self-employment tax so you are not guessing after the money hits your account.</p>
         </div>
         <div class="question-card">
-          <h3>“Is an S-Corp worth the hassle?”</h3>
-          <p>Sometimes yes. Sometimes the savings are not worth the payroll, bookkeeping, and tax filing complexity. The tool helps you see both sides.</p>
-        </div>
-        <div class="question-card">
-          <h3>“What should I ask before signing?”</h3>
-          <p>Upload or review your contract language for common issues around malpractice, termination, call, cancellation, travel, credentialing, and payment timing.</p>
+          <h3>"Is an S-Corp worth the hassle?"</h3>
+          <p>Sometimes yes. Sometimes the savings are not worth the payroll, bookkeeping, and tax filing complexity. The S-Corp Worth-It Check shows both sides at your income level.</p>
         </div>
       </div>
     </div>
@@ -824,39 +888,40 @@
     <div class="wrap">
       <div class="section-head">
         <div class="eyebrow">What it does</div>
-        <h2>One place to compare the money and the fine print.</h2>
-        <p>LocumsLab is not trying to be your CPA or attorney. It gives you a cleaner first pass so your next conversation with a recruiter, spouse, CPA, or attorney is based on numbers instead of vibes.</p>
+        <h2>The contract review and the math in one place.</h2>
+        <p>LocumsLab is not trying to be your CPA or attorney. It gives you a cleaner first pass so your next conversation with a recruiter, spouse, CPA, or attorney is based on numbers and specifics instead of vibes.</p>
       </div>
       <div class="tools-grid">
-        <div class="tool-card">
+        <div class="tool-card featured">
           <div class="tool-number">1</div>
-          <h3>Staff vs locums calculator</h3>
-          <p>Compare gross income, estimated taxes, expenses, benefits, unpaid time, and annual take-home pay.</p>
+          <h3>PDF Contract Analyzer</h3>
+          <p>Upload a locums contract and get a first-pass review of red-flag clauses, missing protections, payment terms, cancellation language, and questions to clarify before signing.</p>
+          <span class="tool-tag">Pro</span>
         </div>
         <div class="tool-card">
           <div class="tool-number">2</div>
-          <h3>S-Corp evaluator</h3>
-          <p>Model reasonable salary, distributions, self-employment tax savings, payroll cost, and whether the structure makes sense.</p>
+          <h3>W-2 vs 1099 comparison</h3>
+          <p>Compare take-home pay, taxes, benefits, retirement room, PTO, and contract risk side by side, including the break-even rate to beat your current W-2.</p>
         </div>
         <div class="tool-card">
           <div class="tool-number">3</div>
-          <h3>Retirement planner</h3>
-          <p>Estimate Solo 401(k), SEP-IRA, and W-2 plan differences so retirement is part of the comparison from the start.</p>
+          <h3>S-Corp Worth-It Check</h3>
+          <p>See if you are earning enough for an S-Corp to be worth the hassle, including payroll, accounting, and filing costs against estimated self-employment tax savings.</p>
         </div>
         <div class="tool-card">
           <div class="tool-number">4</div>
-          <h3>Contract red-flag scan</h3>
-          <p>Review contract language for common issues and generate plain-English negotiation points.</p>
+          <h3>Retirement planner</h3>
+          <p>Estimate Solo 401(k), SEP-IRA, and W-2 plan differences using 2026 limits. The 2026 Solo 401(k) combined limit is $72,000, with new Roth catch-up rules for high earners.</p>
         </div>
         <div class="tool-card">
           <div class="tool-number">5</div>
           <h3>Scenario comparison</h3>
-          <p>Save offers and compare them side by side before you anchor on the highest hourly rate.</p>
+          <p>Save offers and compare them side by side so you do not anchor on the highest hourly rate before seeing the net picture.</p>
         </div>
         <div class="tool-card">
           <div class="tool-number">6</div>
-          <h3>CPA-ready PDF reports</h3>
-          <p>Export your assumptions and estimates so a professional can review the details without starting from scratch.</p>
+          <h3>CPA worksheet PDF</h3>
+          <p>Export your assumptions and estimates as a worksheet to walk through with a CPA, financial planner, or attorney without starting from scratch.</p>
         </div>
       </div>
     </div>
@@ -879,7 +944,7 @@
       <div class="section-head center">
         <div class="eyebrow">Market context</div>
         <h2>Benchmarks help you negotiate without guessing.</h2>
-        <p>Compare salary, malpractice ranges, CME allowances, and retirement contribution ceilings by profession. Use benchmarks as context, then verify the details for your specialty, state, and contract.</p>
+        <p>Compare salary, malpractice ranges, CME allowances, and 2026 retirement contribution ceilings by profession. Use benchmarks as context, then verify the details for your specialty, state, and contract.</p>
       </div>
 
       <div class="table-wrap">
@@ -890,7 +955,7 @@
               <th>BLS Median Salary</th>
               <th>Malpractice/yr</th>
               <th>CME Allowance</th>
-              <th>Max Retirement</th>
+              <th>2026 Max Retirement</th>
             </tr>
           </thead>
           <tbody>
@@ -899,58 +964,58 @@
               <td class="money">$294,300</td>
               <td>$10,000–$30,000</td>
               <td>$3,000–$5,000</td>
-              <td class="green">$70,000</td>
+              <td class="green">$72,000</td>
             </tr>
             <tr>
               <td>CRNA</td>
               <td class="money">$214,500</td>
               <td>$3,000–$8,000</td>
               <td>$2,000–$4,000</td>
-              <td class="green">$70,000</td>
+              <td class="green">$72,000</td>
             </tr>
             <tr>
               <td>Emergency Medicine MD</td>
               <td class="money">$310,640</td>
               <td>$15,000–$50,000</td>
               <td>$3,000–$5,000</td>
-              <td class="green">$70,000</td>
+              <td class="green">$72,000</td>
             </tr>
             <tr>
               <td>Nurse Practitioner</td>
               <td class="money">$126,260</td>
               <td>$1,500–$4,000</td>
               <td>$1,500–$3,000</td>
-              <td class="green">$70,000</td>
+              <td class="green">$72,000</td>
             </tr>
             <tr class="blurred">
               <td>Physician Assistant</td>
               <td class="money">$130,020</td>
               <td>$2,000–$5,000</td>
               <td>$1,500–$3,000</td>
-              <td class="green">$70,000</td>
+              <td class="green">$72,000</td>
             </tr>
             <tr class="blurred">
               <td>Anesthesiologist MD</td>
               <td class="money">$331,190</td>
               <td>$20,000–$60,000</td>
               <td>$3,000–$6,000</td>
-              <td class="green">$70,000</td>
+              <td class="green">$72,000</td>
             </tr>
             <tr class="blurred">
               <td>Registered Nurse</td>
               <td class="money">$93,600</td>
               <td>$500–$2,000</td>
               <td>$500–$1,500</td>
-              <td class="green">$23,500</td>
+              <td class="green">$24,500</td>
             </tr>
           </tbody>
         </table>
         <div class="unlock">
           <p><strong>More professions, tax burden comparisons, and retirement projections</strong> are included with Pro.</p>
-          <a href="app.html" class="button button-primary">See full benchmarks</a>
+          <a href="#pricing" class="button button-primary">See full benchmarks</a>
         </div>
       </div>
-      <p class="source">Sources shown for context: BLS Occupational Employment &amp; Wage Statistics, Medical Liability Monitor, MGMA survey references, and IRS retirement contribution limits. Verify current figures before making tax or legal decisions.</p>
+      <p class="source">Sources for context: BLS Occupational Employment &amp; Wage Statistics, Medical Liability Monitor, MGMA survey references, and 2026 IRS retirement contribution limits (Solo 401(k) combined limit $72,000; employee deferral $24,500). Verify current figures before making tax or legal decisions.</p>
     </div>
   </section>
 
@@ -964,7 +1029,7 @@
           <li>LLC and S-Corp setup basics</li>
           <li>Self-employment tax and deductions</li>
           <li>Malpractice: claims-made vs occurrence</li>
-          <li>Solo 401(k) vs SEP-IRA</li>
+          <li>Solo 401(k) vs SEP-IRA in 2026</li>
           <li>How to find a CPA who understands 1099 healthcare work</li>
         </ul>
         <a href="guide.html" class="button button-green">Download the guide</a>
@@ -973,12 +1038,12 @@
       <div class="panel">
         <div class="eyebrow">Community data</div>
         <h2>What are clinicians actually being offered?</h2>
-        <p>The monthly market report gets better when more people share what they are seeing: state, setting, case mix, rate offered, agency vs direct, and malpractice coverage.</p>
+        <p>Submit an anonymous 1099 offer or current assignment rate. In return, get early access to the full benchmark report as the dataset grows. Two minutes, no name required.</p>
         <ul class="check-list">
-          <li>No login</li>
-          <li>No name or employer required</li>
-          <li>Takes about two minutes</li>
-          <li>Helps build a better rate picture for everyone</li>
+          <li>State, setting, and shift length</li>
+          <li>Hourly rate, call, malpractice, travel</li>
+          <li>No login or employer name</li>
+          <li>30 days of Pro benchmark access on launch</li>
         </ul>
         <button onclick="openRateForm()" class="button button-primary">Submit a rate anonymously</button>
       </div>
@@ -1003,36 +1068,37 @@
     <div class="wrap">
       <div class="section-head center">
         <div class="eyebrow">Pricing</div>
-        <h2>Start free. Upgrade when the extra detail matters.</h2>
-        <p>Use the basic calculators without paying. Pro is for clinicians comparing multiple offers, modeling S-Corp scenarios, or bringing a cleaner report to their CPA.</p>
+        <h2>Review the numbers before you sign.</h2>
+        <p>Use the free calculators for a quick estimate. Upgrade when you need the contract analyzer, S-Corp check, full benchmarks, and an exportable report.</p>
       </div>
       <div class="pricing-grid">
         <div class="price-card">
           <span class="tag">Free</span>
           <h3>For a quick first pass</h3>
           <div class="price">$0</div>
-          <p>Good for seeing whether a locums offer deserves a closer look.</p>
+          <p>Good for checking whether a locums offer deserves a closer look.</p>
           <ul>
-            <li>All seven calculators</li>
+            <li>All core calculators</li>
             <li>Save up to three scenarios</li>
             <li>Basic W-2 vs 1099 comparison</li>
+            <li>Preview rate and expense benchmarks</li>
           </ul>
-          <a href="app.html" class="button button-secondary">Get started</a>
+          <a href="app.html?start=quickstart" class="button button-secondary">Try the calculators</a>
         </div>
         <div class="price-card featured">
           <span class="tag">Pro</span>
-          <h3>For serious comparison</h3>
+          <h3>For serious contract review</h3>
           <div class="price">$39 <span>one-time</span></div>
-          <p>Built for people actively comparing offers or structuring ongoing 1099 work.</p>
+          <p>Built for locums clinicians actively reviewing an offer, comparing 1099 work, or deciding whether the numbers actually make sense.</p>
           <ul>
-            <li>Unlimited saved scenarios</li>
-            <li>S-Corp evaluator</li>
-            <li>Full market benchmarks</li>
-            <li>Side-by-side comparison</li>
-            <li>Unlimited PDF exports</li>
-            <li>Lifetime access</li>
+            <li><strong>PDF Contract Analyzer</strong> — red flags, missing protections, payment terms, and questions to clarify before signing</li>
+            <li><strong>S-Corp Worth-It Check</strong> — see if you are earning enough for S-Corp to be worth the hassle</li>
+            <li><strong>W-2 vs 1099 break-even rate</strong> — the hourly rate you actually need to beat your W-2 after taxes, PTO, and benefits</li>
+            <li><strong>Full market benchmarks</strong> by profession, state, and setting</li>
+            <li><strong>CPA worksheet PDF</strong> for your next CPA or attorney conversation</li>
+            <li>Unlimited saved scenarios and lifetime access</li>
           </ul>
-          <a href="app.html" class="button button-primary">Start free</a>
+          <a href="app.html?upgrade=pro" class="button button-primary">Unlock Pro — $39</a>
         </div>
       </div>
     </div>
@@ -1046,20 +1112,24 @@
       </div>
       <div class="faq-list">
         <div class="faq-item">
+          <h3>What does the Contract Analyzer actually do?</h3>
+          <p>You upload a locums contract PDF and the analyzer flags common red-flag clauses, missing protections (such as tail coverage), payment terms, cancellation language, and malpractice concerns. It also generates a list of questions to clarify with the recruiter or attorney before signing. It is an educational first-pass review, not legal advice.</p>
+        </div>
+        <div class="faq-item">
           <h3>How accurate are the calculations?</h3>
           <p>The calculations are meant for directional planning. They help you compare assumptions and spot major differences. Final tax, legal, entity, and contract decisions should be reviewed with a CPA or attorney.</p>
         </div>
         <div class="faq-item">
           <h3>Where does the benchmark data come from?</h3>
-          <p>Salary benchmarks reference BLS Occupational Employment &amp; Wage Statistics. Malpractice and benefit ranges use industry survey references where available. Treat all benchmarks as context, not a guarantee for your market.</p>
+          <p>Salary benchmarks reference BLS Occupational Employment &amp; Wage Statistics. Malpractice and benefit ranges use industry survey references where available. Retirement limits reflect 2026 IRS figures. Community-reported rate data will expand as more clinicians submit anonymous rates. Treat benchmarks as context, not a guarantee for your market.</p>
         </div>
         <div class="faq-item">
-          <h3>What is included in the S-Corp evaluator?</h3>
-          <p>It compares sole proprietor and S-Corp assumptions, including estimated tax savings, salary and distribution splits, payroll/admin cost, and whether the potential savings appear meaningful enough to discuss with a CPA.</p>
+          <h3>What is included in the S-Corp Worth-It Check?</h3>
+          <p>It compares sole proprietor and S-Corp assumptions, including estimated self-employment tax savings, salary and distribution splits, payroll and admin cost, and whether the potential savings appear meaningful enough at your income level to discuss with a CPA.</p>
         </div>
         <div class="faq-item">
           <h3>Can I export my scenarios?</h3>
-          <p>Yes. Pro users can export scenario and comparison reports as PDFs for a spouse, CPA, financial planner, or attorney.</p>
+          <p>Yes. Pro users can export scenario and comparison reports as worksheet PDFs for a spouse, CPA, financial planner, or attorney.</p>
         </div>
         <div class="faq-item">
           <h3>Is this only for CRNAs?</h3>
@@ -1077,7 +1147,7 @@
     <div class="wrap">
       <h2>Before you sign, run the math.</h2>
       <p>A better offer is not always the one with the bigger hourly rate. Compare the take-home pay, the structure, and the contract risk in one place.</p>
-      <a href="app.html" class="button button-green">Try the free calculator</a>
+      <a href="app.html" class="button button-green">Analyze a contract</a>
     </div>
   </section>
 </main>
@@ -1090,11 +1160,12 @@
           <span class="logo-word"><span class="logo-locums">Locums</span><span class="logo-lab">Lab</span></span>
           <span class="logo-tagline">Financial tools for clinicians</span>
         </div>
-        <p>Financial clarity for clinicians comparing staff work, locums contracts, and 1099 healthcare income.</p>
+        <p>Contract review and financial clarity for clinicians comparing staff work, locums contracts, and 1099 healthcare income.</p>
       </div>
       <div>
         <h3>Product</h3>
-        <a href="app.html">Calculator</a>
+        <a href="app.html">Contract Analyzer</a>
+        <a href="app.html?start=quickstart">Calculators</a>
         <a href="#pricing">Pricing</a>
         <a href="guide.html">Free guide</a>
       </div>
@@ -1119,7 +1190,7 @@
     <div class="modal-head">
       <div>
         <b>Submit a locums rate</b>
-        <span>Anonymous · about two minutes · helps improve the monthly market report</span>
+        <span>Anonymous · about two minutes · 30 days of Pro benchmark access on launch</span>
       </div>
       <button onclick="closeRateForm()" class="close-btn" aria-label="Close rate submission form">&times;</button>
     </div>
