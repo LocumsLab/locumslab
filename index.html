@@ -572,6 +572,7 @@
     margin-bottom: 12px;
   }
   .panel p { color: var(--slate); margin-bottom: 22px; }
+  .panel .panel-note { color: var(--muted); font-size: 0.86rem; font-style: italic; margin-top: -10px; margin-bottom: 0; }
   .check-list { list-style: none; display: grid; gap: 11px; margin: 22px 0 28px; }
   .check-list li { color: var(--slate); padding-left: 26px; position: relative; }
   .check-list li::before {
@@ -1038,14 +1039,15 @@
       <div class="panel">
         <div class="eyebrow">Community data</div>
         <h2>What are clinicians actually being offered?</h2>
-        <p>Submit an anonymous 1099 offer or current assignment rate. In return, get early access to the full benchmark report as the dataset grows. Two minutes, no name required.</p>
+        <p>Submit an anonymous 1099 offer or current assignment rate. The more clinicians who share what they are seeing, the sooner the Locums Rate Report ships, and submitters get it first. Two minutes, no name required.</p>
         <ul class="check-list">
           <li>State, setting, and shift length</li>
           <li>Hourly rate, call, malpractice, travel</li>
           <li>No login or employer name</li>
-          <li>30 days of Pro benchmark access on launch</li>
+          <li>Be first to get the Locums Rate Report when it launches</li>
         </ul>
         <button onclick="openRateForm()" class="button button-primary">Submit a rate anonymously</button>
+        <p class="panel-note">Targeting late 2026 with enough verified submissions.</p>
       </div>
     </div>
   </section>
@@ -1190,7 +1192,7 @@
     <div class="modal-head">
       <div>
         <b>Submit a locums rate</b>
-        <span>Anonymous · about two minutes · 30 days of Pro benchmark access on launch</span>
+        <span>Anonymous · about two minutes · be first to receive the Locums Rate Report when it launches</span>
       </div>
       <button onclick="closeRateForm()" class="close-btn" aria-label="Close rate submission form">&times;</button>
     </div>
