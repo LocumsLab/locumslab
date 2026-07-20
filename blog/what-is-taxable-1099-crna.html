@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="What counts as taxable income for 1099 CRNAs, what you can deduct, which stipends are tax-free, and what the IRS actually expects you to report.">
+<meta name="keywords" content="1099 CRNA taxes, what is taxable 1099 CRNA, CRNA tax deductions, locums CRNA taxable income, housing stipend taxable CRNA, 1099 CRNA self employment tax">
+<meta property="og:title" content="What Is Taxable as a 1099 CRNA: Income, Stipends, and Deductions Explained">
+<meta property="og:description" content="What counts as taxable income, what you can deduct, which stipends are tax-free, and what the IRS expects you to report as a 1099 CRNA.">
+<meta property="og:type" content="article">
+<link rel="canonical" href="https://locumslab.com/blog/what-is-taxable-1099-crna.html">
+<title>What Is Taxable as a 1099 CRNA | LocumsLab</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "What Is Taxable as a 1099 CRNA: Income, Stipends, and Deductions Explained",
+  "description": "What counts as taxable income, what you can deduct, which stipends are tax-free, and what the IRS expects you to report as a 1099 CRNA.",
+  "datePublished": "2026-07-20",
+  "publisher": {
+    "@type": "Organization",
+    "name": "LocumsLab",
+    "url": "https://locumslab.com"
+  }
+}
+</script>
+<style>
+  :root {
+    --navy: #0a2540;
+    --blue: #0066cc;
+    --green: #10b981;
+    --red: #dc2626;
+    --amber: #d97706;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-600: #475569;
+    --gray-900: #0f172a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', -apple-system, sans-serif; color: var(--gray-900); background: white; line-height: 1.8; }
+
+  header { position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--gray-200); }
+  nav { max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--navy); text-decoration: none; }
+  .nav-right { display: flex; align-items: center; gap: 20px; }
+  .nav-link { color: var(--gray-600); text-decoration: none; font-size: 0.9375rem; }
+  .nav-link:hover { color: var(--navy); }
+  .nav-cta { background: var(--blue); color: white; padding: 9px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9375rem; }
+  .nav-cta:hover { background: #0052a3; }
+
+  article { max-width: 720px; margin: 60px auto; padding: 0 24px; }
+  .article-meta { color: var(--gray-600); font-size: 0.9375rem; margin-bottom: 24px; }
+  h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 2.75rem); line-height: 1.2; color: var(--navy); margin-bottom: 16px; letter-spacing: -0.02em; }
+  .article-intro { font-size: 1.25rem; color: var(--gray-600); margin-bottom: 40px; line-height: 1.7; }
+  h2 { font-family: 'DM Serif Display', serif; font-size: 1.75rem; color: var(--navy); margin: 48px 0 20px; letter-spacing: -0.01em; }
+  h3 { font-size: 1.125rem; font-weight: 700; color: var(--navy); margin: 32px 0 12px; }
+  p { margin-bottom: 24px; font-size: 1.0625rem; line-height: 1.8; }
+  strong { color: var(--navy); }
+  ul, ol { margin: 0 0 24px 28px; }
+  li { margin-bottom: 10px; font-size: 1.0625rem; line-height: 1.7; }
+
+  .tax-table { width: 100%; border-collapse: collapse; margin: 28px 0; font-size: 0.9375rem; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .tax-table thead tr { background: var(--navy); color: white; }
+  .tax-table thead th { padding: 13px 20px; text-align: left; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+  .tax-table tbody tr { border-bottom: 1px solid var(--gray-200); }
+  .tax-table tbody tr:last-child { border-bottom: none; }
+  .tax-table tbody tr:nth-child(even) { background: var(--gray-50); }
+  .tax-table tbody td { padding: 13px 20px; vertical-align: top; line-height: 1.6; }
+  .tax-table tbody td:first-child { font-weight: 600; color: var(--navy); }
+  .taxable { color: var(--red); font-weight: 700; }
+  .not-taxable { color: var(--green); font-weight: 700; }
+  .conditional { color: var(--amber); font-weight: 700; }
+
+  .callout { border-radius: 10px; padding: 24px 28px; margin: 28px 0; }
+  .callout-info { background: var(--gray-50); border-left: 4px solid var(--blue); }
+  .callout-info-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+  .callout-info p { font-size: 1rem; color: var(--gray-600); margin-bottom: 0; line-height: 1.75; }
+  .callout-info strong { color: var(--navy); }
+  .callout-warning { background: rgba(220,38,38,0.05); border-left: 4px solid var(--red); }
+  .callout-warning-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); margin-bottom: 10px; }
+  .callout-warning p { font-size: 1rem; color: var(--gray-600); margin-bottom: 0; line-height: 1.75; }
+  .callout-example { background: rgba(217,119,6,0.06); border-left: 4px solid var(--amber); }
+  .callout-example-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); margin-bottom: 10px; }
+  .callout-example p { font-size: 1rem; color: var(--gray-600); margin-bottom: 8px; line-height: 1.75; }
+  .callout-example p:last-child { margin-bottom: 0; }
+  .callout-example strong { color: var(--navy); }
+
+  .deduction-card { background: white; border: 1px solid var(--gray-200); border-radius: 10px; padding: 20px 24px; margin-bottom: 12px; display: flex; gap: 16px; align-items: flex-start; }
+  .deduction-check { width: 22px; height: 22px; background: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.75rem; flex-shrink: 0; margin-top: 2px; }
+  .deduction-content h4 { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .deduction-content p { font-size: 0.9375rem; color: var(--gray-600); margin-bottom: 0; line-height: 1.6; }
+
+  .divider { border: none; border-top: 1px solid var(--gray-200); margin: 48px 0; }
+
+  .tool-cta { background: var(--navy); border-radius: 12px; padding: 36px 40px; margin: 48px 0; color: white; }
+  .tool-cta h3 { color: white; margin: 0 0 10px; font-size: 1.25rem; }
+  .tool-cta p { color: rgba(255,255,255,0.8); margin-bottom: 24px; font-size: 1rem; line-height: 1.7; }
+  .tool-cta-btn { display: inline-block; background: var(--green); color: white; padding: 13px 28px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 1rem; }
+  .tool-cta-btn:hover { background: #059669; }
+
+  .share-bar { border-top: 1px solid var(--gray-200); margin-top: 56px; padding-top: 32px; }
+  .share-bar-label { font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-600); margin-bottom: 14px; }
+  .share-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+  .share-btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; text-decoration: none; border: 1.5px solid var(--gray-200); color: var(--navy); background: white; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+  .share-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--gray-50); }
+  .share-btn svg { flex-shrink: 0; }
+  .share-btn.copied { border-color: var(--green); color: var(--green); }
+
+  .footer-cta { background: var(--navy); color: white; text-align: center; padding: 60px 24px; margin-top: 80px; }
+  .footer-cta h2 { font-family: 'DM Serif Display', serif; color: white; margin-bottom: 16px; font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 400; }
+  .footer-cta p { color: rgba(255,255,255,0.75); margin-bottom: 32px; max-width: 480px; margin-left: auto; margin-right: auto; font-size: 1.0625rem; }
+  .footer-cta-btn { display: inline-block; background: var(--green); color: white; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 1rem; }
+  .footer-cta-btn:hover { background: #059669; }
+
+  @media (max-width: 640px) {
+    .tool-cta { padding: 28px 22px; }
+    .callout { padding: 18px 20px; }
+    .tax-table thead th, .tax-table tbody td { padding: 10px 12px; font-size: 0.875rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="/" class="logo">LocumsLab</a>
+    <div class="nav-right">
+      <a href="/blog" class="nav-link">Blog</a>
+      <a href="/app.html" class="nav-cta">Open Calculator</a>
+    </div>
+  </nav>
+</header>
+
+<article>
+  <div class="article-meta">July 20, 2026 &middot; 8 min read</div>
+
+  <h1>What Is Taxable as a 1099 CRNA: Income, Stipends, and Deductions Explained</h1>
+
+  <p class="article-intro">Going from W-2 to 1099 changes your entire relationship with the IRS. As an employee, your employer handled withholding, reported your income, and split payroll taxes with you. As a 1099 contractor, you are responsible for tracking what is taxable, what is not, what you can deduct, and what you owe every quarter. Most new 1099 CRNAs get at least one of these wrong in year one. Here is a plain-language breakdown.</p>
+
+  <h2>The Starting Point: What the IRS Sees</h2>
+
+  <p>When you work as a 1099 contractor, every agency or facility that pays you $600 or more in a calendar year is required to issue you a Form 1099-NEC showing your total gross payments. That number goes on your tax return as self-employment income. It is your starting point, not your ending point.</p>
+
+  <p>From that gross number, you subtract legitimate business deductions to arrive at your net self-employment income. You then pay self-employment tax (15.3% on 92.35% of net income up to the Social Security wage base, then 2.9% Medicare tax above that) plus federal and state income tax on the net amount.</p>
+
+  <p>The difference between gross income and net income is where most of the tax planning happens. A CRNA who earns $280,000 gross but has $45,000 in legitimate deductions pays taxes on $235,000, not $280,000. At a 32% marginal rate, that difference saves roughly $14,400 in federal income tax alone, on top of the SE tax reduction.</p>
+
+  <h2>What Is and Is Not Taxable</h2>
+
+  <table class="tax-table">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Tax Status</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Clinical hourly or weekly contract pay</td>
+        <td class="taxable">Taxable</td>
+        <td>Your primary 1099-NEC income. Fully subject to SE tax and income tax.</td>
+      </tr>
+      <tr>
+        <td>Call pay and overtime</td>
+        <td class="taxable">Taxable</td>
+        <td>Paid as part of contract compensation. Treated the same as base rate.</td>
+      </tr>
+      <tr>
+        <td>Completion bonuses</td>
+        <td class="taxable">Taxable</td>
+        <td>Reported on 1099-NEC. Taxable in the year received.</td>
+      </tr>
+      <tr>
+        <td>Housing stipends (tax home rules met)</td>
+        <td class="not-taxable">Not taxable</td>
+        <td>Must maintain a tax home and be working away from it. See section below.</td>
+      </tr>
+      <tr>
+        <td>Travel and per diem stipends (tax home rules met)</td>
+        <td class="not-taxable">Not taxable</td>
+        <td>Same tax home requirement applies.</td>
+      </tr>
+      <tr>
+        <td>Housing stipends (no tax home)</td>
+        <td class="taxable">Taxable</td>
+        <td>If you have no permanent residence, all stipends are taxable income.</td>
+      </tr>
+      <tr>
+        <td>Malpractice premiums reimbursed by agency</td>
+        <td class="not-taxable">Not taxable</td>
+        <td>If paid directly by agency, not income to you. If reimbursed, deductible expense.</td>
+      </tr>
+      <tr>
+        <td>Credentialing and licensing fee reimbursements</td>
+        <td class="conditional">Conditional</td>
+        <td>If included in your 1099, deductible as a business expense. Net effect is zero.</td>
+      </tr>
+      <tr>
+        <td>CME reimbursements</td>
+        <td class="conditional">Conditional</td>
+        <td>If added to your 1099, deductible. If paid directly by facility, not your income.</td>
+      </tr>
+      <tr>
+        <td>Solo 401k contributions</td>
+        <td class="not-taxable">Not taxable (deferred)</td>
+        <td>Pre-tax contributions reduce your taxable income dollar for dollar.</td>
+      </tr>
+      <tr>
+        <td>Health insurance premiums (self-employed)</td>
+        <td class="not-taxable">Deductible</td>
+        <td>100% deductible as an above-the-line deduction, reducing adjusted gross income.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>The Housing Stipend Question</h2>
+
+  <p>This is the one that trips up the most CRNAs going locums, and the stakes are high. A housing or travel stipend can be $1,500 to $3,000 per week. Over a 13-week assignment that is $20,000 to $39,000. Whether that is tax-free or fully taxable depends entirely on one thing: whether you qualify as a traveler under IRS rules.</p>
+
+  <p>The IRS considers stipends tax-free if you meet two conditions. First, you must have a legitimate tax home -- a permanent residence where you have ongoing expenses (rent, mortgage, utilities) and where you return when not on assignment. Second, you must be working away from that tax home on a temporary basis, generally defined as less than one year at the same location.</p>
+
+  <div class="callout callout-warning">
+    <div class="callout-warning-label">The scenario that makes stipends taxable</div>
+    <p>If you give up your apartment, put your belongings in storage, and travel full-time with no permanent home base, the IRS considers you an itinerant worker with no tax home. In that case, every housing and travel stipend you receive is ordinary taxable income. This catches a lot of new locums CRNAs who think the stipend is always tax-free.</p>
+  </div>
+
+  <p>Maintaining a tax home does not have to be expensive. Renting a room, maintaining a lease with a family member at fair market value, or owning a home you return to between assignments all count. The key is that you have real, ongoing housing costs at your primary location and can document them.</p>
+
+  <div class="callout callout-info">
+    <div class="callout-info-label">One more rule to know</div>
+    <p>Even with a valid tax home, stipends become taxable if you work at the same facility for more than 12 months. The IRS views that as your new tax home, eliminating the tax-free treatment going forward. If you extend a contract past the 12-month mark, talk to a CPA about how this affects your stipend classification before signing.</p>
+  </div>
+
+  <h2>Deductions: What You Can Subtract</h2>
+
+  <p>This is where 1099 status works in your favor. As a W-2 employee, your ability to deduct work-related expenses is extremely limited. As a self-employed contractor, a wide range of legitimate business expenses reduce your taxable income directly.</p>
+
+  <div class="deduction-card">
+    <div class="deduction-check">&#10003;</div>
+    <div class="deduction-content">
+      <h4>Malpractice insurance premiums</h4>
+      <p>Fully deductible as a business expense. If you pay $6,000 per year for individual coverage, that reduces your net self-employment income by $6,000 before any taxes are calculated.</p>
+    </div>
+  </div>
+
+  <div class="deduction-card">
+    <div class="deduction-check">&#10003;</div>
+    <div class="deduction-content">
+      <h4>Health insurance premiums</h4>
+      <p>Self-employed CRNAs can deduct 100% of health, dental, and vision insurance premiums for themselves and their families as an above-the-line deduction. This reduces your adjusted gross income, not just your taxable income, which has additional downstream benefits.</p>
+    </div>
+  </div>
+
+  <div class="deduction-card">
+    <div class="deduction-check">&#10003;</div>
+    <div class="deduction-content">
+      <h4>Professional licensing and DEA registration</h4>
+      <p>State license renewal fees, DEA registration, NBCRNA recertification fees, and similar professional credentialing costs are deductible business expenses. Track every one of them.</p>
+    </div>
+  </div>
+
+  <div class="deduction-card">
+    <div class="deduction-check">&#10003;</div>
+    <div class="deduction-content">
+      <h4>Continuing medical education</h4>
+      <p>Conference registration, travel to CME events, required courses, and related materials are deductible. If your contract does not include a CME allowance, you are paying for this yourself and should be deducting every dollar.</p>
+    </div>
+  </div>
+
+  <div class="deduction-card">
+    <div class="deduction-check">&#10003;</div>
+    <div class="deduction-content">
+      <h4>Professional association dues and subscriptions</h4>
+      <p>AANA membership, specialty society dues, clinical reference subscriptions, and similar professional memberships are deductible as ordinary business expenses.</p>
+    </div>
+  </div>
+
+  <div class="deduction-card">
+    <div class="deduction-check">&#10003;</div>
+    <div class="deduction-content">
+      <h4>Home office deduction</h4>
+      <p>If you use a dedicated space in your home regularly and exclusively for business -- reviewing contracts, managing billing, business calls -- you can deduct either $5 per square foot (simplified method, up to 300 sq ft) or the actual proportional cost of that space. Requires the space to be used only for business, not also as a guest room or general workspace.</p>
+    </div>
+  </div>
+
+  <div class="deduction-card">
+    <div class="deduction-check">&#10003;</div>
+    <div class="deduction-content">
+      <h4>Business mileage and travel</h4>
+      <p>Driving to and from assignment locations, airports, and business-related destinations is deductible at the IRS standard mileage rate (67 cents per mile in 2024). Keep a mileage log. Commuting from home to a regular workplace is not deductible, but travel to temporary work locations typically is.</p>
+    </div>
+  </div>
+
+  <div class="deduction-card">
+    <div class="deduction-check">&#10003;</div>
+    <div class="deduction-content">
+      <h4>Clinical equipment and supplies</h4>
+      <p>Stethoscopes, monitoring equipment, clinical reference materials, scrubs used exclusively for work, and similar items you purchase yourself are deductible. Keep receipts.</p>
+    </div>
+  </div>
+
+  <div class="deduction-card">
+    <div class="deduction-check">&#10003;</div>
+    <div class="deduction-content">
+      <h4>Half of self-employment tax</h4>
+      <p>This one is automatic and often overlooked. The IRS allows you to deduct half of your self-employment tax from your gross income as an above-the-line deduction. On $30,000 in SE tax, that is a $15,000 deduction. Your tax software or CPA handles this, but it is worth knowing it exists.</p>
+    </div>
+  </div>
+
+  <div class="deduction-card">
+    <div class="deduction-check">&#10003;</div>
+    <div class="deduction-content">
+      <h4>Retirement contributions</h4>
+      <p>Solo 401k contributions reduce your taxable income dollar for dollar. In 2025, you can contribute up to $70,000 between the employee and employer sides. At a 32% marginal rate, maxing a Solo 401k saves roughly $22,400 in federal income tax in addition to the deferred growth.</p>
+    </div>
+  </div>
+
+  <div class="deduction-card">
+    <div class="deduction-check">&#10003;</div>
+    <div class="deduction-content">
+      <h4>CPA and professional fees</h4>
+      <p>What you pay your accountant, tax preparer, and financial advisor for business-related services is a deductible business expense. The cost of getting this right is itself a write-off.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <h2>Quarterly Estimated Taxes</h2>
+
+  <p>As a 1099 contractor, nobody withholds taxes for you. The IRS expects you to pay estimated taxes four times a year: April 15, June 15, September 15, and January 15. Missing these deadlines results in an underpayment penalty on top of whatever you owe in April.</p>
+
+  <p>A workable starting point for most 1099 CRNAs is to set aside 28 to 32 percent of every payment received into a separate savings account. This covers federal income tax and self-employment tax for most income levels. If you are in a high-tax state, push that closer to 35 to 38 percent.</p>
+
+  <div class="callout callout-example">
+    <div class="callout-example-label">What this looks like in practice</div>
+    <p>You receive a $24,000 payment for a 4-week locums block. Transfer $7,200 (30%) to your tax savings account immediately. Leave it there. At quarter end, send the estimated payment to the IRS via EFTPS. Whatever is left in the tax account after April filing is yours to keep.</p>
+    <p><strong>The goal is to never be surprised by a tax bill.</strong> The money is already accounted for before you spend anything.</p>
+  </div>
+
+  <p>If your income varies significantly quarter to quarter, work with a CPA to calculate your actual estimated payments rather than using a flat percentage. Underpaying in high-income quarters and overpaying in low-income quarters creates cash flow problems that are easy to avoid with accurate quarterly projections.</p>
+
+  <div class="tool-cta">
+    <h3>Estimate your quarterly tax payments</h3>
+    <p>The Tax Estimator calculates your self-employment tax, federal income tax, and quarterly payment amount based on your actual income and deductions.</p>
+    <a href="/app.html" class="tool-cta-btn">Open Tax Estimator</a>
+  </div>
+
+  <h2>The Deductions Most CRNAs Miss</h2>
+
+  <p>After working through the common deductions, a few consistently get overlooked.</p>
+
+  <p><strong>Cell phone and internet.</strong> If you use your phone and home internet for business purposes (and most 1099 CRNAs do, for scheduling, contracts, and communication), the business-use percentage is deductible. If you use your phone 70% for business, 70% of the annual cost is a deductible expense.</p>
+
+  <p><strong>Bank and transaction fees.</strong> Monthly fees on your business checking account, wire transfer fees, and payment processing costs are deductible business expenses. They are small individually but add up over a year.</p>
+
+  <p><strong>Uniforms and scrubs.</strong> Scrubs and clinical attire required for work that are not suitable for everyday wear are deductible. Keep receipts. The IRS is specific about this: the clothing must be required for work and not adaptable to general use.</p>
+
+  <p><strong>Travel to interviews and credentialing visits.</strong> If you travel to visit a facility before accepting an assignment, or travel for credentialing purposes, that travel cost may be deductible as an ordinary business expense. Keep documentation of the purpose of the trip.</p>
+
+  <p><strong>Software and subscriptions used for business.</strong> Tax software, accounting software, clinical reference apps, contract review tools, and similar subscriptions used for your business are deductible. Keep a list at the end of each year -- these are easy to forget.</p>
+
+  <h2>What to Track and How</h2>
+
+  <p>The deductions above are only useful if you can document them. An IRS audit requires receipts and records. "I think I spent about that much" is not documentation.</p>
+
+  <p>The simplest system that works: a dedicated business credit card used exclusively for business expenses, reviewed and categorized monthly. At year end, export the statement and hand it to your CPA. Every deductible expense is already in one place with a receipt attached to the transaction. This alone eliminates most of the friction around tax prep and audit protection.</p>
+
+  <p>A business checking account paired with a business credit card keeps your finances clean, makes deduction tracking automatic, and takes about 20 minutes per month to maintain. It is the single highest-leverage administrative habit for a 1099 CRNA.</p>
+
+  <h2>The Bottom Line</h2>
+
+  <p>Taxable income as a 1099 CRNA is not your gross 1099-NEC number. It is what is left after legitimate deductions, the SE tax deduction, retirement contributions, and health insurance premiums. For a CRNA grossing $280,000, those reductions can bring the taxable number down to $190,000 to $210,000, depending on the specific situation.</p>
+
+  <p>The difference between a CRNA who tracks everything and one who does not is not a minor rounding error. It is often $15,000 to $25,000 per year in taxes unnecessarily paid. The tax code is not in your favor by default. You have to know what you are entitled to and document it.</p>
+
+  <p>If you have not already found a CPA who works specifically with 1099 healthcare contractors, that is the highest-value use of the money you will save from reading this post.</p>
+
+  <div class="share-bar">
+    <div class="share-bar-label">Share this post</div>
+    <div class="share-buttons">
+      <button class="share-btn" onclick="copyLink(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <span>Copy link</span>
+      </button>
+      <a class="share-btn" id="fb-share" href="#" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        Facebook
+      </a>
+      <a class="share-btn" id="li-share" href="#" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        LinkedIn
+      </a>
+      <a class="share-btn" id="x-share" href="#" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.259 5.631zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X
+      </a>
+    </div>
+  </div>
+  <script>
+    (function() {
+      var url = window.location.href;
+      var title = encodeURIComponent(document.title);
+      var u = encodeURIComponent(url);
+      document.getElementById("fb-share").href = "https://www.facebook.com/sharer/sharer.php?u=" + u;
+      document.getElementById("li-share").href = "https://www.linkedin.com/sharing/share-offsite/?url=" + u;
+      document.getElementById("x-share").href = "https://x.com/intent/tweet?url=" + u + "&text=" + title;
+    })();
+    function copyLink(btn) {
+      navigator.clipboard.writeText(window.location.href).then(function() {
+        var span = btn.querySelector("span");
+        span.textContent = "Copied!";
+        btn.classList.add("copied");
+        setTimeout(function() { span.textContent = "Copy link"; btn.classList.remove("copied"); }, 2000);
+      });
+    }
+  </script>
+
+</article>
+
+<div class="footer-cta">
+  <h2>See what you actually owe after deductions</h2>
+  <p>Free tax estimator for 1099 CRNAs. Enter your income and deductions and see your quarterly payment amount.</p>
+  <a href="/app.html" class="footer-cta-btn">Open Tax Estimator</a>
+</div>
+
+</body>
+</html>
+
