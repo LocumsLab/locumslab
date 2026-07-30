@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create an Offer Summary — LocumsLab</title>
+<meta name="description" content="Create a clear, shareable summary of a CRNA locums offer in under two minutes.">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="shared.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="logo">LocumsLab</div>
+    <a class="toplink" href="preview.html">View a sample summary →</a>
+  </header>
+
+  <div class="hero">
+    <div class="eyebrow-tag">For recruiters</div>
+    <h1>Turn an offer into something a candidate can actually review.</h1>
+    <p>Enter the compensation and contract terms below. LocumsLab creates a neutral,
+      shareable summary and flags anything that still needs clarifying — no account
+      needed, for you or the candidate.</p>
+  </div>
+
+  <div class="form-grid">
+    <main class="panel">
+      <h2>Create an offer summary</h2>
+      <p class="sub">Most recruiters finish this in under two minutes.</p>
+      <div id="flash" class="flash"></div>
+
+      <form id="offerForm">
+        <div class="fields">
+
+          <div class="field">
+            <label for="rateType">Rate type</label>
+            <select id="rateType" name="rate_type">
+              <option value="hourly">Hourly rate</option>
+              <option value="weekly">Weekly rate</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="rate">Rate</label>
+            <div class="input-prefix">
+              <span>$</span>
+              <input id="rate" name="rate" type="number" min="1" step="1" value="215" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="hours">Guaranteed hours / week</label>
+            <input id="hours" name="guaranteed_hours" type="number" min="0" step="1" value="40" required>
+          </div>
+
+          <div class="field">
+            <label for="weeks">Contract length <span class="hint">(weeks)</span></label>
+            <input id="weeks" name="contract_weeks" type="number" min="0" step="1" value="13" required>
+          </div>
+
+          <div class="field full">
+            <label for="travel">Housing &amp; travel support</label>
+            <select id="travel" name="travel_support">
+              <option value="unknown">Not yet confirmed</option>
+              <option value="fully-covered">Fully covered</option>
+              <option value="stipend" selected>Stipend or reimbursement</option>
+              <option value="partial">Partially covered</option>
+              <option value="candidate-paid">Candidate responsible</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="call">Call required?</label>
+            <select id="call" name="call_required">
+              <option value="unknown">Unknown</option>
+              <option value="no">No</option>
+              <option value="yes" selected>Yes</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="cancel">Cancellation notice</label>
+            <select id="cancel" name="cancellation_notice">
+              <option value="unknown" selected>Unknown</option>
+              <option value="7 days">7 days</option>
+              <option value="14 days">14 days</option>
+              <option value="30 days">30 days</option>
+              <option value="60+ days">60+ days</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="malpractice">Malpractice coverage</label>
+            <select id="malpractice" name="malpractice">
+              <option value="unknown">Unknown</option>
+              <option value="provided" selected>Provided, type unknown</option>
+              <option value="occurrence">Occurrence coverage</option>
+              <option value="claims-made">Claims-made coverage</option>
+              <option value="candidate">Candidate responsible</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="tail">Tail coverage</label>
+            <select id="tail" name="tail">
+              <option value="unknown" selected>Not confirmed</option>
+              <option value="included">Included</option>
+              <option value="not-included">Not included</option>
+              <option value="not-needed">Not applicable</option>
+            </select>
+          </div>
+
+          <div class="field full">
+            <label for="notes">Anything else the candidate should know? <span class="hint">Optional</span></label>
+            <textarea id="notes" name="notes" placeholder="e.g. weekday 10-hour shifts, no weekends, credentialing estimate 60–90 days"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="recruiter">Recruiter name <span class="hint">Optional</span></label>
+            <input id="recruiter" name="recruiter_name" placeholder="Jordan Smith">
+          </div>
+
+          <div class="field">
+            <label for="agency">Agency <span class="hint">Optional</span></label>
+            <input id="agency" name="agency_name" placeholder="Agency name">
+          </div>
+
+        </div>
+
+        <div class="form-actions">
+          <button id="submitBtn" class="btn btn-primary" type="submit">Generate shareable summary</button>
+          <a class="btn btn-secondary" href="preview.html">View sample first</a>
+        </div>
+
+        <p class="form-note">
+          Offer information is entered by the recruiter. LocumsLab organizes the details
+          and calculates gross compensation only — it does not endorse the assignment or
+          provide tax, legal, or financial advice.
+        </p>
+      </form>
+    </main>
+
+    <aside class="panel preview-panel">
+      <div class="label">Live preview</div>
+      <div class="preview-metric">
+        <div class="val" id="pWeekly">$8,600</div>
+        <div class="lbl">Guaranteed weekly gross</div>
+      </div>
+      <div class="preview-metric">
+        <div class="val" id="pTotal">$111,800</div>
+        <div class="lbl">Guaranteed contract gross</div>
+      </div>
+      <div class="preview-metric">
+        <div class="val" id="pHourly">$215/hr</div>
+        <div class="lbl">Base effective hourly rate</div>
+      </div>
+      <div class="preview-metric">
+        <span id="pClarify" class="clarify-badge warn">5 items to clarify</span>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+const form = document.getElementById('offerForm');
+const flash = document.getElementById('flash');
+
+function formData() { return Object.fromEntries(new FormData(form).entries()); }
+
+function updatePreview() {
+  const o = normalizeOffer(formData());
+  document.getElementById('pWeekly').textContent = money(o.weekly_gross);
+  document.getElementById('pTotal').textContent = money(o.contract_gross);
+  document.getElementById('pHourly').textContent = money(o.effective_hourly) + '/hr';
+  const n = clarificationItems(o).length;
+  const badge = document.getElementById('pClarify');
+  badge.textContent = n ? `${n} item${n === 1 ? '' : 's'} to clarify` : 'Core terms provided';
+  badge.className = 'clarify-badge ' + (n ? 'warn' : 'good');
+}
+form.addEventListener('input', updatePreview);
+updatePreview();
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Creating summary…';
+  flash.className = 'flash';
+
+  try {
+    const sb = getSupabase();
+    if (!sb) throw new Error('Supabase is not configured yet — fill in config.js with your project URL and anon key, and run supabase_setup.sql.');
+
+    const public_token = randomToken(18);
+    const edit_token = randomToken(24);
+    const offer_data = formData();
+
+    const { error } = await sb.from('offer_reviews').insert({ public_token, edit_token, offer_data });
+    if (error) throw error;
+
+    const publicUrl = new URL('offer.html', location.href);
+    publicUrl.searchParams.set('id', public_token);
+    const editUrl = new URL('edit.html', location.href);
+    editUrl.searchParams.set('token', edit_token);
+
+    sessionStorage.setItem('lastOfferPublicUrl', publicUrl.href);
+    sessionStorage.setItem('lastOfferEditUrl', editUrl.href);
+    location.href = 'created.html';
+  } catch (err) {
+    flash.textContent = 'The summary could not be created. ' + (err.message || '');
+    flash.className = 'flash error show';
+    btn.disabled = false;
+    btn.textContent = 'Generate shareable summary';
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summary Created — LocumsLab</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="logo">LocumsLab</div>
+    <a class="toplink" href="offer-form.html">Create another →</a>
+  </header>
+
+  <div class="hero">
+    <div class="eyebrow-tag">Summary created</div>
+    <h1>Your shareable offer summary is ready.</h1>
+    <p>Send the candidate link to your CRNA. Keep the edit link for yourself — you'll
+      need it if anything about the offer changes.</p>
+  </div>
+
+  <div class="form-grid">
+    <main class="panel">
+      <h2>Candidate link</h2>
+      <p class="sub">Anyone with this link can view the read-only summary. No login required.</p>
+      <div class="copy-row">
+        <input id="publicUrl" readonly>
+        <button class="btn btn-primary" data-copy="publicUrl">Copy</button>
+      </div>
+      <div class="form-actions">
+        <a id="openPublic" class="btn btn-secondary" target="_blank">Open summary →</a>
+      </div>
+    </main>
+
+    <aside class="panel">
+      <h2>Private edit link</h2>
+      <p class="sub">Do not send this to the candidate. Anyone with this link can change the offer.</p>
+      <div class="copy-row">
+        <input id="editUrl" readonly>
+        <button class="btn btn-secondary" data-copy="editUrl">Copy</button>
+      </div>
+      <p class="link-warning">There's no login or password recovery in this pilot — bookmark or save this link somewhere safe.</p>
+    </aside>
+  </div>
+</div>
+
+<script>
+document.getElementById('publicUrl').value = sessionStorage.getItem('lastOfferPublicUrl') || '';
+document.getElementById('editUrl').value = sessionStorage.getItem('lastOfferEditUrl') || '';
+document.getElementById('openPublic').href = document.getElementById('publicUrl').value;
+
+document.querySelectorAll('[data-copy]').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const input = document.getElementById(btn.dataset.copy);
+    await navigator.clipboard.writeText(input.value);
+    const original = btn.textContent;
+    btn.textContent = 'Copied';
+    setTimeout(() => { btn.textContent = original; }, 1500);
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Offer Summary — LocumsLab</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="shared.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="logo">LocumsLab</div>
+  </header>
+
+  <div class="hero">
+    <div class="eyebrow-tag">Private edit link</div>
+    <h1>Update this offer summary.</h1>
+    <p>Changes appear immediately on the same candidate-facing link — no need to send a new one.</p>
+  </div>
+
+  <main class="panel" style="max-width:760px;">
+    <div id="flash" class="flash"></div>
+
+    <form id="editForm">
+      <div class="fields">
+
+        <div class="field">
+          <label>Rate type</label>
+          <select name="rate_type">
+            <option value="hourly">Hourly rate</option>
+            <option value="weekly">Weekly rate</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Rate</label>
+          <div class="input-prefix"><span>$</span><input name="rate" type="number" required></div>
+        </div>
+
+        <div class="field">
+          <label>Guaranteed hours / week</label>
+          <input name="guaranteed_hours" type="number" required>
+        </div>
+
+        <div class="field">
+          <label>Contract length (weeks)</label>
+          <input name="contract_weeks" type="number" required>
+        </div>
+
+        <div class="field full">
+          <label>Housing &amp; travel support</label>
+          <select name="travel_support">
+            <option value="unknown">Not yet confirmed</option>
+            <option value="fully-covered">Fully covered</option>
+            <option value="stipend">Stipend or reimbursement</option>
+            <option value="partial">Partially covered</option>
+            <option value="candidate-paid">Candidate responsible</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Call required?</label>
+          <select name="call_required">
+            <option value="unknown">Unknown</option>
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Cancellation notice</label>
+          <select name="cancellation_notice">
+            <option value="unknown">Unknown</option>
+            <option value="7 days">7 days</option>
+            <option value="14 days">14 days</option>
+            <option value="30 days">30 days</option>
+            <option value="60+ days">60+ days</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Malpractice coverage</label>
+          <select name="malpractice">
+            <option value="unknown">Unknown</option>
+            <option value="provided">Provided, type unknown</option>
+            <option value="occurrence">Occurrence coverage</option>
+            <option value="claims-made">Claims-made coverage</option>
+            <option value="candidate">Candidate responsible</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Tail coverage</label>
+          <select name="tail">
+            <option value="unknown">Not confirmed</option>
+            <option value="included">Included</option>
+            <option value="not-included">Not included</option>
+            <option value="not-needed">Not applicable</option>
+          </select>
+        </div>
+
+        <div class="field full">
+          <label>Additional notes</label>
+          <textarea name="notes"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Recruiter name</label>
+          <input name="recruiter_name">
+        </div>
+
+        <div class="field">
+          <label>Agency</label>
+          <input name="agency_name">
+        </div>
+
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">Save changes</button>
+      </div>
+    </form>
+  </main>
+</div>
+
+<script>
+const token = qs('token');
+const sb = getSupabase();
+const form = document.getElementById('editForm');
+const flash = document.getElementById('flash');
+
+function msg(t, type) {
+  flash.textContent = t;
+  flash.className = 'flash ' + type + ' show';
+}
+
+(async () => {
+  if (!token || !sb) { msg('This edit link is missing or Supabase is not configured.', 'error'); form.style.display = 'none'; return; }
+  const { data, error } = await sb.rpc('get_offer_for_edit', { p_edit_token: token });
+  if (error || !data || !data.length) {
+    msg('This edit link is invalid or the summary was removed.', 'error');
+    form.style.display = 'none';
+    return;
+  }
+  const o = data[0].offer_data;
+  Object.entries(o).forEach(([k, v]) => { if (form.elements[k]) form.elements[k].value = v; });
+})();
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const offer_data = Object.fromEntries(new FormData(form).entries());
+  const { data, error } = await sb.rpc('update_offer_by_edit_token', { p_edit_token: token, p_offer_data: offer_data });
+  if (error || !data) msg('Could not save changes. ' + (error ? error.message : ''), 'error');
+  else msg('Changes saved. The candidate link now reflects this update.', 'success');
+});
+</script>
+</body>
+</html>
