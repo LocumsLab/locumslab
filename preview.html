@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offer Summary — LocumsLab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fffdf8;
+    --surface: #ffffff;
+    --surface2: #fbf7ef;
+    --border: #e5e0d7;
+    --accent: #12835c;
+    --accent-dark: #0f6f4e;
+    --accent-bg: rgba(18,131,92,0.07);
+    --amber: #b7791f;
+    --amber-bg: rgba(183,121,31,0.09);
+    --text: #10253f;
+    --muted: #5b6573;
+    --shadow: 0 18px 50px rgba(17, 24, 39, 0.09);
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background:
+      radial-gradient(circle at top left, rgba(239, 229, 212, 0.65), transparent 34rem),
+      var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* ---- Header / brand ---- */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .logo {
+    font-size: 1.25rem;
+    font-weight: 850;
+    letter-spacing: -0.045em;
+    color: var(--text);
+    line-height: 1;
+  }
+  .logo::after {
+    content: "";
+    display: block;
+    width: 84px;
+    height: 3px;
+    background: #16c98d;
+    margin-top: 6px;
+  }
+  .eyebrow-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-bg);
+    border: 1px solid rgba(18,131,92,0.25);
+    padding: 5px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .attribution {
+    font-size: 0.8125rem;
+    color: var(--muted);
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .attribution strong { color: var(--text); font-weight: 600; }
+
+  /* ---- Section wrapper ---- */
+  section { margin-bottom: 36px; }
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  /* ---- Offer at a glance ---- */
+  .glance-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 28px 30px;
+  }
+  .glance-title {
+    font-family: Newsreader, Georgia, serif;
+    font-weight: 550;
+    font-size: 1.55rem;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .glance-sub {
+    font-size: 0.9375rem;
+    color: var(--muted);
+    margin-bottom: 22px;
+  }
+  .glance-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+  .glance-item .val {
+    font-family: Newsreader, Georgia, serif;
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: var(--accent-dark);
+    letter-spacing: -0.01em;
+  }
+  .glance-item .lbl {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  /* ---- Guaranteed compensation stats ---- */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .stat-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px 18px;
+    text-align: center;
+  }
+  .stat-card .num {
+    font-family: Newsreader, Georgia, serif;
+    font-weight: 600;
+    font-size: 1.75rem;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .stat-card .lbl {
+    font-size: 0.8125rem;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+  .stat-note {
+    font-size: 0.8125rem;
+    color: var(--muted);
+    margin-top: 12px;
+    font-style: italic;
+  }
+
+  /* ---- Assignment terms ---- */
+  .terms-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+  .term-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .term-row:last-child { border-bottom: none; }
+  .term-name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .term-detail {
+    font-size: 0.8125rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .pill {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .pill-ok { background: rgba(18,131,92,0.1); color: var(--accent-dark); }
+  .pill-neutral { background: rgba(16,37,63,0.07); color: var(--text); }
+  .pill-warn { background: var(--amber-bg); color: var(--amber); }
+
+  /* ---- Questions to clarify ---- */
+  .clarify-box {
+    background: var(--amber-bg);
+    border: 1px solid rgba(183,121,31,0.28);
+    border-left: 4px solid var(--amber);
+    border-radius: var(--radius-md);
+    padding: 22px 24px;
+  }
+  .clarify-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .clarify-sub {
+    font-size: 0.8438rem;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .clarify-list { list-style: none; }
+  .clarify-list li {
+    display: flex;
+    gap: 10px;
+    font-size: 0.9375rem;
+    color: var(--text);
+    padding: 9px 0;
+    border-top: 1px solid rgba(183,121,31,0.18);
+  }
+  .clarify-list li:first-child { border-top: none; }
+  .clarify-list li::before {
+    content: "?";
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--amber);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+
+  /* ---- CTA ---- */
+  .cta-card {
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    border-radius: var(--radius-lg);
+    padding: 30px 32px;
+    text-align: center;
+    color: white;
+  }
+  .cta-card h3 {
+    font-family: Newsreader, Georgia, serif;
+    font-weight: 550;
+    font-size: 1.375rem;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .cta-card p {
+    font-size: 0.9375rem;
+    opacity: 0.92;
+    max-width: 440px;
+    margin: 0 auto 20px;
+  }
+  .cta-btn {
+    display: inline-block;
+    background: white;
+    color: var(--accent-dark);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    padding: 12px 28px;
+    border-radius: 10px;
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  }
+
+  footer {
+    margin-top: 36px;
+    text-align: center;
+  }
+  footer p {
+    font-size: 0.8125rem;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  footer a { color: var(--accent-dark); font-weight: 600; text-decoration: none; }
+
+  @media (max-width: 560px) {
+    .glance-grid { grid-template-columns: repeat(2, 1fr); }
+    .stat-row { grid-template-columns: 1fr; }
+    header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo">LocumsLab</div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <a href="offer-form.html" style="font-size:0.875rem; font-weight:600; color:var(--muted); text-decoration:none;">Create a summary →</a>
+      <div class="eyebrow-tag">Sample Offer Summary</div>
+    </div>
+  </header>
+
+  <div class="attribution">
+    This is a sample using placeholder offer data, shown for review before this page is
+    connected to real recruiter submissions. Offer information is entered by the
+    recruiter. <strong>Calculations and clarifying questions below are generated
+    independently by LocumsLab</strong> and are not an endorsement of any opportunity.
+  </div>
+
+  <!-- 1. Offer at a glance -->
+  <section>
+    <div class="glance-card">
+      <div class="glance-title">CRNA Locums Opportunity</div>
+      <div class="glance-sub">Submitted by recruiter · General anesthesia assignment</div>
+      <div class="glance-grid">
+        <div class="glance-item">
+          <div class="val">$215/hr</div>
+          <div class="lbl">Hourly rate</div>
+        </div>
+        <div class="glance-item">
+          <div class="val">40 hrs</div>
+          <div class="lbl">Guaranteed / week</div>
+        </div>
+        <div class="glance-item">
+          <div class="val">13 wks</div>
+          <div class="lbl">Contract length</div>
+        </div>
+        <div class="glance-item">
+          <div class="val">$2,000/mo</div>
+          <div class="lbl">Housing stipend</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Guaranteed compensation -->
+  <section>
+    <div class="section-label">Guaranteed Compensation</div>
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="num">$8,600</div>
+        <div class="lbl">Weekly guaranteed gross</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">$111,800</div>
+        <div class="lbl">Guaranteed contract gross</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">$215/hr</div>
+        <div class="lbl">Effective hourly rate</div>
+      </div>
+    </div>
+    <div class="stat-note">
+      Based only on the guaranteed hours entered above. Does not include overtime, call
+      pay, taxes, or any candidate-specific expenses. Does not reflect additional hours
+      the recruiter may have mentioned informally but that are not contractually guaranteed.
+    </div>
+  </section>
+
+  <!-- 3. Assignment terms -->
+  <section>
+    <div class="section-label">Assignment Terms</div>
+    <div class="terms-card">
+      <div class="term-row">
+        <div>
+          <div class="term-name">Call requirement</div>
+          <div class="term-detail">Call is required for this assignment</div>
+        </div>
+        <span class="pill pill-neutral">Required</span>
+      </div>
+      <div class="term-row">
+        <div>
+          <div class="term-name">Cancellation notice</div>
+          <div class="term-detail">Not specified by recruiter</div>
+        </div>
+        <span class="pill pill-warn">Not provided</span>
+      </div>
+      <div class="term-row">
+        <div>
+          <div class="term-name">Malpractice coverage</div>
+          <div class="term-detail">Provided for the duration of the assignment</div>
+        </div>
+        <span class="pill pill-ok">Provided</span>
+      </div>
+      <div class="term-row">
+        <div>
+          <div class="term-name">Tail coverage</div>
+          <div class="term-detail">Not confirmed by recruiter</div>
+        </div>
+        <span class="pill pill-warn">Not confirmed</span>
+      </div>
+      <div class="term-row">
+        <div>
+          <div class="term-name">Housing / travel</div>
+          <div class="term-detail">$2,000 monthly stipend — not fully covered housing</div>
+        </div>
+        <span class="pill pill-neutral">Stipend</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Questions to clarify -->
+  <section>
+    <div class="clarify-box">
+      <div class="clarify-title">Before accepting, clarify:</div>
+      <div class="clarify-sub">Generated automatically from missing or unconfirmed details in this offer.</div>
+      <ul class="clarify-list">
+        <li>The cancellation notice period was not provided. Ask what notice either party must give to end the contract early.</li>
+        <li>Tail malpractice coverage has not been confirmed. Ask whether the policy is claims-made or occurrence, and who pays for tail if it applies.</li>
+        <li>Call is required, but call-back or on-call pay was not specified. Ask how call is compensated.</li>
+        <li>Housing is offered as a $2,000/month stipend rather than provided housing. Confirm whether that amount is realistic for the assignment location.</li>
+        <li>Confirm that the 40 guaranteed hours match the schedule actually being discussed for this assignment.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section>
+    <div class="cta-card">
+      <h3>Compare this with your current position</h3>
+      <p>Add your salary, benefits, and expenses to see this offer next to your staff
+        pay, fully accounting for taxes and time off.</p>
+      <a href="#" class="cta-btn">Run Staff vs. Locums Comparison →</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>Generated by <a href="#">LocumsLab</a> · Not legal, tax, or financial advice.
+    Figures are estimates based on the information entered by the recruiter.</p>
+  </footer>
+
+</div>
+</body>
+</html>
