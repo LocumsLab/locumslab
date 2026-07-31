@@ -70,6 +70,16 @@
     white-space: nowrap;
   }
 
+  .crna-note {
+    font-family: Newsreader, Georgia, serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--text);
+    margin-bottom: 20px;
+    max-width: 600px;
+  }
+
   .attribution {
     font-size: 0.8125rem;
     color: var(--muted);
