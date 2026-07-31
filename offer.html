@@ -116,6 +116,24 @@ function render(raw) {
     </section>
 
     <section>
+      <div class="context-box">
+        <div class="context-title">Market context</div>
+        <p>For reference — not a comparison to this specific offer: national CRNA
+          staff compensation averages range from about $223,000 (BLS median, May
+          2024) to roughly $270,000 (AANA-reported average, 2026). Locums hourly
+          rates for CRNAs commonly range from $125–$325/hr depending on location,
+          demand, and assignment urgency.</p>
+        <p>Locums rates are structured differently than staff pay — no PTO,
+          benefits, or retirement match are included — so a direct hourly
+          comparison isn't meaningful on its own. Run the full Staff vs. Locums
+          comparison for numbers specific to you.</p>
+        <div class="context-source">Sources: U.S. Bureau of Labor Statistics (May
+          2024); AANA (2026); Barton Associates CRNA Salary Guide (2026).
+          Reviewed twice yearly — last checked July 2026.</div>
+      </div>
+    </section>
+
+    <section>
       <div class="clarify-box">
         <div class="clarify-title">Before accepting, clarify:</div>
         <div class="clarify-sub">Generated automatically from missing or unconfirmed details in this offer.</div>
@@ -123,6 +141,12 @@ function render(raw) {
           ? `<ul class="clarify-list">${items.map(i => `<li>${i}</li>`).join('')}</ul>`
           : `<p style="font-size:0.9375rem;color:var(--muted);">The core terms in this summary were provided. Review the final written contract before signing.</p>`
         }
+        <div class="analyzer-note">
+          Once you receive the written contract, run it through the
+          <a href="https://locumslab.com/app.html">Contract Analyzer</a> to confirm
+          these terms — especially tail coverage, cancellation notice, and
+          malpractice details — actually made it into the paperwork.
+        </div>
       </div>
     </section>
 
