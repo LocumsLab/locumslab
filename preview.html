@@ -226,6 +226,43 @@
     color: var(--muted);
     margin-bottom: 16px;
   }
+
+  /* ---- Market context panel (light integration, v1 test) ---- */
+  .context-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px 22px;
+  }
+  .context-title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .context-box p {
+    font-size: 0.875rem;
+    color: var(--muted);
+    line-height: 1.55;
+    margin-bottom: 8px;
+  }
+  .context-source {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 4px;
+  }
+  .analyzer-note {
+    font-size: 0.875rem;
+    color: var(--text);
+    background: var(--accent-bg);
+    border: 1px solid rgba(18,131,92,0.2);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-top: 16px;
+  }
+  .analyzer-note a { color: var(--accent-dark); font-weight: 700; text-decoration: none; }
+  .analyzer-note a:hover { text-decoration: underline; }
   .clarify-list { list-style: none; }
   .clarify-list li {
     display: flex;
@@ -414,6 +451,25 @@
     </div>
   </section>
 
+  <!-- 3.5 Market context (light integration, v1 test) -->
+  <section>
+    <div class="context-box">
+      <div class="context-title">Market context</div>
+      <p>For reference — not a comparison to this specific offer: national CRNA
+        staff compensation averages range from about $223,000 (BLS median, May
+        2024) to roughly $270,000 (AANA-reported average, 2026). Locums hourly
+        rates for CRNAs commonly range from $125–$325/hr depending on location,
+        demand, and assignment urgency.</p>
+      <p>Locums rates are structured differently than staff pay — no PTO,
+        benefits, or retirement match are included — so a direct hourly
+        comparison isn't meaningful on its own. Run the full Staff vs. Locums
+        comparison for numbers specific to you.</p>
+      <div class="context-source">Sources: U.S. Bureau of Labor Statistics (May
+        2024); AANA (2026); Barton Associates CRNA Salary Guide (2026).
+        Reviewed twice yearly — last checked July 2026.</div>
+    </div>
+  </section>
+
   <!-- 4. Questions to clarify -->
   <section>
     <div class="clarify-box">
@@ -426,6 +482,12 @@
         <li>Housing is offered as a $2,000/month stipend rather than provided housing. Confirm whether that amount is realistic for the assignment location.</li>
         <li>Confirm that the 40 guaranteed hours match the schedule actually being discussed for this assignment.</li>
       </ul>
+      <div class="analyzer-note">
+        Once you receive the written contract, run it through the
+        <a href="https://locumslab.com/app.html">Contract Analyzer</a> to confirm
+        these terms — especially tail coverage, cancellation notice, and
+        malpractice details — actually made it into the paperwork.
+      </div>
     </div>
   </section>
 
