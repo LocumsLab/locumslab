@@ -1,114 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LocumsLab Decision Support Access</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #fffdf8; --surface: #ffffff; --border: #e5e0d7;
-    --accent: #12835c; --accent-dark: #0f6f4e; --text: #10253f; --muted: #5b6573;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family: Inter, sans-serif; background: var(--bg); color: var(--text); line-height:1.6; }
-  .wrap { max-width: 640px; margin: 0 auto; padding: 56px 24px 80px; }
-  .sponsor-tag { text-align:center; font-size:0.8125rem; color: var(--muted); margin-bottom: 8px; text-transform:uppercase; letter-spacing:0.06em; font-weight:700; }
-  h1 { font-family: Newsreader, Georgia, serif; font-weight:550; font-size: clamp(1.8rem, 5vw, 2.6rem); text-align:center; margin-bottom: 14px; letter-spacing:-0.03em; }
-  .lede { text-align:center; color: var(--muted); font-size:1.0625rem; max-width: 480px; margin: 0 auto 36px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px; box-shadow: 0 8px 24px rgba(17,24,39,0.05); margin-bottom: 24px; }
-  .steps { list-style: none; counter-reset: step; }
-  .steps li { counter-increment: step; display:flex; gap:14px; padding: 12px 0; border-bottom: 1px solid var(--border); }
-  .steps li:last-child { border-bottom: none; }
-  .steps li::before {
-    content: counter(step); flex-shrink:0; width:28px; height:28px; border-radius:50%;
-    background: var(--accent); color:white; font-weight:800; font-size:0.875rem;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .step-text strong { display:block; color: var(--text); font-size:0.9375rem; margin-bottom:2px; }
-  .step-text span { color: var(--muted); font-size:0.875rem; }
-  .privacy-box { background: #f2faf6; border: 1px solid rgba(18,131,92,0.2); border-left: 4px solid var(--accent); border-radius: 0 14px 14px 0; padding: 20px 22px; margin-bottom: 28px; }
-  .privacy-box .label { font-size:0.75rem; font-weight:800; color: var(--accent); text-transform:uppercase; letter-spacing:0.06em; margin-bottom: 8px; }
-  .privacy-box p { font-size:0.9375rem; color: var(--text); margin-bottom: 8px; }
-  .privacy-box p:last-child { margin-bottom:0; }
-  .cta { display:block; text-align:center; background: var(--accent); color:white; text-decoration:none; padding:16px; border-radius:999px; font-weight:750; font-size:1.0625rem; transition: background 0.2s; }
-  .cta:hover { background: var(--accent-dark); }
-  .fine-print { text-align:center; font-size:0.8125rem; color: var(--muted); margin-top:14px; }
-  footer { text-align:center; font-size:0.75rem; color: var(--muted); margin-top: 40px; }
-  /* Google Form embed — swap the src below once your form is created */
-  .form-embed { width:100%; border:none; border-radius:14px; }
-</style>
-</head>
-<body>
-<div class="wrap">
-  <div class="sponsor-tag" id="sponsorTag">Sponsored access</div>
-  <h1>LocumsLab Decision Support Access</h1>
-  <p class="lede">Independent CRNA-built tools to help you compare compensation, review a contract, and prepare for the 1099 decision — sponsored by <strong id="agencyNameLede">your recruiter</strong>.</p>
+# Setting Up the Google Form (5 minutes)
 
-  <div class="card">
-    <ul class="steps">
-      <li><div class="step-text"><strong>Compare staff and locums compensation</strong><span>See your real take-home side by side, not just the headline rate.</span></div></li>
-      <li><div class="step-text"><strong>Calculate the offer's real hourly value</strong><span>Account for SE tax, insurance, malpractice, and travel time.</span></div></li>
-      <li><div class="step-text"><strong>Review the contract</strong><span>A first-pass check for missing terms and restrictive clauses.</span></div></li>
-      <li><div class="step-text"><strong>Understand the 1099 setup</strong><span>Taxes, entity structure, and whether an S-Corp makes sense.</span></div></li>
-      <li><div class="step-text"><strong>Prepare questions for your CPA or attorney</strong><span>Get a ready-to-send email with your specific numbers.</span></div></li>
-    </ul>
-  </div>
+This replaces all the backend code from before — no Netlify functions, no
+Supabase schema changes, no verification emails. Google Forms auto-creates a
+linked Google Sheet for you, which is your submission log. The Excel tracker
+in this delivery is a *second*, more deliberate log you fill in by hand as you
+manually activate each candidate — use both if you like, or just the Sheet if
+that's enough.
 
-  <div class="privacy-box">
-    <div class="label">Your activity remains private</div>
-    <p><strong id="agencyNamePrivacy">Your recruiter's agency</strong> paid for your access but cannot see your salary, calculator inputs, contract contents, results, or questions. Sponsorship does not influence LocumsLab's calculations or findings.</p>
-    <p>The agency only receives confirmation that you activated access — nothing about how you used it.</p>
-  </div>
+## 1. Create the form
 
-  <div class="card">
-    <a class="cta" id="ctaButton" href="#" target="_blank" rel="noopener">
-      Activate My 60-Day Access →
-    </a>
-    <div class="fine-print">Takes about a minute. You'll hear back from LocumsLab directly with your access details.</div>
-  </div>
+Go to forms.google.com → Blank form. Name it **"LocumsLab Sponsored Access Request"**.
 
-  <footer>locumslab.com &middot; Educational tools only — not financial, legal, or tax advice.</footer>
-</div>
+Add these fields:
 
-<script>
-  // ── EVERYTHING COMES FROM THE URL ITSELF ──
-  // No code to edit per agency. The agency's name and their Google Form link
-  // are just parameters in the URL you send them. This page reads its own
-  // address, no server calls, nothing sent anywhere.
-  //
-  // URL template for a new agency:
-  //   locumslab.com/sponsored.html?name=AGENCY+NAME&form=FORM_LINK
-  //
-  // Example for "Example Locums Agency":
-  //   locumslab.com/sponsored.html?name=Example+Locums+Agency&form=https%3A%2F%2Fforms.gle%2Fabc123
-  //
-  // (Spaces become + and the form link needs to be URL-encoded — see the
-  // "Building a new agency's link" section in 00-PILOT-GUIDE.md for a
-  // no-typing way to generate this.)
+| Field | Type | Required? |
+|---|---|---|
+| First name | Short answer | Yes |
+| Your email | Short answer (validate as email) | Yes |
+| Referring agency | Short answer | Yes — see prefill note below |
+| Have you already created a free LocumsLab account with this email? | Multiple choice (Yes / No) | Yes |
+| Is this your first locums assignment? | Multiple choice (Yes / No) | No |
 
-  const params = new URLSearchParams(window.location.search);
-  const agencyName = params.get("name");
-  const formLink = params.get("form");
+Keep it to this. Don't ask for phone number, salary, contract details, or which
+specific recruiter — those add friction at the exact moment you want a low-effort
+"yes," and none of it is needed to activate access.
 
-  const nameEls = [
-    document.getElementById("agencyNameLede"),
-    document.getElementById("agencyNamePrivacy")
-  ];
-  const tagEl = document.getElementById("sponsorTag");
-  const ctaEl = document.getElementById("ctaButton");
+**Why the account question matters:** you can't grant Pro access to someone
+who doesn't have a LocumsLab account yet (there's no user record to attach it
+to). The landing page already tells candidates to sign up first — this
+question just tells you, at a glance, whether that actually happened before
+you go looking them up in Supabase. If they say "No," don't go searching for
+them — reply asking them to sign up at locumslab.com/app with the same email,
+then come back to grant access once they have.
 
-  if (agencyName && formLink) {
-    nameEls.forEach(el => el.textContent = agencyName);
-    tagEl.textContent = "Sponsored by " + agencyName;
-    ctaEl.href = formLink;
-  } else {
-    // Missing or incomplete link — don't send them to a broken page.
-    ctaEl.href = "#";
-    ctaEl.textContent = "Link not recognized — please contact your recruiter";
-    ctaEl.style.background = "#94a3b8";
-    ctaEl.style.pointerEvents = "none";
-  }
-</script>
-</body>
-</html>
+### Prefilling the agency field
+
+Rather than making the candidate type the agency name (which invites typos and
+makes the form feel generic), prefill it per agency:
+
+1. Fill out the form once yourself with the agency's name in the "Referring agency" field
+2. Click the ⋮ menu → **Get pre-filled link**
+3. Google gives you a URL with the agency name baked in and that field locked to read-only for the candidate
+4. Use *that* URL (not the base form link) as the `href` in `sponsored-landing-page.html` for that specific agency
+
+If you're piloting with more than one agency, you'll have one prefilled link per agency, all pointing to the same form/Sheet — so your tracking stays in one place.
+
+Optional but nice: add a confirmation message under **Settings → Presentation → Confirmation message**:
+> "Thanks! You'll hear from LocumsLab directly within 1 business day with your access details."
+
+## 2. Turn on the linked Sheet
+
+In the form editor, click the **Responses** tab → the green Sheets icon → **Create a new spreadsheet**. Every submission now lands there automatically, timestamped.
+
+## 3. Get your share link
+
+Click **Send** (top right) → the link icon → check **Shorten URL** → copy it. This is what goes in `sponsored-landing-page.html` in place of `REPLACE_WITH_YOUR_FORM_LINK`, and it's also what you can hand agencies directly if you skip the landing page entirely for the very first pilot.
+
+## 4. (Optional) Embed instead of link out
+
+If you'd rather the form appear directly on the landing page instead of linking out: in the form editor, click **Send** → the `<>` embed icon → copy the `src` URL out of the iframe code it gives you → paste it into the commented-out `<iframe>` line in `sponsored-landing-page.html`, then delete the `<a class="cta">` button below it.
+
+## 5. Turn on email notifications for new responses
+
+In the linked Google Sheet: **Tools → Notification rules** → "Notify me at" → "A user submits a form" → "Right away." Now you get an email the moment a candidate requests access, so you know when to go manually activate them.
+
+---
+
+That's the entire technical setup for this pilot. No code, no deploys, no auth changes.
