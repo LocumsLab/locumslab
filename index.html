@@ -141,6 +141,12 @@
     color: var(--slate);
     padding: 10px 12px;
   }
+  .nav-link.nav-auth {
+    white-space: nowrap;
+    color: var(--ink, #10253f);
+    font-weight: 750;
+  }
+  .nav-link.nav-auth:hover { text-decoration: underline; }
   .button {
     display: inline-flex;
     align-items: center;
@@ -760,6 +766,8 @@
     nav { height: auto; padding: 16px 0; align-items: flex-start; }
     .nav-links { gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
     .nav-link { display: none; }
+    /* Log In must stay reachable on mobile even though other nav links hide */
+    .nav-link.nav-auth { display: inline-flex; padding: 10px 10px; }
     .hero { padding-top: 58px; }
     h1 { font-size: clamp(3.2rem, 16vw, 4.7rem); }
     .hero-copy { font-size: 1.06rem; }
@@ -787,6 +795,7 @@
         <a class="nav-link" href="#about">About</a>
         <a class="nav-link" href="/blog">Blog</a>
         <a class="nav-link" href="#pricing">Pricing</a>
+        <a class="nav-link nav-auth" href="app.html?login=true">Log In</a>
         <a class="button button-primary" href="app.html">Analyze a contract</a>
       </div>
     </nav>
