@@ -953,6 +953,74 @@
    }
  }
 
+ /* CPA email modals use a .modal > .modal-content pattern rather than the
+    .modal-overlay > .modal pattern used elsewhere. These styles were missing
+    entirely, so the modals rendered inline at the bottom of the page. */
+ #askCPAModal, #w2CPAModal, #taxCPAModal {
+   position: fixed;
+   inset: 0;
+   z-index: 6000;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   background: rgba(8,14,24,0.70);
+   backdrop-filter: blur(5px);
+   padding: 18px;
+   border: none;
+   border-radius: 0;
+   box-shadow: none;
+   max-width: none;
+   width: auto;
+   overflow: hidden;
+ }
+
+ .modal-content {
+   background: var(--surface);
+   border: 1px solid var(--border);
+   border-radius: var(--radius-lg);
+   width: 100%;
+   max-height: 90vh;
+   overflow-y: auto;
+   box-shadow: 0 28px 72px rgba(0,0,0,0.28);
+ }
+
+ .modal-header {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   gap: 16px;
+   padding: 26px 28px 0;
+ }
+
+ .modal-header h2 {
+   font-size: 1.5rem;
+   font-weight: 800;
+   margin: 0;
+ }
+
+ .modal-close {
+   background: transparent;
+   border: none;
+   color: var(--muted);
+   font-size: 1.75rem;
+   line-height: 1;
+   cursor: pointer;
+   padding: 4px 8px;
+   border-radius: 8px;
+ }
+
+ .modal-close:hover { color: var(--text); background: var(--cream); }
+
+ .modal-body { padding: 18px 28px 28px; }
+
+ @media (max-width: 700px) {
+   .modal-header { padding: 20px 20px 0; }
+   .modal-body { padding: 14px 20px 20px; }
+   .modal-content > .modal-body > div[style*="grid-template-columns: 1fr 1fr"] {
+     grid-template-columns: 1fr !important;
+   }
+ }
+
  @media (max-width: 700px) {
    header {
      position: relative;
@@ -1128,8 +1196,8 @@
  </p></div><div style="margin-bottom: 24px;"><h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 8px;">Is this only for CRNAs?</h4><p style="font-size: 0.9375rem; color: var(--muted); line-height: 1.6;">
  No! LocumsLab works for physicians, CRNAs, NPs, PAs, nurses, and any healthcare professional comparing staff positions vs locums/travel contracts.
  </p></div><div style="margin-bottom: 24px;"><h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 8px;">Where is my data stored?</h4><p style="font-size: 0.9375rem; color: var(--muted); line-height: 1.6;">
- All data is stored locally in your browser (localStorage). We don't transmit your scenario data to any server. This means your data is private, but clearing your browser data will remove your saved scenarios.
- </p></div><div style="margin-bottom: 24px;"><h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 8px;">What's the difference between Free and Pro?</h4><p style="font-size: 0.9375rem; color: var(--muted); line-height: 1.6;"><strong>Free:</strong> All calculators, save 1 scenario<br><strong>Pro ($39 one-time):</strong> S-Corp Evaluator, Benchmarks, unlimited scenarios, comparison view, PDF export, lifetime access
+ Saved scenarios are stored in your account on a hosted database (Supabase) and tied to your login, so they follow you across devices. Contract PDFs are sent for review and are not retained afterward; we keep only the file name and date so you can see your own review history. If an agency sponsors your access, they are told only that access was activated and never see your inputs, results, or contracts.
+ </p></div><div style="margin-bottom: 24px;"><h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 8px;">What's the difference between Free and Pro?</h4><p style="font-size: 0.9375rem; color: var(--muted); line-height: 1.6;"><strong>Free:</strong> All core calculators, save up to 3 scenarios<br><strong>Pro ($39 one-time):</strong> S-Corp Evaluator, Benchmarks, unlimited scenarios, comparison view, PDF export, lifetime access
  </p></div><div style="margin-bottom: 24px;"><h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 8px;">Is Pro a subscription?</h4><p style="font-size: 0.9375rem; color: var(--muted); line-height: 1.6;">
  No! Pro is a <strong>one-time payment</strong> of $39. Pay once, use forever. No recurring charges.
  </p></div></div><div class="modal-actions"><button class="modal-btn primary" onclick="hideFAQ()">Close</button></div></div></div><!-- CONTACT MODAL --><div class="modal-overlay" id="contactModal"><div class="modal" style="max-width: 500px;"><h3>Contact Us</h3><p style="margin: 16px 0; font-size: 0.9375rem; color: var(--muted); line-height: 1.7;">
@@ -1220,6 +1288,18 @@ if (startParam === 'quickstart') {
 if (urlParams.get('contact') === 'true') {
  window.history.replaceState({}, '', window.location.pathname);
  window._autoContact = true;
+}
+
+// Auto-open auth screen if coming from landing page Log In / Sign Up links
+// app.html?login=true  -> opens auth screen on the Log In tab
+// app.html?signup=true -> opens auth screen on the Sign Up tab
+if (urlParams.get('login') === 'true') {
+ window.history.replaceState({}, '', window.location.pathname);
+ window._autoAuth = 'login';
+}
+if (urlParams.get('signup') === 'true') {
+ window.history.replaceState({}, '', window.location.pathname);
+ window._autoAuth = 'signup';
 }
 
 // State
@@ -1599,12 +1679,28 @@ function fmtFull(n) {
  return '$' + Math.round(n).toLocaleString();
 }
 
+// Full-precision currency used by the "Ask Your CPA" email templates and the
+// enhanced comparison table. Previously referenced but never defined, which
+// threw a ReferenceError and blanked those features.
+function formatCurrency(n) {
+ const num = Number(n);
+ if (!isFinite(num)) return '$0';
+ return '$' + Math.round(num).toLocaleString();
+}
+
 // Auth
 function switchAuthTab(tab) {
- document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+ const tabs = document.querySelectorAll('.auth-tab');
+ tabs.forEach(t => t.classList.remove('active'));
  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
- event.target.classList.add('active');
- document.getElementById(tab + 'Form').classList.add('active');
+ // Match the tab by its onclick target rather than relying on the global
+ // event object, so this also works when called programmatically.
+ tabs.forEach(t => {
+ const attr = t.getAttribute('onclick') || '';
+ if (attr.indexOf("'" + tab + "'") !== -1) t.classList.add('active');
+ });
+ const form = document.getElementById(tab + 'Form');
+ if (form) form.classList.add('active');
  document.getElementById('authError').classList.remove('show');
 }
 
@@ -1923,12 +2019,12 @@ Note: Always work with a CPA to ensure proper setup and compliance.`;
 
  // Store data for Ask Your CPA feature
  window.lastSCorpData = {
- grossIncome: grossIncome,
+ grossIncome: income,
  expenses: expenses,
  netIncome: netIncome,
- recommendedSalary: recommendedSalary,
- filingStatus: filingStatus,
- savings: spSETax - scSETax
+ recommendedSalary: reasonableSalary,
+ filingStatus: filing,
+ savings: savings
  };
 }
 
@@ -3173,13 +3269,13 @@ function calcW21099() {
 
  // Store data for Ask Your CPA feature
  window.lastW2ComparisonData = {
- w2Salary: w2Salary,
- w2Benefits: w2Benefits,
+ w2Salary: w2Sal,
+ w2Benefits: w2Ben,
  w2Tax: w2Tax,
  w2Net: w2Net,
  c1099Gross: c1099Gross,
- c1099Expenses: c1099Expenses,
- c1099Tax: c1099Tax,
+ c1099Expenses: totalExp,
+ c1099Tax: seTax + fedTax,
  c1099Net: c1099Net
  };
  updateExportButton();
@@ -3211,14 +3307,15 @@ function calcTax() {
  document.getElementById('tx-results').classList.remove('hidden');
 
  // Store data for Ask Your CPA feature
+ const txFiling = document.getElementById('tx-filing').value;
  window.lastTaxEstimate = {
- grossIncome: gross1099,
- totalDeductions: totalDeductions,
+ grossIncome: gross,
+ totalDeductions: totalDed,
  seTax: seTax,
  federalTax: fedTax,
- totalTax: totalTax,
- effectiveRate: totalTax / gross1099,
- filingStatus: filingStatus === 'married' ? 'Married Filing Jointly' : (filingStatus === 'hoh' ? 'Head of Household' : 'Single')
+ totalTax: total,
+ effectiveRate: gross > 0 ? total / gross : 0,
+ filingStatus: txFiling === 'married' ? 'Married Filing Jointly' : (txFiling === 'hoh' ? 'Head of Household' : 'Single')
  };
  updateExportButton();
 }
@@ -3521,8 +3618,10 @@ window.addEventListener('popstate', function(e) {
  }
 });
 
-function showAuthScreen() {
+function showAuthScreen(mode) {
  document.getElementById('authScreen').classList.remove('hidden');
+ // mode is 'login' or 'signup'; anything else leaves the current tab alone
+ if (mode === 'login' || mode === 'signup') switchAuthTab(mode);
 }
 
 // Global helper functions
@@ -3568,6 +3667,14 @@ window.addEventListener('load', async () => {
  } else {
  // Demo mode - show app without login
  showMainApp();
+
+ // Came from the landing page Log In / Sign Up link with no active session:
+ // pop the auth screen instead of dropping them into demo mode
+ if (window._autoAuth) {
+ const mode = window._autoAuth;
+ window._autoAuth = null;
+ showAuthScreen(mode);
+ }
  }
 
  // MOBILE FIX: touch event listeners
@@ -3590,7 +3697,7 @@ const LEGAL = {
  privacy: {
  title: "Privacy",
  body: `
- <p><strong>Short version:</strong> LocumsLab stores your scenarios securely in your account database. Your data is tied to your login and accessible across devices.</p><ul><li><strong>What we store:</strong> Your email (for login in this demo) and scenario data you save.</li><li><strong>Where it lives:</strong> Your device / browser storage. Clearing site data or switching devices will remove access.</li><li><strong>Analytics:</strong> If you enable optional analytics, it will collect basic usage events (page views) but not your scenario contents.</li></ul><p>If you have questions, email <a href="mailto:hello@locumslab.com" style="color: var(--accent); text-decoration: underline;">hello@locumslab.com</a>.</p>
+ <p><strong>Short version:</strong> LocumsLab stores your scenarios securely in your account database. Your data is tied to your login and accessible across devices.</p><ul><li><strong>What we store:</strong> Your email address and any scenarios you choose to save.</li><li><strong>Where it lives:</strong> A hosted Postgres database (Supabase), tied to your account. Your saved scenarios follow you across devices when you log in.</li><li><strong>Contract uploads:</strong> Contract PDFs are sent for review and are not retained after the review completes. We log only the file name and the date so you can see your own review history.</li><li><strong>Usage data:</strong> We record which calculators are run so we can improve them. We do not attach your scenario values or contract contents to that record.</li><li><strong>Sponsored accounts:</strong> If an agency sponsors your access, they are told only that access was activated. They do not see your inputs, results, or contracts.</li></ul><p>If you have questions, email <a href="mailto:hello@locumslab.com" style="color: var(--accent); text-decoration: underline;">hello@locumslab.com</a>.</p>
  `
  },
  terms: {
@@ -3606,10 +3713,10 @@ function showLegal(kind) {
  const content = LEGAL[kind] || LEGAL.terms;
  document.getElementById('legalTitle').textContent = content.title;
  document.getElementById('legalBody').innerHTML = content.body;
- modal.classList.add('active');
+ modal.classList.add('show');
 }
 function hideLegalModal() {
- document.getElementById('legalModal').classList.remove('active');
+ document.getElementById('legalModal').classList.remove('show');
 }
 
 function showLegalModal(kind) {
@@ -4496,11 +4603,13 @@ async function analyzeContractFile(file) {
     try {
       const base64 = e.target.result.split(',')[1];
       const analysis = await analyzeContractWithClaude(base64, file.name);
-      
-      // Record the scan in database
-      await recordContractScan(file.name, chargedAmount);
-      
+
+      // Show the results FIRST. Logging is bookkeeping and must never be able
+      // to make a successful review look like a failure to the user.
       displayRedFlagsResults(analysis);
+
+      // Fire and forget - errors are swallowed inside recordContractScan
+      recordContractScan(file.name);
       
     } catch (error) {
       console.error('Analysis error:', error);
@@ -4511,15 +4620,16 @@ async function analyzeContractFile(file) {
   reader.readAsDataURL(file);
 }
 
-async function recordContractScan(filename, chargedAmount) {
-  if (!window.supabase || !currentUserId) return;
+async function recordContractScan(filename) {
+  // `sb` is the Supabase client. `window.supabase` is the UMD library itself,
+  // which has no .from() method - that was the original bug here.
+  if (!sb || !currentUserId) return;
   try {
-    const { error } = await window.supabase
+    const { error } = await sb
       .from('contract_scans')
       .insert({
         user_id: currentUserId,
-        filename: filename,
-        charged_amount: chargedAmount
+        filename: filename
       });
     if (error) throw error;
   } catch (error) {
