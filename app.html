@@ -4945,12 +4945,102 @@ Thank you,
    </ul>
  </div>
  <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 18px;">
-   <div style="font-size: 0.875rem; font-weight: 700; color: var(--text); margin-bottom: 10px;">Suggested recruiter email</div>
-   <div style="color: var(--muted); line-height: 1.75; white-space: pre-wrap;">${escapeHtml(emailLanguage)}</div>
+   <div style="font-size: 0.875rem; font-weight: 700; color: var(--text); margin-bottom: 6px;">Tell your recruiter where you stand</div>
+   <div style="font-size: 0.8125rem; color: var(--muted); line-height: 1.6; margin-bottom: 14px;">Pick the message that fits. Your contract, your numbers, and this review stay private &mdash; only the text below gets sent, from your own email.</div>
+   <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+     <button type="button" data-recruiter-status="ready" onclick="setRecruiterStatus('ready')" style="flex:1 1 auto; min-width:150px; padding:10px 14px; border:1px solid var(--border); background:var(--surface); color:var(--text); border-radius:8px; font-family:inherit; font-size:0.875rem; font-weight:700; cursor:pointer; transition:all .18s;">Ready to move forward</button>
+     <button type="button" data-recruiter-status="clarify" onclick="setRecruiterStatus('clarify')" style="flex:1 1 auto; min-width:150px; padding:10px 14px; border:1px solid var(--border); background:var(--surface); color:var(--text); border-radius:8px; font-family:inherit; font-size:0.875rem; font-weight:700; cursor:pointer; transition:all .18s;">Need terms clarified</button>
+     <button type="button" data-recruiter-status="decline" onclick="setRecruiterStatus('decline')" style="flex:1 1 auto; min-width:150px; padding:10px 14px; border:1px solid var(--border); background:var(--surface); color:var(--text); border-radius:8px; font-family:inherit; font-size:0.875rem; font-weight:700; cursor:pointer; transition:all .18s;">Not moving forward</button>
+   </div>
+   <textarea id="recruiterEmailBody" rows="14" spellcheck="true" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px; color:var(--text); font-family:inherit; font-size:0.9375rem; line-height:1.7; resize:vertical; outline:none;"></textarea>
+   <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-top:12px;">
+     <div id="recruiterStatusNote" style="font-size:0.8125rem; color:var(--muted); line-height:1.6; flex:1 1 260px;"></div>
+     <button type="button" id="copyRecruiterBtn" onclick="copyRecruiterEmail()" style="background:var(--accent); color:#fff; border:none; padding:10px 22px; border-radius:8px; cursor:pointer; font-family:inherit; font-weight:700; font-size:0.9375rem; white-space:nowrap;">Copy email</button>
+   </div>
  </div>
  </div>`;
 
  contentDiv.innerHTML = html;
+
+ // Seed the recruiter message with the questions this review produced
+ _recruiterQuestions = questionPool;
+ setRecruiterStatus('clarify');
+}
+
+// ============================================================
+// RECRUITER STATUS UPDATE
+// Lets the candidate tell the recruiter where they stand, in their
+// own words, from their own email. Nothing is sent from LocumsLab
+// and the recruiter never sees the contract or the review.
+// ============================================================
+
+let _recruiterQuestions = [];
+
+function buildRecruiterEmail(status) {
+  const qs = (_recruiterQuestions || []).slice(0, 6);
+  const numbered = qs.length
+    ? qs.map(function (q, i) { return (i + 1) + '. ' + q; }).join('\n')
+    : '1. [Add the specific terms you want clarified]';
+
+  if (status === 'ready') {
+    return 'Hi [Recruiter Name],\n\n'
+      + 'I have reviewed the agreement and I am ready to move forward.\n\n'
+      + 'Please send over next steps for credentialing and let me know what you need from me and by when.\n\n'
+      + 'Thanks,\n[Your Name]';
+  }
+
+  if (status === 'decline') {
+    return 'Hi [Recruiter Name],\n\n'
+      + 'Thank you for sending the agreement. After reviewing the terms, I have decided not to move forward with this particular assignment.\n\n'
+      + 'I appreciate the time you put into it, and I would be glad to hear about other opportunities that might be a closer fit.\n\n'
+      + 'Thanks,\n[Your Name]';
+  }
+
+  return 'Hi [Recruiter Name],\n\n'
+    + 'I have reviewed the agreement and I am interested. Before I sign, I would like clarification on a few points:\n\n'
+    + numbered + '\n\n'
+    + 'Once these are addressed I am ready to move forward. Happy to jump on a quick call if that is easier.\n\n'
+    + 'Thanks,\n[Your Name]';
+}
+
+function setRecruiterStatus(status) {
+  const box = document.getElementById('recruiterEmailBody');
+  if (box) box.value = buildRecruiterEmail(status);
+
+  const btns = document.querySelectorAll('[data-recruiter-status]');
+  btns.forEach(function (b) {
+    const on = b.getAttribute('data-recruiter-status') === status;
+    b.style.background = on ? 'var(--accent)' : 'var(--surface)';
+    b.style.color = on ? '#ffffff' : 'var(--text)';
+    b.style.borderColor = on ? 'var(--accent)' : 'var(--border)';
+  });
+
+  const note = document.getElementById('recruiterStatusNote');
+  if (note) {
+    note.textContent = status === 'ready'
+      ? 'Edit anything you like, then copy and send it from your own email.'
+      : (status === 'decline'
+        ? 'Declining clearly and early is better for you than going quiet. It keeps the relationship open for the next assignment.'
+        : 'Your questions from the review above are already filled in. Edit, delete, or add to them before sending.');
+  }
+}
+
+function copyRecruiterEmail() {
+  const box = document.getElementById('recruiterEmailBody');
+  if (!box) return;
+  const btn = document.getElementById('copyRecruiterBtn');
+  const done = function () {
+    if (!btn) return;
+    const original = btn.textContent;
+    btn.textContent = 'Copied';
+    setTimeout(function () { btn.textContent = original; }, 2200);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(box.value).then(done).catch(function () { box.select(); });
+  } else {
+    box.select();
+    try { document.execCommand('copy'); done(); } catch (e) { /* user can copy manually */ }
+  }
 }
 
 async function recordRedFlagsScan(filename) {
