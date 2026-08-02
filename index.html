@@ -204,6 +204,9 @@
     font-weight: 800;
     letter-spacing: 0.05em;
     text-transform: uppercase;
+    /* Headings below have no top margin and a sub-1 line-height, so the serif
+       ascenders ride up into this pill. Space it off the heading here. */
+    margin-bottom: clamp(16px, 1.7vw, 24px);
   }
   h1, h2, .display {
     font-family: Newsreader, Georgia, serif;
@@ -214,7 +217,9 @@
   h1 {
     font-size: clamp(3.2rem, 7vw, 6.5rem);
     line-height: 0.92;
-    margin: 22px 0 24px;
+    /* Top margin moved to .eyebrow's margin-bottom so hero and section heads
+       use one consistent rule. Net hero spacing is unchanged. */
+    margin: 0 0 24px;
     max-width: 720px;
   }
   .hero-copy {
