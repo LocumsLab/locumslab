@@ -1078,7 +1078,7 @@
 </div>
 <script>if (localStorage.getItem('nl_bar_dismissed')) { document.getElementById('newsletter-bar').style.display = 'none'; }</script>
 <!-- END NEWSLETTER BAR -->
-<!-- AUTH --><div class="auth-screen hidden" id="authScreen"><div class="auth-box"><div class="auth-logo">LocumsLab</div><div class="auth-tagline">Run the math before the contract feels urgent.</div><div id="authContextNote" class="hidden" style="background:#f2faf6; border:1px solid rgba(18,131,92,0.25); border-left:4px solid var(--accent); border-radius:0 10px 10px 0; padding:14px 16px; margin-bottom:22px; font-size:0.9rem; line-height:1.6; color:var(--text);"></div><div class="auth-tabs"><div class="auth-tab active" onclick="switchAuthTab('login')">Log In</div><div class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</div></div><div class="auth-error" id="authError"></div><form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)"><input type="email" class="auth-input" placeholder="Email" required id="loginEmail"><input type="password" class="auth-input" placeholder="Password" required id="loginPassword"><button type="submit" class="auth-btn">Log In</button></form><form class="auth-form" id="signupForm" onsubmit="handleSignup(event)"><input type="email" class="auth-input" placeholder="Email" required id="signupEmail"><input type="password" class="auth-input" placeholder="Password (min 6 characters)" required id="signupPassword" minlength="6"><input type="password" class="auth-input" placeholder="Confirm Password" required id="signupPasswordConfirm"><button type="submit" class="auth-btn">Create Account</button></form></div></div><!-- MAIN APP --><div id="mainApp"><!-- Try Free banner - always visible when not logged in --><div id="signup-banner" style="background: rgba(251, 191, 36, 0.1); border-bottom: 1px solid rgba(251, 191, 36, 0.3); padding: 10px 24px; text-align: center; display:none;"><span style="color: #fbbf24; font-size: 0.875rem;"> You’re using the free calculator preview. <a href="#" onclick="showAuthScreen(); return false;" style="color: #10b981; font-weight: 600; text-decoration: underline;">Create a free account</a> to save scenarios and compare contracts.</span></div><header><div class="logo"><div class="logo-text">LocumsLab</div><div class="logo-badge" id="planBadge">Free</div></div><div class="header-right"><span class="user-email" id="userEmail"></span><button class="header-btn upgrade hidden" id="upgradeBtn" onclick="showUpgradeModal()">Upgrade to Pro</button><button class="header-btn secondary" onclick="showWizard()" id="wizardBtn" style="display:none;">Start Over</button><button class="header-btn" onclick="openGuideDrawer()" style="color: var(--accent); border-color: rgba(16,185,129,0.4);">Guide</button><button class="header-btn" onclick="showDashboard()">Dashboard</button><button class="header-btn hidden" id="logoutBtn" onclick="handleLogout()">Logout</button></div></header><!-- WIZARD --><div class="wizard" id="wizard"><div class="wizard-header"><h1>Run the numbers before you go <span class="highlight">locums</span>.</h1><p>Start with the calculator that matches the decision you are trying to make.</p></div><div class="wizard-choices"><div class="choice-card" onclick="selectGoal('quickstart')" style="border-color: var(--accent); background: rgba(16,185,129,0.05);"><div class="choice-emoji"></div><div class="choice-title" style="color: var(--accent);">Quick Start</div><div class="choice-desc">A guided W-2 to locums comparison for clinicians who are just starting to look.</div></div><div class="choice-card" onclick="selectGoal('staff-vs-locums')"><div class="choice-emoji"></div><div class="choice-title">Staff vs Locums</div><div class="choice-desc">Compare a staff role against a locums or travel offer.</div></div><div class="choice-card" onclick="selectGoal('contract-eval')"><div class="choice-emoji"></div><div class="choice-title">True Hourly Rate</div><div class="choice-desc">Estimate what the offer really pays after taxes, insurance, malpractice, and travel.</div></div><div class="choice-card" onclick="selectGoal('w2-1099')"><div class="choice-emoji"></div><div class="choice-title">W2 vs 1099</div><div class="choice-desc">Compare employee income against contractor income without guessing.</div></div><div class="choice-card" onclick="selectGoal('scorp')"><div class="choice-emoji"></div><div class="choice-title">S-Corp Evaluator</div><div class="choice-desc">Estimate whether the tax savings may justify the added admin.</div><div style="display:inline-block; margin-top:8px; background: var(--accent); color: white; font-size: 0.625rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em;">PRO</div></div><div class="choice-card" onclick="selectGoal('red-flags')">
+<!-- AUTH --><div class="auth-screen hidden" id="authScreen"><div class="auth-box"><div class="auth-logo">LocumsLab</div><div class="auth-tagline">Run the math before the contract feels urgent.</div><div id="authContextNote" class="hidden" style="background:#f2faf6; border:1px solid rgba(18,131,92,0.25); border-left:4px solid var(--accent); border-radius:0 10px 10px 0; padding:14px 16px; margin-bottom:22px; font-size:0.9rem; line-height:1.6; color:var(--text);"></div><div class="auth-tabs"><div class="auth-tab active" onclick="switchAuthTab('login')">Log In</div><div class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</div></div><div class="auth-error" id="authError"></div><form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)"><input type="email" class="auth-input" placeholder="Email" required id="loginEmail"><input type="password" class="auth-input" placeholder="Password" required id="loginPassword"><button type="submit" class="auth-btn">Log In</button></form><form class="auth-form" id="signupForm" onsubmit="handleSignup(event)"><input type="email" class="auth-input" placeholder="Email" required id="signupEmail"><input type="password" class="auth-input" placeholder="Password (min 6 characters)" required id="signupPassword" minlength="6"><input type="password" class="auth-input" placeholder="Confirm Password" required id="signupPasswordConfirm"><button type="submit" class="auth-btn">Create Account</button></form><div id="forgotLinkWrap" style="text-align:center; margin-top:6px;"><a href="#" onclick="switchAuthTab('forgot'); return false;" style="font-size:0.85rem; color:var(--muted); text-decoration:underline;">Forgot your password?</a></div><form class="auth-form" id="forgotForm" onsubmit="handleForgotPassword(event)"><p style="font-size:0.9rem; color:var(--muted); line-height:1.6; margin-bottom:16px;">Enter the email on your account and we will send you a link to set a new password.</p><input type="email" class="auth-input" placeholder="Email" required id="forgotEmail"><button type="submit" class="auth-btn">Send Reset Link</button><div style="text-align:center; margin-top:12px;"><a href="#" onclick="switchAuthTab('login'); return false;" style="font-size:0.85rem; color:var(--muted); text-decoration:underline;">Back to log in</a></div></form><form class="auth-form" id="recoveryForm" onsubmit="handleSetNewPassword(event)"><p style="font-size:0.9rem; color:var(--muted); line-height:1.6; margin-bottom:16px;">Choose a new password for your account.</p><input type="password" class="auth-input" placeholder="New password (min 6 characters)" required id="recoveryPassword" minlength="6"><input type="password" class="auth-input" placeholder="Confirm new password" required id="recoveryPasswordConfirm"><button type="submit" class="auth-btn">Save New Password</button></form></div></div><!-- MAIN APP --><div id="mainApp"><!-- Try Free banner - always visible when not logged in --><div id="signup-banner" style="background: rgba(251, 191, 36, 0.1); border-bottom: 1px solid rgba(251, 191, 36, 0.3); padding: 10px 24px; text-align: center; display:none;"><span style="color: #fbbf24; font-size: 0.875rem;"> You’re using the free calculator preview. <a href="#" onclick="showAuthScreen(); return false;" style="color: #10b981; font-weight: 600; text-decoration: underline;">Create a free account</a> to save scenarios and compare contracts.</span></div><header><div class="logo"><div class="logo-text">LocumsLab</div><div class="logo-badge" id="planBadge">Free</div></div><div class="header-right"><span class="user-email" id="userEmail"></span><button class="header-btn upgrade hidden" id="upgradeBtn" onclick="showUpgradeModal()">Upgrade to Pro</button><button class="header-btn secondary" onclick="showWizard()" id="wizardBtn" style="display:none;">Start Over</button><button class="header-btn" onclick="openGuideDrawer()" style="color: var(--accent); border-color: rgba(16,185,129,0.4);">Guide</button><button class="header-btn" onclick="showDashboard()">Dashboard</button><button class="header-btn hidden" id="logoutBtn" onclick="handleLogout()">Logout</button></div></header><!-- WIZARD --><div class="wizard" id="wizard"><div class="wizard-header"><h1>Run the numbers before you go <span class="highlight">locums</span>.</h1><p>Start with the calculator that matches the decision you are trying to make.</p></div><div class="wizard-choices"><div class="choice-card" onclick="selectGoal('quickstart')" style="border-color: var(--accent); background: rgba(16,185,129,0.05);"><div class="choice-emoji"></div><div class="choice-title" style="color: var(--accent);">Quick Start</div><div class="choice-desc">A guided W-2 to locums comparison for clinicians who are just starting to look.</div></div><div class="choice-card" onclick="selectGoal('staff-vs-locums')"><div class="choice-emoji"></div><div class="choice-title">Staff vs Locums</div><div class="choice-desc">Compare a staff role against a locums or travel offer.</div></div><div class="choice-card" onclick="selectGoal('contract-eval')"><div class="choice-emoji"></div><div class="choice-title">True Hourly Rate</div><div class="choice-desc">Estimate what the offer really pays after taxes, insurance, malpractice, and travel.</div></div><div class="choice-card" onclick="selectGoal('w2-1099')"><div class="choice-emoji"></div><div class="choice-title">W2 vs 1099</div><div class="choice-desc">Compare employee income against contractor income without guessing.</div></div><div class="choice-card" onclick="selectGoal('scorp')"><div class="choice-emoji"></div><div class="choice-title">S-Corp Evaluator</div><div class="choice-desc">Estimate whether the tax savings may justify the added admin.</div><div style="display:inline-block; margin-top:8px; background: var(--accent); color: white; font-size: 0.625rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.05em;">PRO</div></div><div class="choice-card" onclick="selectGoal('red-flags')">
 <div class="choice-emoji"></div>
 <div class="choice-title">Contract Review</div>
 <div class="choice-desc">Check for restrictive clauses, missing terms, and issues worth clarifying.</div>
@@ -1325,6 +1325,16 @@ if (urlParams.get('signup') === 'true') {
 if (urlParams.get('upgrade') === 'pro') {
  window.history.replaceState({}, '', window.location.pathname);
  window._autoUpgrade = true;
+}
+
+// Password recovery. Supabase returns the user here with type=recovery in the
+// URL hash (or ?recovery=true from our redirectTo). Either one means we must
+// show the set-password screen instead of dropping them into the app with a
+// live session and no password they know.
+window._recoveryMode = (window.location.hash.indexOf('type=recovery') !== -1)
+ || (urlParams.get('recovery') === 'true');
+if (urlParams.get('recovery') === 'true') {
+ window.history.replaceState({}, '', window.location.pathname + window.location.hash);
 }
 
 // State
@@ -1733,6 +1743,13 @@ function switchAuthTab(tab) {
  const form = document.getElementById(tab + 'Form');
  if (form) form.classList.add('active');
  document.getElementById('authError').classList.remove('show');
+
+ // The tab strip and the forgot link only make sense on login/signup
+ const isBase = (tab === 'login' || tab === 'signup');
+ const strip = document.querySelector('.auth-tabs');
+ if (strip) strip.style.display = isBase ? '' : 'none';
+ const fw = document.getElementById('forgotLinkWrap');
+ if (fw) fw.style.display = (tab === 'login') ? '' : 'none';
 }
 
 function showAuthError(msg) {
@@ -1840,6 +1857,69 @@ async function handleLogout() {
  isPro = false;
  document.getElementById('authScreen').classList.remove('hidden');
  document.getElementById('mainApp').classList.add('hidden');
+}
+
+async function handleForgotPassword(e) {
+ e.preventDefault();
+ const email = document.getElementById('forgotEmail').value.trim();
+ const btn = e.target.querySelector('button[type="submit"]');
+ btn.textContent = 'Sending...';
+ btn.disabled = true;
+
+ const { error } = await sb.auth.resetPasswordForEmail(email, {
+ redirectTo: window.location.origin + '/app.html?recovery=true'
+ });
+
+ btn.textContent = 'Send Reset Link';
+ btn.disabled = false;
+
+ // Do not reveal whether the address exists. Same message either way.
+ if (error) console.error('Reset error:', error.message);
+ const el = document.getElementById('authError');
+ el.textContent = 'If an account exists for that email, a reset link is on its way. Check your spam folder.';
+ el.style.background = 'rgba(18,131,92,0.08)';
+ el.style.borderColor = 'rgba(18,131,92,0.35)';
+ el.style.color = 'var(--accent)';
+ el.classList.add('show');
+}
+
+async function handleSetNewPassword(e) {
+ e.preventDefault();
+ const pw = document.getElementById('recoveryPassword').value;
+ const confirm = document.getElementById('recoveryPasswordConfirm').value;
+
+ if (pw !== confirm) { showAuthError('Passwords do not match'); return; }
+ if (pw.length < 6) { showAuthError('Password must be at least 6 characters'); return; }
+
+ const btn = e.target.querySelector('button[type="submit"]');
+ btn.textContent = 'Saving...';
+ btn.disabled = true;
+
+ const { data, error } = await sb.auth.updateUser({ password: pw });
+
+ btn.textContent = 'Save New Password';
+ btn.disabled = false;
+
+ if (error) { showAuthError(error.message); return; }
+
+ window._recoveryMode = false;
+
+ const { data: { session } } = await sb.auth.getSession();
+ if (session && session.user) {
+ currentUser = session.user.email;
+ currentUserId = session.user.id;
+ const { data: ent } = await sb
+.from('entitlements')
+.select('plan, status')
+.eq('user_id', session.user.id)
+.single();
+ isPro = ent && ent.plan === 'pro' && ent.status === 'active';
+ }
+
+ document.getElementById('authScreen').classList.add('hidden');
+ switchAuthTab('login');
+ showMainApp();
+ setTimeout(() => alert('Password updated. You are now signed in.'), 100);
 }
 
 function showMainApp() {
@@ -3670,10 +3750,17 @@ window.addEventListener('popstate', function(e) {
  }
 });
 
+sb.auth.onAuthStateChange((event) => {
+ if (event === 'PASSWORD_RECOVERY') {
+ window._recoveryMode = true;
+ showAuthScreen('recovery');
+ }
+});
+
 function showAuthScreen(mode, note) {
  document.getElementById('authScreen').classList.remove('hidden');
  // mode is 'login' or 'signup'; anything else leaves the current tab alone
- if (mode === 'login' || mode === 'signup') switchAuthTab(mode);
+ if (mode === 'login' || mode === 'signup' || mode === 'forgot' || mode === 'recovery') switchAuthTab(mode);
 
  // Optional context line, e.g. explaining why an account is needed before checkout
  const noteEl = document.getElementById('authContextNote');
@@ -3717,6 +3804,13 @@ function normalizeContractAnalysis(analysis) {
 
 window.addEventListener('load', async () => {
  toggleRateType();
+
+ // Recovery link: force the set-password screen, ignore the session
+ if (window._recoveryMode) {
+ showMainApp();
+ showAuthScreen('recovery');
+ return;
+ }
 
  // Check for existing Supabase session
  const { data: { session } } = await sb.auth.getSession();
