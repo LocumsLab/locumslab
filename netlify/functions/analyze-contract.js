@@ -63,15 +63,24 @@ exports.handler = async (event) => {
     return json(405, { success: false, error: 'Method Not Allowed' });
   }
 
-  let pdfBase64, filename;
+  let pdfBase64, contractText, filename;
   try {
-    ({ pdfBase64, filename } = JSON.parse(event.body || '{}'));
+    ({ pdfBase64, contractText, filename } = JSON.parse(event.body || '{}'));
   } catch (e) {
     return json(400, { success: false, error: 'Malformed request body.' });
   }
 
-  if (!pdfBase64) {
+  // PDFs arrive as base64. Word documents arrive as extracted text, since
+  // rebuilding a PDF client-side added nothing and failed on long contracts.
+  const hasPdf = typeof pdfBase64 === 'string' && pdfBase64.length > 0;
+  const hasText = typeof contractText === 'string' && contractText.trim().length > 0;
+
+  if (!hasPdf && !hasText) {
     return json(400, { success: false, error: 'No contract file was received. Please try uploading again.' });
+  }
+
+  if (hasText && contractText.trim().length < 200) {
+    return json(400, { success: false, error: 'That document did not contain enough readable text to review. If it is a scan, please upload a text-based PDF instead.' });
   }
 
   try {
@@ -83,16 +92,25 @@ exports.handler = async (event) => {
       system: SYSTEM_PROMPT,
       messages: [{
         role: 'user',
-        content: [
-          {
-            type: 'document',
-            source: { type: 'base64', media_type: 'application/pdf', data: pdfBase64 }
-          },
-          {
-            type: 'text',
-            text: 'Review this contract and return the JSON described in your instructions. Nothing else.'
-          }
-        ]
+        content: hasPdf
+          ? [
+              {
+                type: 'document',
+                source: { type: 'base64', media_type: 'application/pdf', data: pdfBase64 }
+              },
+              {
+                type: 'text',
+                text: 'Review this contract and return the JSON described in your instructions. Nothing else.'
+              }
+            ]
+          : [
+              {
+                type: 'text',
+                text: 'Here is the full text of a contract, extracted from a Word document. Table rows are separated by the | character.\n\n<contract>\n'
+                  + contractText.trim()
+                  + '\n</contract>\n\nReview it and return the JSON described in your instructions. Nothing else.'
+              }
+            ]
       }]
     });
 
