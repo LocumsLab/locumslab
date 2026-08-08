@@ -1,14 +1,27 @@
 # Netlify configuration
 [build]
   publish = "."
-  
+
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# Increase timeout for all functions (Anthropic API needs time)
-[functions."*"]
-  max_duration = 26
+# NOTE: the previous block used `max_duration = 26` under [functions."*"].
+# Netlify's key is `timeout`, not `max_duration`, so unknown keys were silently
+# ignored and every function ran under the default limit. That is why runs were
+# dying at 13-15 seconds with no explanation.
+#
+# This block only matters for synchronous functions. The contract review now
+# runs as analyze-contract-background.js, and background functions get 15
+# minutes regardless of any timeout setting. Kept here for contact and
+# create-checkout, and as a fallback if you ever revert the review to
+# synchronous.
+#
+# Setting this does not by itself raise the limit. Netlify gates extended
+# synchronous timeouts server-side per site, so it also needs a support request
+# at answers.netlify.com naming the site and function.
+[functions."analyze-contract"]
+  timeout = 26
 
 # Redirects for clean URLs
 [[redirects]]
