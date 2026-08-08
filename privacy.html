@@ -182,11 +182,11 @@
   <div class="page-header">
     <h1>Privacy Policy</h1>
     <p>How LocumsLab collects, uses, and protects your information.</p>
-    <span class="last-updated">Last updated: March 1, 2026</span>
+    <span class="last-updated">Last updated: August 7, 2026</span>
   </div>
 
   <div class="highlight-box">
-    <p>LocumsLab is a financial calculator tool for healthcare professionals. We keep things simple: we collect only what we need, we don't sell your data, and you're always in control.</p>
+    <p>LocumsLab is a financial decision tool for healthcare professionals. We keep things simple: we collect only what we need, we don't sell your data, and you're always in control. If you upload a contract, we never store the file — see Section 3.</p>
   </div>
 
   <section>
@@ -196,14 +196,14 @@
       <li>Your email address</li>
       <li>A hashed password (we never store your password in plain text)</li>
       <li>Account creation date and last login timestamp</li>
-      <li>Whether you are a free or Pro subscriber</li>
+      <li>Whether you are a free or Pro user</li>
     </ul>
     <p>When you use the calculators, we may store:</p>
     <ul>
       <li>Scenarios you choose to save (income figures, calculator inputs)</li>
       <li>Your saved comparisons and named scenarios</li>
     </ul>
-    <p>We do not collect your name, address, phone number, or any payment card details directly. Payment processing is handled by Stripe (see Section 4).</p>
+    <p>We do not collect your name, address, phone number, or any payment card details directly. Payment processing is handled by Stripe (see Section 5).</p>
   </section>
 
   <section>
@@ -220,26 +220,42 @@
   </section>
 
   <section>
-    <h2>3. Data Storage & Security</h2>
-    <p>Your data is stored securely using <a href="https://supabase.com" target="_blank" rel="noopener">Supabase</a>, a trusted cloud database provider. All data is encrypted at rest and in transit using TLS.</p>
-    <p>Access to your data is restricted by row-level security policies — your scenarios and account information are only accessible to you when you are logged in.</p>
+    <h2>3. Contract Review</h2>
+    <ul>
+      <li>Your contract file is never stored by LocumsLab.</li>
+      <li>The contract is sent to <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">Anthropic's</a> Claude API to generate the review. Anthropic does not train on API inputs and deletes them under its commercial retention policy.</li>
+      <li>The completed review, which includes short quotations from your contract, is stored in your account for 30 days and then deleted automatically. Only you can access it.</li>
+    </ul>
+    <p>The review reads contract terms only and does not need to know who you are, so we recommend removing your name, the facility, and the recruiter before uploading.</p>
+    <p>Some contracts restrict disclosure of their own terms. You are responsible for confirming that uploading yours is consistent with any obligations you have agreed to.</p>
+  </section>
+
+  <section>
+    <h2>4. Data Storage &amp; Security</h2>
+    <p>Your data is stored securely using <a href="https://supabase.com" target="_blank" rel="noopener">Supabase</a>, a cloud database provider. All data is encrypted at rest and in transit using TLS.</p>
+    <p>Access to your data is restricted by row-level security policies — your scenarios, reviews, and account information are only accessible to you when you are logged in.</p>
     <p>While we take reasonable steps to protect your data, no system is completely secure. We encourage you to use a strong, unique password for your account.</p>
   </section>
 
   <section>
-    <h2>4. Payment Processing</h2>
-    <p>Pro subscriptions are processed by <a href="https://stripe.com" target="_blank" rel="noopener">Stripe</a>. When you upgrade to Pro, you will be redirected to Stripe's secure checkout. LocumsLab does not store your credit card number, CVV, or billing address.</p>
+    <h2>5. Payment Processing</h2>
+    <p>Pro access is processed by <a href="https://stripe.com" target="_blank" rel="noopener">Stripe</a>. When you upgrade to Pro, you will be redirected to Stripe's secure checkout. LocumsLab does not store your credit card number, CVV, or billing address.</p>
     <p>Stripe's privacy policy can be found at <a href="https://stripe.com/privacy" target="_blank" rel="noopener">stripe.com/privacy</a>.</p>
   </section>
 
   <section>
-    <h2>5. Cookies & Analytics</h2>
-    <p>LocumsLab uses minimal cookies necessary for authentication (to keep you logged in between sessions). We do not use advertising cookies or third-party tracking pixels.</p>
-    <p>We may use basic, privacy-respecting analytics to understand aggregate usage patterns (e.g. which calculators are most used). This data is never linked to your personal identity.</p>
+    <h2>6. Sponsored Access</h2>
+    <p>If an agency or recruiter sponsors your access to LocumsLab, they are told only that access was activated. They do not see your calculator inputs, your results, your contracts, or your reviews.</p>
   </section>
 
   <section>
-    <h2>6. Your Rights</h2>
+    <h2>7. Cookies &amp; Analytics</h2>
+    <p>LocumsLab uses minimal cookies necessary for authentication (to keep you logged in between sessions). We do not use advertising cookies or third-party tracking pixels.</p>
+    <p>We record which calculators are run so we can understand aggregate usage and improve them. We do not attach your scenario values or contract contents to that record.</p>
+  </section>
+
+  <section>
+    <h2>8. Your Rights</h2>
     <p>You have the right to:</p>
     <ul>
       <li>Access the personal data we hold about you</li>
@@ -247,31 +263,32 @@
       <li>Request deletion of your account and associated data</li>
       <li>Export your saved scenarios at any time</li>
     </ul>
-    <p>To exercise any of these rights, email us at <a href="mailto:support@locumslab.com">support@locumslab.com</a> and we will respond within 5 business days.</p>
+    <p>To exercise any of these rights, email us at <a href="mailto:hello@locumslab.com">hello@locumslab.com</a> and we will respond within 5 business days.</p>
   </section>
 
   <section>
-    <h2>7. Data Retention</h2>
+    <h2>9. Data Retention</h2>
     <p>We retain your account data for as long as your account is active. If you delete your account, your personal data and saved scenarios will be permanently deleted within 30 days.</p>
+    <p>Contract review results are deleted automatically 30 days after the review is run, whether or not your account remains active. Uploaded contract files are never stored at any point.</p>
     <p>Anonymized, aggregate usage data (e.g. number of calculations performed) may be retained indefinitely.</p>
   </section>
 
   <section>
-    <h2>8. Children's Privacy</h2>
+    <h2>10. Children's Privacy</h2>
     <p>LocumsLab is intended for adult healthcare professionals. We do not knowingly collect personal information from anyone under the age of 18. If we become aware that a minor has provided us with personal data, we will delete it promptly.</p>
   </section>
 
   <section>
-    <h2>9. Changes to This Policy</h2>
+    <h2>11. Changes to This Policy</h2>
     <p>We may update this Privacy Policy from time to time. When we do, we will update the "Last updated" date at the top of this page. For significant changes, we will notify registered users by email.</p>
     <p>Continued use of LocumsLab after changes are posted constitutes your acceptance of the updated policy.</p>
   </section>
 
   <section>
-    <h2>10. Contact Us</h2>
+    <h2>12. Contact Us</h2>
     <p>If you have questions or concerns about this Privacy Policy or how we handle your data, please reach out:</p>
     <ul>
-      <li>Email: <a href="mailto:support@locumslab.com">support@locumslab.com</a></li>
+      <li>Email: <a href="mailto:hello@locumslab.com">hello@locumslab.com</a></li>
       <li>Website: <a href="https://locumslab.com">locumslab.com</a></li>
     </ul>
   </section>
