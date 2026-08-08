@@ -4947,6 +4947,9 @@ async function analyzeContractFile(file) {
   }
 }
 
+// filename is deliberately not stored. Names like
+// "Jane_Doe_CRNA_Contract.docx" identify a person before anyone opens
+// anything. Only the user id and timestamp are kept.
 async function recordContractScan(filename) {
   // `sb` is the Supabase client. `window.supabase` is the UMD library itself,
   // which has no .from() method - that was the original bug here.
@@ -4956,7 +4959,7 @@ async function recordContractScan(filename) {
       .from('contract_scans')
       .insert({
         user_id: currentUserId,
-        filename: filename
+        filename: null
       });
     if (error) throw error;
   } catch (error) {
@@ -4964,20 +4967,74 @@ async function recordContractScan(filename) {
   }
 }
 
-async function analyzeContractWithClaude(payload, filename) {
- // payload is { pdfBase64 } for PDFs or { contractText } for Word documents
- const body = (typeof payload === 'string')
- ? { pdfBase64: payload, filename: filename }
- : Object.assign({}, payload, { filename: filename });
+// The review runs as a Netlify background function, which returns 202 at once
+// and keeps working for up to 15 minutes. That removes the synchronous timeout
+// that was killing long contracts. We create a job row first, hand its id to
+// the function, then poll for the result.
+const REVIEW_POLL_MS = 3000;
+const REVIEW_TIMEOUT_MS = 6 * 60 * 1000;
 
- const response = await fetch('/.netlify/functions/analyze-contract', {
+async function analyzeContractWithClaude(payload, filename) {
+ if (!currentUserId) {
+ throw new Error('Please log in before running a contract review.');
+ }
+
+ const body = (typeof payload === 'string')
+ ? { pdfBase64: payload }
+ : Object.assign({}, payload);
+
+ // 1. Create the job. RLS ties it to this user.
+ const { data: job, error: jobError } = await sb
+.from('contract_reviews')
+.insert({ user_id: currentUserId, status: 'pending' })
+.select('id')
+.single();
+
+ if (jobError || !job) {
+ throw new Error('Could not start the review. Please try again.');
+ }
+
+ body.jobId = job.id;
+
+ // 2. Hand it off. A background function replies 202 with no body.
+ const response = await fetch('/.netlify/functions/analyze-contract-background', {
  method: 'POST',
- headers: {
- 'Content-Type': 'application/json'
- },
+ headers: { 'Content-Type': 'application/json' },
  body: JSON.stringify(body)
  });
 
+ if (!response.ok && response.status !== 202) {
+ throw new Error('Could not start the review. Please try again.');
+ }
+
+ // 3. Poll until the row reports a terminal state.
+ const startedAt = Date.now();
+ while (Date.now() - startedAt < REVIEW_TIMEOUT_MS) {
+ await new Promise(function (r) { setTimeout(r, REVIEW_POLL_MS); });
+
+ const { data: row, error: pollError } = await sb
+.from('contract_reviews')
+.select('status, analysis, error')
+.eq('id', job.id)
+.gt('expires_at', new Date().toISOString())
+.single();
+
+ if (pollError) continue; // transient network blip, keep waiting
+
+ if (row && row.status === 'complete') {
+ if (!row.analysis) throw new Error('The review finished but returned no result.');
+ return normalizeContractAnalysis(row.analysis);
+ }
+ if (row && row.status === 'failed') {
+ throw new Error(row.error || 'The contract review failed. Please try again.');
+ }
+ }
+
+ throw new Error('The review is taking longer than expected. It may still finish - check back in a few minutes, or email hello@locumslab.com.');
+}
+
+// Kept for reference: the old synchronous response handler.
+async function _unusedSyncResponseHandling(response) {
  let data;
  try {
  data = await response.json();
