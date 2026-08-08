@@ -56,12 +56,61 @@ Return ONLY valid JSON, no preamble, no markdown fences, matching this shape exa
   "takeToAttorney": ["Only items that genuinely warrant a lawyer. Empty array if none do."]
 }
 
+Length limits. Exceeding these truncates the response and the whole review is lost, so stay inside them:
+- At most 6 issues. Choose the 6 that most affect the CRNA's decision.
+- Each "quote" at most 40 words. Quote only the operative sentence, not the full clause. If the clause is long, quote the key phrase and summarise the rest in "finding".
+- "finding", "whyItMatters", "whatToAsk", and "recommendation" are each at most 2 sentences.
+- At most 8 missingTerms, one line each.
+- At most 6 recruiterQuestions, one sentence each.
+- At most 4 takeToAttorney items.
+
 Rules:
 - riskLevel reflects the severity of the worst issues, never the number of issues. A single unbounded non-compete or an uncovered tail is High on its own.
 - severityBuckets are 0 to 3 per category: 0 nothing flagged, 1 worth watching, 2 moderate, 3 serious.
 - Every bucket value must be justified by the issues you listed.
 - finding and whyItMatters must say different things.
 - Write recommendations specific to the clause, never a generic instruction.`;
+
+// Closes an unterminated JSON object by trimming back to the last complete
+// element and appending the brackets the model never got to write.
+function salvageTruncatedJson(text) {
+  if (!text || text.indexOf('{') === -1) return null;
+
+  for (let cut = text.length; cut > 200; cut -= 1) {
+    const ch = text[cut - 1];
+    if (ch !== '}' && ch !== ']' && ch !== '"') continue;
+
+    let candidate = text.slice(0, cut).replace(/,\s*$/, '');
+
+    // Count unclosed structures, ignoring braces inside strings
+    let depthCurly = 0, depthSquare = 0, inStr = false, esc = false;
+    for (let i = 0; i < candidate.length; i++) {
+      const c = candidate[i];
+      if (esc) { esc = false; continue; }
+      if (c === '\\') { esc = true; continue; }
+      if (c === '"') { inStr = !inStr; continue; }
+      if (inStr) continue;
+      if (c === '{') depthCurly++;
+      else if (c === '}') depthCurly--;
+      else if (c === '[') depthSquare++;
+      else if (c === ']') depthSquare--;
+    }
+    if (inStr || depthCurly < 0 || depthSquare < 0) continue;
+
+    let repaired = candidate;
+    while (depthSquare-- > 0) repaired += ']';
+    while (depthCurly-- > 0) repaired += '}';
+
+    try {
+      const obj = JSON.parse(repaired);
+      if (obj && typeof obj === 'object') {
+        console.log('Salvaged truncated JSON at ' + cut + ' of ' + text.length);
+        return obj;
+      }
+    } catch (e) { /* keep walking back */ }
+  }
+  return null;
+}
 
 function db() {
   return createClient(
@@ -124,7 +173,7 @@ exports.handler = async (event) => {
 
     const message = await anthropic.messages.create({
       model: MODEL,
-      max_tokens: 8000,
+      max_tokens: 16000,
       system: SYSTEM_PROMPT,
       messages: [{
         role: 'user',
@@ -169,7 +218,17 @@ exports.handler = async (event) => {
     let parsed;
     try {
       parsed = JSON.parse(text);
-    } catch (e) {
+    } catch (eFirst) {
+      // If the model ran out of tokens the JSON is cut off mid-object. Rather
+      // than lose an 80-second review, close the open structures and salvage
+      // whatever complete items came through.
+      parsed = salvageTruncatedJson(text);
+    }
+
+    if (!parsed) {
+      try {
+        parsed = JSON.parse(text);
+      } catch (e) {
       // Do NOT fake a successful review. The client shows this message.
       console.error('JSON parse failed. stop_reason=' + message.stop_reason + ' len=' + text.length);
       await finish(jobId, {
@@ -178,6 +237,7 @@ exports.handler = async (event) => {
         completed_at: new Date().toISOString()
       });
       return json(200, { success: false });
+      }
     }
 
     const VALID_RISK = ['Low', 'Medium', 'High'];
