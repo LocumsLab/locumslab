@@ -1066,7 +1066,7 @@
  gtag('js', new Date());
  gtag('config', 'G-XXXXXXX');
 </script>
---><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="https://js.stripe.com/v3/"></script><script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script></head><body><!-- NEWSLETTER BAR -->
+--><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="https://js.stripe.com/v3/"></script><script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script></head><body><!-- NEWSLETTER BAR -->
 <div id="newsletter-bar" style="background: #0a2540; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 10px 24px; display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;">
   <span style="color: rgba(255,255,255,0.8); font-size: 0.875rem;">Free monthly CRNA locums market report — rate signals, open positions, and market notes.</span>
   <form action="https://app.beehiiv.com/subscribe" method="POST" target="_blank" style="display:inline-flex; gap:8px; align-items:center;">
@@ -4837,6 +4837,71 @@ function htmlToPlainText(html) {
     .trim();
 }
 
+// Netlify rejects request bodies over 6MB, and base64 inflates a file by
+// about a third, so PDFs over roughly 4.2MB used to fail with a 413 before
+// the function ever ran. We now read the text in the browser and send that
+// instead, which has no size ceiling.
+//
+// Scanned PDFs have no extractable text, so if extraction comes back thin we
+// fall back to sending the file itself - which still works, just only for
+// files small enough to fit under the limit.
+const PDF_TEXT_MIN_CHARS = 1500;
+const PDF_BASE64_MAX_BYTES = 4.2 * 1024 * 1024;
+
+async function pdfToText(file) {
+  const lib = window.pdfjsLib;
+  if (!lib) return '';
+  try {
+    if (lib.GlobalWorkerOptions && !lib.GlobalWorkerOptions.workerSrc) {
+      lib.GlobalWorkerOptions.workerSrc =
+        'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+    }
+    const buf = await file.arrayBuffer();
+    const pdf = await lib.getDocument({ data: buf }).promise;
+    const pages = [];
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      let last = null;
+      let line = '';
+      const out = [];
+      content.items.forEach(function (item) {
+        // transform[5] is the y position. A change means a new line.
+        const y = item.transform ? Math.round(item.transform[5]) : null;
+        if (last !== null && y !== null && Math.abs(y - last) > 2) {
+          out.push(line.trim());
+          line = '';
+        }
+        line += item.str + (item.hasEOL ? '\n' : ' ');
+        if (y !== null) last = y;
+      });
+      if (line.trim()) out.push(line.trim());
+      pages.push(out.join('\n'));
+    }
+    return pages.join('\n\n')
+      .replace(/[ \t]+/g, ' ')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  } catch (e) {
+    console.warn('PDF text extraction failed, will try sending the file:', e && e.message);
+    return '';
+  }
+}
+
+async function buildPdfPayload(file) {
+  const text = await pdfToText(file);
+  if (text && text.replace(/\s/g, '').length >= PDF_TEXT_MIN_CHARS) {
+    return { contractText: text };
+  }
+  // Little or no text: probably a scan. Send the file so the model can read it.
+  if (file.size <= PDF_BASE64_MAX_BYTES) {
+    return { pdfBase64: await fileToBase64(file) };
+  }
+  throw new Error('This PDF appears to be a scan and is too large to review ('
+    + (file.size / 1024 / 1024).toFixed(1)
+    + 'MB, limit 4.2MB for scanned files). Try a text-based PDF, or email hello@locumslab.com.');
+}
+
 function fileToBase64(file) {
   return new Promise(function (resolve, reject) {
     const reader = new FileReader();
@@ -4927,7 +4992,7 @@ async function analyzeContractFile(file) {
     const isWord = file.name.toLowerCase().endsWith('.docx');
     const payload = isWord
       ? { contractText: await docxToText(file) }
-      : { pdfBase64: await fileToBase64(file) };
+      : await buildPdfPayload(file);
     const analysis = await analyzeContractWithClaude(payload, file.name);
 
     clearAnalysisProgress();
