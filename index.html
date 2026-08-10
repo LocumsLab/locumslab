@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Before you sign the locums contract, run the numbers. Upload your contract for a red-flag review, compare W-2 vs 1099 offers after taxes and expenses, and see whether 1099 work actually makes sense.">
+<meta name="keywords" content="locums contract review, CRNA locums calculator, 1099 vs W2 calculator, physician locums tax, S-Corp CRNA, contract analyzer, locum tenens take home pay, healthcare contractor calculator, solo 401k calculator 2026">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="LocumsLab — Before you sign the locums contract, run the numbers">
+<meta property="og:description" content="Upload your contract, check for red flags, compare W-2 vs 1099 offers, estimate taxes and expenses, and see whether 1099 work actually makes sense.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://locumslab.com">
+<link rel="canonical" href="https://locumslab.com">
+<title>LocumsLab — Contract review and offer comparison for locums clinicians</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"What does the Contract Analyzer actually do?","acceptedAnswer":{"@type":"Answer","text":"Upload a locums contract PDF and the analyzer flags common red-flag clauses, missing protections, payment terms, cancellation language, and malpractice concerns, along with questions to clarify with the recruiter or attorney before signing. It is a first-pass educational review, not legal advice."}},
+    {"@type":"Question","name":"How much more do locums clinicians make compared to staff?","acceptedAnswer":{"@type":"Answer","text":"Locums clinicians may earn more in gross income, but the net advantage depends on weeks worked, taxes, malpractice coverage, health insurance, retirement contributions, unpaid time off, and business expenses. LocumsLab models these directionally so the comparison is based on net, not gross."}},
+    {"@type":"Question","name":"Should a CRNA or physician form an S-Corp?","acceptedAnswer":{"@type":"Answer","text":"An S-Corporation can reduce self-employment tax for some higher-earning 1099 clinicians, but it also adds payroll, bookkeeping, reasonable salary requirements, and tax filing complexity. The S-Corp Worth-It Check estimates whether the likely savings justify the extra admin at your income level."}},
+    {"@type":"Question","name":"How much can a 1099 CRNA or physician contribute to a Solo 401(k) in 2026?","acceptedAnswer":{"@type":"Answer","text":"For 2026, the combined employee and employer Solo 401(k) contribution limit is $72,000 (or up to $80,000 with catch-up contributions for those 50 and older). Higher earners with prior-year wages over $150,000 must make catch-up contributions as Roth starting in 2026. LocumsLab helps estimate retirement scenarios, but final numbers should be confirmed with a tax professional."}},
+    {"@type":"Question","name":"Is the LocumsLab calculator free?","acceptedAnswer":{"@type":"Answer","text":"The core calculators are free. Pro ($99 one-time) unlocks the Contract Analyzer, S-Corp Worth-It Check, full benchmarks, side-by-side scenario comparison, and unlimited PDF exports."}}
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"SoftwareApplication",
+  "name":"LocumsLab",
+  "applicationCategory":"FinanceApplication",
+  "description":"Contract review and offer-comparison tools for locums clinicians. Upload contracts for red-flag analysis, compare W-2 vs 1099, model S-Corp scenarios, and estimate take-home pay before signing.",
+  "url":"https://locumslab.com",
+  "offers":{"@type":"Offer","price":"99","priceCurrency":"USD"},
+  "operatingSystem":"Web"
+}
+</script>
+<style>
+  :root {
+    --ink: #111827;
+    --navy: #10253f;
+    --blue: #1f6feb;
+    --blue-dark: #174ea6;
+    --green: #12835c;
+    --green-soft: #e8f5ef;
+    --cream: #fbf7ef;
+    --sand: #efe5d4;
+    --paper: #fffdf8;
+    --slate: #5b6573;
+    --muted: #8a94a3;
+    --line: #e5e0d7;
+    --white: #ffffff;
+    --shadow: 0 22px 60px rgba(17, 24, 39, 0.10);
+    --radius-lg: 28px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(255, 253, 248, 0.88);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(229, 224, 215, 0.85);
+  }
+  nav {
+    height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .brand {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    text-decoration: none;
+    line-height: 1;
+  }
+  .logo-word {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-weight: 850;
+    letter-spacing: -0.055em;
+    font-size: 1.72rem;
+    line-height: 0.95;
+  }
+  .logo-word::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 3px;
+    background: #16c98d;
+  }
+  .logo-locums { color: var(--navy); }
+  .logo-lab { color: #16c98d; }
+  .logo-tagline {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 0.54rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: 500;
+  }
+  footer .logo-locums { color: #f5f7fa; }
+  footer .logo-tagline { color: rgba(255,255,255,0.45); }
+  .footer-brand-logo {
+    display: inline-flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .nav-link {
+    text-decoration: none;
+    font-weight: 650;
+    font-size: 0.92rem;
+    color: var(--slate);
+    padding: 10px 12px;
+  }
+  .nav-link.nav-auth {
+    white-space: nowrap;
+    color: var(--ink, #10253f);
+    font-weight: 750;
+  }
+  .nav-link.nav-auth:hover { text-decoration: underline; }
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 0;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 750;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    font-family: inherit;
+  }
+  .button:hover { transform: translateY(-1px); }
+  .button-primary {
+    background: var(--blue);
+    color: white;
+    padding: 13px 20px;
+    box-shadow: 0 10px 22px rgba(31, 111, 235, 0.22);
+  }
+  .button-primary:hover { background: var(--blue-dark); }
+  .button-secondary {
+    background: var(--white);
+    color: var(--navy);
+    padding: 12px 18px;
+    border: 1px solid var(--line);
+  }
+  .button-green {
+    background: var(--green);
+    color: white;
+    padding: 13px 22px;
+    box-shadow: 0 10px 20px rgba(18, 131, 92, 0.18);
+  }
+
+  .hero {
+    padding: 86px 0 54px;
+    overflow: hidden;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.03fr) minmax(380px, 0.97fr);
+    gap: 54px;
+    align-items: center;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--green);
+    background: var(--green-soft);
+    border: 1px solid rgba(18, 131, 92, 0.16);
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    /* Headings below have no top margin and a sub-1 line-height, so the serif
+       ascenders ride up into this pill. Space it off the heading here. */
+    margin-bottom: clamp(16px, 1.7vw, 24px);
+  }
+  h1, h2, .display {
+    font-family: Newsreader, Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    color: var(--navy);
+  }
+  h1 {
+    font-size: clamp(3.2rem, 7vw, 6.5rem);
+    line-height: 0.92;
+    /* Top margin moved to .eyebrow's margin-bottom so hero and section heads
+       use one consistent rule. Net hero spacing is unchanged. */
+    margin: 0 0 24px;
+    max-width: 720px;
+  }
+  .hero-copy {
+    max-width: 640px;
+    color: var(--slate);
+    font-size: 1.2rem;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 34px;
+  }
+  .microcopy {
+    margin-top: 16px;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .hero-disclaimer {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-style: italic;
+  }
+
+  .receipt-wrap {
+    position: relative;
+  }
+  .receipt-wrap::before {
+    content: "";
+    position: absolute;
+    inset: -32px -20px 42px 58px;
+    background: var(--sand);
+    border-radius: 36px;
+    transform: rotate(4deg);
+    z-index: -1;
+  }
+  .receipt-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 28px;
+  }
+  .receipt-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px dashed var(--line);
+    padding-bottom: 18px;
+    margin-bottom: 14px;
+  }
+  .receipt-title { font-weight: 800; color: var(--navy); }
+  .receipt-sub { color: var(--muted); font-size: 0.88rem; margin-top: 2px; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--green);
+    background: var(--green-soft);
+  }
+  .line-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 14px 0;
+    border-bottom: 1px solid #f0ece4;
+    color: var(--slate);
+    font-size: 0.95rem;
+  }
+  .line-item strong { color: var(--ink); font-weight: 800; }
+  .line-item .positive { color: var(--green); }
+  .result-box {
+    background: var(--navy);
+    color: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 18px;
+  }
+  .result-box span {
+    display: block;
+    color: rgba(255,255,255,0.62);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .result-box strong {
+    display: block;
+    font-size: 2.1rem;
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+  }
+  .result-box p {
+    color: rgba(255,255,255,0.74);
+    margin-top: 6px;
+    font-size: 0.92rem;
+  }
+  .flag-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0ece4;
+    color: var(--slate);
+    font-size: 0.93rem;
+  }
+  .flag-row:last-of-type { border-bottom: 0; }
+  .flag-row .label { display: flex; align-items: center; gap: 10px; }
+  .flag-row .dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 99px;
+    flex-shrink: 0;
+  }
+  .flag-row .dot.red { background: #d4504a; }
+  .flag-row .dot.amber { background: #d49a3a; }
+  .flag-row .dot.green { background: var(--green); }
+  .flag-row .tag-mini {
+    font-size: 0.74rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    border-radius: 99px;
+  }
+  .flag-row .tag-mini.red { color: #b03a35; background: rgba(212, 80, 74, 0.12); }
+  .flag-row .tag-mini.amber { color: #8a6420; background: rgba(212, 154, 58, 0.16); }
+  .flag-row .tag-mini.green { color: var(--green); background: var(--green-soft); }
+
+  .strip {
+    padding: 20px 0 66px;
+  }
+  .strip-inner {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: rgba(255,255,255,0.56);
+  }
+  .strip-item {
+    padding: 20px 22px;
+    border-right: 1px solid var(--line);
+  }
+  .strip-item:last-child { border-right: 0; }
+  .strip-item b { display: block; color: var(--navy); font-size: 0.96rem; margin-bottom: 3px; }
+  .strip-item span { color: var(--slate); font-size: 0.88rem; }
+
+  section { padding: 84px 0; }
+  .section-head {
+    max-width: 760px;
+    margin-bottom: 38px;
+  }
+  .section-head.center { text-align: center; margin-left: auto; margin-right: auto; }
+  h2 {
+    font-size: clamp(2.3rem, 5vw, 4.1rem);
+    line-height: 0.98;
+    margin-bottom: 16px;
+  }
+  .section-head p {
+    color: var(--slate);
+    font-size: 1.08rem;
+  }
+
+  .questions {
+    background: var(--cream);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .question-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 46px;
+    align-items: start;
+  }
+  .question-list {
+    display: grid;
+    gap: 14px;
+  }
+  .question-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 22px;
+  }
+  .question-card h3 {
+    color: var(--navy);
+    font-size: 1.14rem;
+    margin-bottom: 8px;
+  }
+  .question-card p { color: var(--slate); }
+  .plain-note {
+    background: var(--navy);
+    color: white;
+    border-radius: var(--radius-lg);
+    padding: 34px;
+    position: sticky;
+    top: 100px;
+  }
+  .plain-note h3 {
+    font-family: Newsreader, Georgia, serif;
+    font-size: 2.25rem;
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    margin-bottom: 14px;
+  }
+  .plain-note p { color: rgba(255,255,255,0.75); }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .tool-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    min-height: 225px;
+  }
+  .tool-card.featured {
+    border: 2px solid var(--blue);
+    background: linear-gradient(180deg, white, #f7faff);
+  }
+  .tool-number {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    background: var(--cream);
+    color: var(--navy);
+    font-weight: 800;
+    margin-bottom: 22px;
+  }
+  .tool-card.featured .tool-number {
+    background: var(--blue);
+    color: white;
+  }
+  .tool-card h3 {
+    color: var(--navy);
+    margin-bottom: 8px;
+    font-size: 1.12rem;
+  }
+  .tool-card p { color: var(--slate); font-size: 0.95rem; }
+  .tool-tag {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--blue);
+    background: rgba(31, 111, 235, 0.09);
+    padding: 4px 10px;
+    border-radius: 99px;
+  }
+
+  .quickstart {
+    padding: 0;
+  }
+  .quickstart-card {
+    background: var(--navy);
+    color: white;
+    border-radius: 34px;
+    padding: 46px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 30px;
+    box-shadow: var(--shadow);
+  }
+  .quickstart-card h2 { color: white; margin-bottom: 12px; }
+  .quickstart-card p { color: rgba(255,255,255,0.72); max-width: 690px; }
+
+  .benchmarks {
+    background: var(--paper);
+  }
+  .table-wrap {
+    overflow-x: auto;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 16px 44px rgba(17, 24, 39, 0.06);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 760px;
+    font-size: 0.94rem;
+  }
+  th {
+    text-align: left;
+    background: var(--navy);
+    color: white;
+    padding: 17px 20px;
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  th:not(:first-child), td:not(:first-child) { text-align: right; }
+  td {
+    padding: 17px 20px;
+    border-bottom: 1px solid #f0ece4;
+    color: var(--slate);
+  }
+  tr:last-child td { border-bottom: 0; }
+  td:first-child { color: var(--navy); font-weight: 800; }
+  .money { color: var(--blue); font-weight: 800; }
+  .green { color: var(--green); font-weight: 800; }
+  .blurred td { filter: blur(4px); opacity: 0.48; user-select: none; }
+  .unlock {
+    padding: 28px 24px 34px;
+    text-align: center;
+    background: linear-gradient(180deg, white, var(--cream));
+  }
+  .unlock p { color: var(--slate); margin-bottom: 18px; }
+  .source {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.78rem;
+    margin-top: 16px;
+  }
+
+  .split-section {
+    background: var(--cream);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+    align-items: stretch;
+  }
+  .panel {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 34px;
+  }
+  .panel.dark {
+    background: var(--navy);
+    color: white;
+  }
+  .panel.dark h2, .panel.dark h3 { color: white; }
+  .panel.dark p, .panel.dark li { color: rgba(255,255,255,0.74); }
+  .panel h3 {
+    color: var(--navy);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+  .panel p { color: var(--slate); margin-bottom: 22px; }
+  .panel .panel-note { color: var(--muted); font-size: 0.86rem; font-style: italic; margin-top: 16px; margin-bottom: 0; }
+  .check-list { list-style: none; display: grid; gap: 11px; margin: 22px 0 28px; }
+  .check-list li { color: var(--slate); padding-left: 26px; position: relative; }
+  .check-list li::before {
+    content: "";
+    width: 9px;
+    height: 9px;
+    border-radius: 99px;
+    background: var(--green);
+    position: absolute;
+    left: 0;
+    top: 0.72em;
+  }
+
+  .newsletter {
+    background: var(--navy);
+    color: white;
+  }
+  .newsletter-box {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .newsletter h2 { color: white; }
+  .newsletter p { color: rgba(255,255,255,0.72); }
+  .signup-form {
+    margin: 28px auto 0;
+    display: flex;
+    gap: 10px;
+    max-width: 520px;
+  }
+  .signup-form input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid rgba(255,255,255,0.16);
+    background: rgba(255,255,255,0.10);
+    color: white;
+    border-radius: 999px;
+    padding: 14px 18px;
+    font: inherit;
+    outline: none;
+  }
+  .signup-form input::placeholder { color: rgba(255,255,255,0.48); }
+  .privacy-note { color: rgba(255,255,255,0.45); font-size: 0.82rem; margin-top: 12px; }
+
+  .rate-submit { text-align: center; }
+  .rate-submit .section-head { margin-left: auto; margin-right: auto; }
+
+  .pricing {
+    background: var(--cream);
+    border-top: 1px solid var(--line);
+  }
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    max-width: 890px;
+    margin: 38px auto 0;
+  }
+  .price-card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 34px;
+    position: relative;
+  }
+  .price-card.featured {
+    border: 2px solid var(--blue);
+    box-shadow: 0 20px 52px rgba(31, 111, 235, 0.11);
+  }
+  .tag {
+    display: inline-flex;
+    color: var(--blue);
+    background: rgba(31,111,235,0.09);
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 0.76rem;
+    font-weight: 850;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .price-card h3 { font-size: 1.45rem; color: var(--navy); margin-bottom: 6px; }
+  .price { font-size: 3rem; font-weight: 850; color: var(--navy); letter-spacing: -0.06em; margin: 16px 0 8px; }
+  .price span { font-size: 1rem; color: var(--slate); letter-spacing: 0; font-weight: 600; }
+  .price-card p { color: var(--slate); }
+  .price-card ul { list-style: none; margin: 26px 0; display: grid; gap: 12px; }
+  .price-card li { color: var(--slate); padding-left: 24px; position: relative; }
+  .price-card li strong { color: var(--ink); font-weight: 800; }
+  .price-card li::before { content: "✓"; color: var(--green); position: absolute; left: 0; font-weight: 900; }
+  .price-card .button { width: 100%; }
+
+  .faq-list { max-width: 880px; margin: 40px auto 0; display: grid; gap: 12px; }
+  .faq-item {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 24px;
+  }
+  .faq-item h3 { color: var(--navy); font-size: 1.05rem; margin-bottom: 8px; }
+  .faq-item p { color: var(--slate); }
+  .faq-item a { color: var(--blue); font-weight: 700; }
+
+  .final-cta {
+    background: var(--navy);
+    color: white;
+    text-align: center;
+  }
+  .final-cta h2 { color: white; }
+  .final-cta p { color: rgba(255,255,255,0.72); max-width: 650px; margin: 0 auto 28px; }
+
+  footer {
+    background: #0b1c31;
+    color: white;
+    padding: 54px 0 34px;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.7fr 1fr 1fr 1fr 1fr;
+    gap: 32px;
+  }
+  footer h3 { font-size: 1.1rem; margin-bottom: 10px; }
+  footer p, footer a { color: rgba(255,255,255,0.66); font-size: 0.92rem; }
+  footer a { text-decoration: none; display: block; margin: 9px 0; }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.10);
+    margin-top: 34px;
+    padding-top: 22px;
+    color: rgba(255,255,255,0.50);
+    font-size: 0.84rem;
+    text-align: center;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 14, 24, 0.72);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    padding: 18px;
+  }
+  .modal-card {
+    background: white;
+    border-radius: 20px;
+    width: min(700px, 96vw);
+    height: min(86vh, 780px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 28px 72px rgba(0,0,0,0.32);
+  }
+  .modal-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: flex-start;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--line);
+  }
+  .modal-head b { color: var(--navy); }
+  .modal-head span { display: block; color: var(--slate); font-size: 0.84rem; margin-top: 2px; }
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    color: var(--muted);
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  @media (max-width: 980px) {
+    .hero-grid, .question-grid, .split-grid { grid-template-columns: 1fr; }
+    .receipt-wrap { max-width: 560px; }
+    .plain-note { position: static; }
+    .tools-grid { grid-template-columns: repeat(2, 1fr); }
+    .strip-inner { grid-template-columns: repeat(2, 1fr); }
+    .strip-item:nth-child(2) { border-right: 0; }
+    .strip-item:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+    .quickstart-card { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 700px) {
+    nav { height: auto; padding: 16px 0; align-items: flex-start; }
+    .nav-links { gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .nav-link { display: none; }
+    /* Log In must stay reachable on mobile even though other nav links hide */
+    .nav-link.nav-auth { display: inline-flex; padding: 10px 10px; }
+    .hero { padding-top: 58px; }
+    h1 { font-size: clamp(3.2rem, 16vw, 4.7rem); }
+    .hero-copy { font-size: 1.06rem; }
+    .tools-grid, .pricing-grid, .strip-inner { grid-template-columns: 1fr; }
+    .strip-item { border-right: 0; border-bottom: 1px solid var(--line); }
+    .strip-item:last-child { border-bottom: 0; }
+    section { padding: 62px 0; }
+    .quickstart-card, .panel, .receipt-card { padding: 26px; }
+    .signup-form { flex-direction: column; }
+    .signup-form .button { width: 100%; }
+    .footer-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="/" aria-label="LocumsLab home">
+        <span class="logo-word"><span class="logo-locums">Locums</span><span class="logo-lab">Lab</span></span>
+        <span class="logo-tagline">Financial tools for clinicians</span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="#about">About</a>
+        <a class="nav-link" href="/blog">Blog</a>
+        <a class="nav-link" href="#pricing">Pricing</a>
+        <a class="nav-link nav-auth" href="app.html?login=true">Log In</a>
+        <a class="button button-primary" href="app.html">Analyze a contract</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">For locums clinicians</div>
+        <h1>Before you sign the locums contract, run the numbers.</h1>
+        <p class="hero-copy">Upload your contract, check for red flags, compare the offer against W-2 income, estimate taxes and expenses, and see whether 1099 work actually makes sense.</p>
+        <div class="hero-actions">
+          <a href="app.html" class="button button-primary">Analyze a contract</a>
+          <a href="app.html?start=quickstart" class="button button-secondary">Try the free calculators</a>
+        </div>
+        <p class="microcopy">Built for CRNAs, physicians, NPs, PAs, and other clinicians comparing staff work against 1099 or travel income.</p>
+        <p class="hero-disclaimer">Educational first-pass review only. Not legal, tax, or financial advice.</p>
+      </div>
+
+      <div class="receipt-wrap">
+        <div class="receipt-card" aria-label="Example LocumsLab contract review preview">
+          <div class="receipt-top">
+            <div>
+              <div class="receipt-title">Contract review</div>
+              <div class="receipt-sub">Example only · Educational review</div>
+            </div>
+            <span class="pill">First pass</span>
+          </div>
+          <div class="flag-row">
+            <span class="label"><span class="dot red"></span>Tail malpractice coverage</span>
+            <span class="tag-mini red">Missing</span>
+          </div>
+          <div class="flag-row">
+            <span class="label"><span class="dot amber"></span>Cancellation notice</span>
+            <span class="tag-mini amber">Asymmetric</span>
+          </div>
+          <div class="flag-row">
+            <span class="label"><span class="dot amber"></span>Payment timing</span>
+            <span class="tag-mini amber">Net 45</span>
+          </div>
+          <div class="flag-row">
+            <span class="label"><span class="dot green"></span>Travel and lodging</span>
+            <span class="tag-mini green">Covered</span>
+          </div>
+          <div class="flag-row">
+            <span class="label"><span class="dot green"></span>Hourly rate vs state benchmark</span>
+            <span class="tag-mini green">Above median</span>
+          </div>
+          <div class="result-box">
+            <span>Worth a closer look</span>
+            <strong>4 questions to ask</strong>
+            <p>Tail coverage, cancellation symmetry, and net-45 payment terms are worth clarifying before signing.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="strip">
+    <div class="wrap">
+      <div class="strip-inner">
+        <div class="strip-item"><b>Contract review</b><span>Red flags and questions to ask</span></div>
+        <div class="strip-item"><b>W-2 vs 1099</b><span>Compare net, not gross</span></div>
+        <div class="strip-item"><b>S-Corp worth-it check</b><span>Is the hassle worth the savings?</span></div>
+        <div class="strip-item"><b>Market context</b><span>Rates, benefits, and benchmarks</span></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="questions" id="about">
+    <div class="wrap question-grid">
+      <div class="plain-note">
+        <h3>About LocumsLab</h3>
+        <p>LocumsLab is built for clinicians who want a cleaner way to compare staff work, travel work, and 1099 contracts. It does not replace a CPA or attorney. It helps you understand the numbers, the tradeoffs, and the contract questions before you get too far into a deal.</p>
+      </div>
+      <div class="question-list">
+        <div class="question-card">
+          <h3>"What's in this contract that I should ask about?"</h3>
+          <p>Upload the PDF for a first-pass review of malpractice, cancellation, payment timing, call requirements, and other terms that locums clinicians commonly notice too late.</p>
+        </div>
+        <div class="question-card">
+          <h3>"Will I actually make more?"</h3>
+          <p>Locums rates can look great until you factor in unpaid weeks, health insurance, malpractice, licensing, travel gaps, and quarterly taxes.</p>
+        </div>
+        <div class="question-card">
+          <h3>"What should I set aside for taxes?"</h3>
+          <p>Get a practical estimate of federal, state, and self-employment tax so you are not guessing after the money hits your account.</p>
+        </div>
+        <div class="question-card">
+          <h3>"Is an S-Corp worth the hassle?"</h3>
+          <p>Sometimes yes. Sometimes the savings are not worth the payroll, bookkeeping, and tax filing complexity. The S-Corp Worth-It Check shows both sides at your income level.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">What it does</div>
+        <h2>The contract review and the math in one place.</h2>
+        <p>LocumsLab is not trying to be your CPA or attorney. It gives you a cleaner first pass so your next conversation with a recruiter, spouse, CPA, or attorney is based on numbers and specifics instead of vibes.</p>
+      </div>
+      <div class="tools-grid">
+        <div class="tool-card featured">
+          <div class="tool-number">1</div>
+          <h3>Contract Analyzer</h3>
+          <p>Upload a locums contract as a PDF or Word file and get a first-pass review of red-flag clauses, missing protections, payment terms, and cancellation language &mdash; plus a drafted email with the questions worth asking before you sign.</p>
+          <span class="tool-tag">Pro</span>
+        </div>
+        <div class="tool-card">
+          <div class="tool-number">2</div>
+          <h3>W-2 vs 1099 comparison</h3>
+          <p>Compare take-home pay, taxes, benefits, retirement room, PTO, and contract risk side by side, including the break-even rate to beat your current W-2.</p>
+        </div>
+        <div class="tool-card">
+          <div class="tool-number">3</div>
+          <h3>S-Corp Worth-It Check</h3>
+          <p>See if you are earning enough for an S-Corp to be worth the hassle, including payroll, accounting, and filing costs against estimated self-employment tax savings.</p>
+        </div>
+        <div class="tool-card">
+          <div class="tool-number">4</div>
+          <h3>Retirement planner</h3>
+          <p>Estimate Solo 401(k), SEP-IRA, and W-2 plan differences using 2026 limits. The 2026 Solo 401(k) combined limit is $72,000, with new Roth catch-up rules for high earners.</p>
+        </div>
+        <div class="tool-card">
+          <div class="tool-number">5</div>
+          <h3>Scenario comparison</h3>
+          <p>Save offers and compare them side by side so you do not anchor on the highest hourly rate before seeing the net picture.</p>
+        </div>
+        <div class="tool-card">
+          <div class="tool-number">6</div>
+          <h3>CPA worksheet PDF</h3>
+          <p>Export your assumptions and estimates as a worksheet to walk through with a CPA, financial planner, or attorney without starting from scratch.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quickstart">
+    <div class="wrap">
+      <div class="quickstart-card">
+        <div>
+          <h2>Not ready to build a full scenario?</h2>
+          <p>Use Quick Start. It walks you through the basic W-2 vs 1099 comparison in a few minutes and shows what questions deserve a closer look.</p>
+        </div>
+        <a href="app.html?start=quickstart" class="button button-green">Run Quick Start</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="benchmarks">
+    <div class="wrap">
+      <div class="section-head center">
+        <div class="eyebrow">Market context</div>
+        <h2>Benchmarks help you negotiate without guessing.</h2>
+        <p>Compare salary, malpractice ranges, CME allowances, and 2026 retirement contribution ceilings by profession. Use benchmarks as context, then verify the details for your specialty, state, and contract.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Profession</th>
+              <th>BLS Median Salary</th>
+              <th>Malpractice/yr</th>
+              <th>CME Allowance</th>
+              <th>2026 Max Retirement</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Hospitalist MD</td>
+              <td class="money">$294,300</td>
+              <td>$10,000–$30,000</td>
+              <td>$3,000–$5,000</td>
+              <td class="green">$72,000</td>
+            </tr>
+            <tr>
+              <td>CRNA</td>
+              <td class="money">$214,500</td>
+              <td>$3,000–$8,000</td>
+              <td>$2,000–$4,000</td>
+              <td class="green">$72,000</td>
+            </tr>
+            <tr>
+              <td>Emergency Medicine MD</td>
+              <td class="money">$310,640</td>
+              <td>$15,000–$50,000</td>
+              <td>$3,000–$5,000</td>
+              <td class="green">$72,000</td>
+            </tr>
+            <tr>
+              <td>Nurse Practitioner</td>
+              <td class="money">$126,260</td>
+              <td>$1,500–$4,000</td>
+              <td>$1,500–$3,000</td>
+              <td class="green">$72,000</td>
+            </tr>
+            <tr class="blurred">
+              <td>Physician Assistant</td>
+              <td class="money">$130,020</td>
+              <td>$2,000–$5,000</td>
+              <td>$1,500–$3,000</td>
+              <td class="green">$72,000</td>
+            </tr>
+            <tr class="blurred">
+              <td>Anesthesiologist MD</td>
+              <td class="money">$331,190</td>
+              <td>$20,000–$60,000</td>
+              <td>$3,000–$6,000</td>
+              <td class="green">$72,000</td>
+            </tr>
+            <tr class="blurred">
+              <td>Registered Nurse</td>
+              <td class="money">$93,600</td>
+              <td>$500–$2,000</td>
+              <td>$500–$1,500</td>
+              <td class="green">$24,500</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="unlock">
+          <p><strong>More professions, tax burden comparisons, and retirement projections</strong> are included with Pro.</p>
+          <a href="#pricing" class="button button-primary">See full benchmarks</a>
+        </div>
+      </div>
+      <p class="source">Sources for context: BLS Occupational Employment &amp; Wage Statistics, Medical Liability Monitor, MGMA survey references, and 2026 IRS retirement contribution limits (Solo 401(k) combined limit $72,000; employee deferral $24,500). Verify current figures before making tax or legal decisions.</p>
+    </div>
+  </section>
+
+  <section class="split-section">
+    <div class="wrap split-grid">
+      <div class="panel dark">
+        <div class="eyebrow">Free resource</div>
+        <h2>The Locums Financial Roadmap</h2>
+        <p>A plain-English starting point for clinicians thinking about 1099 work. It covers entity setup, taxes, malpractice, retirement accounts, and the kind of CPA you probably want before your first big contract.</p>
+        <ul class="check-list">
+          <li>LLC and S-Corp setup basics</li>
+          <li>Self-employment tax and deductions</li>
+          <li>Malpractice: claims-made vs occurrence</li>
+          <li>Solo 401(k) vs SEP-IRA in 2026</li>
+          <li>How to find a CPA who understands 1099 healthcare work</li>
+        </ul>
+        <a href="guide.html" class="button button-green">Download the guide</a>
+      </div>
+
+      <div class="panel">
+        <div class="eyebrow">Community data</div>
+        <h2>What are clinicians actually being offered?</h2>
+        <p>Submit an anonymous 1099 offer or current assignment rate. The more clinicians who share what they are seeing, the sooner the Locums Rate Report ships, and submitters get it first. Two minutes, no name required.</p>
+        <ul class="check-list">
+          <li>State, setting, and shift length</li>
+          <li>Hourly rate, call, malpractice, travel</li>
+          <li>No login or employer name</li>
+          <li>Be first to get the Locums Rate Report when it launches</li>
+        </ul>
+        <button onclick="openRateForm()" class="button button-primary">Submit a rate anonymously</button>
+        <p class="panel-note">Targeting late 2026 with enough verified submissions.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="newsletter">
+    <div class="wrap newsletter-box">
+      <div class="eyebrow">Free monthly report</div>
+      <h2>CRNA Locums Market Report</h2>
+      <p>Open positions by state, rate intel from major agencies, and what seems to be moving in the market. One practical email per month.</p>
+      <form action="https://app.beehiiv.com/subscribe" method="POST" target="_blank" class="signup-form">
+        <input type="hidden" name="publication_id" value="ae4c662f-c04c-4bed-af24-6368e2ed1715">
+        <input type="email" name="email" required placeholder="Your email address">
+        <button type="submit" class="button button-green">Subscribe</button>
+      </form>
+      <p class="privacy-note">No spam. Unsubscribe anytime.</p>
+    </div>
+  </section>
+
+  <section class="pricing" id="pricing">
+    <div class="wrap">
+      <div class="section-head center">
+        <div class="eyebrow">Pricing</div>
+        <h2>Review the numbers before you sign.</h2>
+        <p>Use the free calculators for a quick estimate. Upgrade when you need the contract analyzer, S-Corp check, full benchmarks, and an exportable report.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="price-card">
+          <span class="tag">Free</span>
+          <h3>For a quick first pass</h3>
+          <div class="price">$0</div>
+          <p>Good for checking whether a locums offer deserves a closer look.</p>
+          <ul>
+            <li>All core calculators</li>
+            <li>Save up to three scenarios</li>
+            <li>Basic W-2 vs 1099 comparison</li>
+            <li>Preview rate and expense benchmarks</li>
+          </ul>
+          <a href="app.html?start=quickstart" class="button button-secondary">Try the calculators</a>
+        </div>
+        <div class="price-card featured">
+          <span class="tag">Pro</span>
+          <h3>For serious contract review</h3>
+          <div class="price">$99 <span>one-time</span></div>
+          <p>Built for locums clinicians actively reviewing an offer, comparing 1099 work, or deciding whether the numbers actually make sense.</p>
+          <ul>
+            <li><strong>Contract Analyzer</strong> — upload a PDF or Word file. Flags restrictive covenants, tail coverage, termination notice, and payment terms that are not spelled out</li>
+            <li><strong>S-Corp Worth-It Check</strong> — see if you are earning enough for S-Corp to be worth the hassle</li>
+            <li><strong>W-2 vs 1099 break-even rate</strong> — the hourly rate you actually need to beat your W-2 after taxes, PTO, and benefits</li>
+            <li><strong>Full market benchmarks</strong> by profession, state, and setting</li>
+            <li><strong>Recruiter and CPA emails</strong> — drafted for you, with your questions and figures already filled in</li>
+            <li><strong>Downloadable review report</strong> for your next CPA or attorney conversation</li>
+            <li>Unlimited saved scenarios, side-by-side offer comparison, and PDF export</li>
+            <li>One-time purchase — no subscription, nothing to cancel</li>
+          </ul>
+          <a href="app.html?upgrade=pro" class="button button-primary">Unlock Pro — $99</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <div class="section-head center">
+        <div class="eyebrow">FAQ</div>
+        <h2>A few things worth clarifying.</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item">
+          <h3>What does the Contract Analyzer actually do?</h3>
+          <p>You upload a locums contract PDF and the analyzer flags common red-flag clauses, missing protections (such as tail coverage), payment terms, cancellation language, and malpractice concerns. It also generates a list of questions to clarify with the recruiter or attorney before signing. It is an educational first-pass review, not legal advice.</p>
+        </div>
+        <div class="faq-item">
+          <h3>How accurate are the calculations?</h3>
+          <p>The calculations are meant for directional planning. They help you compare assumptions and spot major differences. Final tax, legal, entity, and contract decisions should be reviewed with a CPA or attorney.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Where does the benchmark data come from?</h3>
+          <p>Salary benchmarks reference BLS Occupational Employment &amp; Wage Statistics. Malpractice and benefit ranges use industry survey references where available. Retirement limits reflect 2026 IRS figures. Community-reported rate data will expand as more clinicians submit anonymous rates. Treat benchmarks as context, not a guarantee for your market.</p>
+        </div>
+        <div class="faq-item">
+          <h3>What is included in the S-Corp Worth-It Check?</h3>
+          <p>It compares sole proprietor and S-Corp assumptions, including estimated self-employment tax savings, salary and distribution splits, payroll and admin cost, and whether the potential savings appear meaningful enough at your income level to discuss with a CPA.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Can I export my scenarios?</h3>
+          <p>Yes. Pro users can export scenario and comparison reports as worksheet PDFs for a spouse, CPA, financial planner, or attorney.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Is this only for CRNAs?</h3>
+          <p>No. It works for CRNAs, physicians, NPs, PAs, nurses, and other healthcare professionals comparing staff, travel, and locums work.</p>
+        </div>
+        <div class="faq-item">
+          <h3>What if I have questions?</h3>
+          <p>Email <a href="mailto:hello@locumslab.com">hello@locumslab.com</a>. You should still use a qualified professional for tax, legal, or contract-specific advice.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="wrap">
+      <h2>Before you sign, run the math.</h2>
+      <p>A better offer is not always the one with the bigger hourly rate. Compare the take-home pay, the structure, and the contract risk in one place.</p>
+      <a href="app.html" class="button button-green">Analyze a contract</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-logo" aria-label="LocumsLab logo">
+          <span class="logo-word"><span class="logo-locums">Locums</span><span class="logo-lab">Lab</span></span>
+          <span class="logo-tagline">Financial tools for clinicians</span>
+        </div>
+        <p>Contract review and financial clarity for clinicians comparing staff work, locums contracts, and 1099 healthcare income.</p>
+      </div>
+      <div>
+        <h3>Product</h3>
+        <a href="app.html">Contract Analyzer</a>
+        <a href="app.html?start=quickstart">Calculators</a>
+        <a href="#pricing">Pricing</a>
+        <a href="guide.html">Free guide</a>
+      </div>
+      <div>
+        <h3>Learn</h3>
+        <a href="/blog">Blog</a>
+        <a href="/blog/how-to-review-locums-contract.html">Contract review guide</a>
+      </div>
+      <div>
+        <h3>Free tools</h3>
+        <a href="realized-annual-rate.html">Realized annual rate</a>
+        <a href="cancellation-exposure.html">Cancellation exposure</a>
+      </div>
+      <div>
+        <h3>Company</h3>
+        <a href="#about">About</a>
+        <a href="#faq">FAQ</a>
+        <a href="app.html?contact=true">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2026 LocumsLab. Educational estimates only. Not tax, legal, financial, or contract advice.</div>
+  </div>
+</footer>
+
+<div id="rate-form-modal" class="modal" onclick="if(event.target===this){closeRateForm();}">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div>
+        <b>Submit a locums rate</b>
+        <span>Anonymous · about two minutes · be first to receive the Locums Rate Report when it launches</span>
+      </div>
+      <button onclick="closeRateForm()" class="close-btn" aria-label="Close rate submission form">&times;</button>
+    </div>
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfTO6ffR2XUEDcLFE58E0tbtKLE9cbLx4OCxW007eQweBiSVg/viewform?embedded=true" style="flex:1; border:none; width:100%;" loading="lazy" title="LocumsLab Rate Submission">Loading...</iframe>
+  </div>
+</div>
+
+<script>
+function openRateForm() {
+  document.getElementById('rate-form-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeRateForm() {
+  document.getElementById('rate-form-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeRateForm();
+});
+</script>
+
+</body>
+</html>
