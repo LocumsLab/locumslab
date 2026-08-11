@@ -1066,7 +1066,7 @@
  gtag('js', new Date());
  gtag('config', 'G-XXXXXXX');
 </script>
---><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="https://js.stripe.com/v3/"></script><script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script></head><body><!-- NEWSLETTER BAR -->
+--><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="https://js.stripe.com/v3/"></script><script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script></head><body><!-- NEWSLETTER BAR -->
 <div id="newsletter-bar" style="background: #0a2540; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 10px 24px; display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;">
   <span style="color: rgba(255,255,255,0.8); font-size: 0.875rem;">Free monthly CRNA locums market report — rate signals, open positions, and market notes.</span>
   <form action="https://app.beehiiv.com/subscribe" method="POST" target="_blank" style="display:inline-flex; gap:8px; align-items:center;">
@@ -4773,133 +4773,31 @@ async function processContractPayment(filename) {
 }
 
 // ---------- FILE CONVERSION (PDF passthrough + DOCX bridge) ----------
-// Word documents are sent as text, not as a rebuilt PDF.
-// The old approach repainted mammoth's output into a jsPDF document, which
-// added no information (formatting is already gone after extraction) and
-// stalled the main thread on long contracts. convertToHtml is used rather
-// than extractRawText so table structure survives, since rate schedules and
-// call rotations are frequently laid out in tables.
-async function docxToText(file) {
+async function docxToPdfBase64(file) {
   if (!window.mammoth) throw new Error('Word support did not load. Please refresh and try again.');
   const arrayBuffer = await file.arrayBuffer();
+  const result = await window.mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+  const text = (result && result.value ? result.value : '').trim();
+  if (!text) throw new Error('No readable text found in that Word document. If it is a scanned image, please save it as a PDF instead.');
 
-  let text = '';
-  try {
-    const html = await window.mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
-    text = htmlToPlainText(html && html.value ? html.value : '');
-  } catch (e) {
-    text = '';
-  }
-
-  // Fall back to raw extraction if the HTML conversion yields nothing useful
-  if (text.replace(/\s/g, '').length < 200) {
-    const raw = await window.mammoth.extractRawText({ arrayBuffer: arrayBuffer });
-    const rawText = (raw && raw.value ? raw.value : '').trim();
-    if (rawText.length > text.length) text = rawText;
-  }
-
-  text = text.trim();
-  if (!text) {
-    throw new Error('No readable text found in that Word document. If it is a scanned image, please save it as a PDF instead.');
-  }
-  return text;
-}
-
-// Converts mammoth's HTML into readable plain text while keeping table rows
-// intact. Uses the DOM parser rather than regex so malformed markup cannot
-// silently drop contract language.
-function htmlToPlainText(html) {
-  if (!html) return '';
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-
-  doc.querySelectorAll('tr').forEach(function (tr) {
-    const cells = Array.prototype.map.call(tr.querySelectorAll('td, th'), function (td) {
-      return (td.textContent || '').replace(/\s+/g, ' ').trim();
-    }).filter(Boolean);
-    tr.textContent = cells.join('  |  ');
-  });
-
-  doc.querySelectorAll('table').forEach(function (t) {
-    t.textContent = '\n' + (t.textContent || '').trim() + '\n';
-  });
-
-  ['p', 'div', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'br'].forEach(function (tag) {
-    doc.querySelectorAll(tag).forEach(function (el) {
-      el.insertAdjacentText('afterend', '\n');
-    });
-  });
-
-  return (doc.body.textContent || '')
-    .replace(/\u00a0/g, ' ')
-    .replace(/[ \t]+/g, ' ')
-    .replace(/\n{3,}/g, '\n\n')
-    .split('\n').map(function (l) { return l.trim(); }).join('\n')
-    .trim();
-}
-
-// Netlify rejects request bodies over 6MB, and base64 inflates a file by
-// about a third, so PDFs over roughly 4.2MB used to fail with a 413 before
-// the function ever ran. We now read the text in the browser and send that
-// instead, which has no size ceiling.
-//
-// Scanned PDFs have no extractable text, so if extraction comes back thin we
-// fall back to sending the file itself - which still works, just only for
-// files small enough to fit under the limit.
-const PDF_TEXT_MIN_CHARS = 1500;
-const PDF_BASE64_MAX_BYTES = 4.2 * 1024 * 1024;
-
-async function pdfToText(file) {
-  const lib = window.pdfjsLib;
-  if (!lib) return '';
-  try {
-    if (lib.GlobalWorkerOptions && !lib.GlobalWorkerOptions.workerSrc) {
-      lib.GlobalWorkerOptions.workerSrc =
-        'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+  const margin = 54, usableWidth = 612 - margin * 2, lineHeight = 14, pageBottom = 792 - margin;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  let y = margin;
+  const paragraphs = text.split(/\r?\n/);
+  for (const para of paragraphs) {
+    if (!para.trim()) { y += 8; continue; }
+    const lines = doc.splitTextToSize(para, usableWidth);
+    for (const line of lines) {
+      if (y > pageBottom) { doc.addPage(); y = margin; }
+      doc.text(line, margin, y);
+      y += lineHeight;
     }
-    const buf = await file.arrayBuffer();
-    const pdf = await lib.getDocument({ data: buf }).promise;
-    const pages = [];
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
-      let last = null;
-      let line = '';
-      const out = [];
-      content.items.forEach(function (item) {
-        // transform[5] is the y position. A change means a new line.
-        const y = item.transform ? Math.round(item.transform[5]) : null;
-        if (last !== null && y !== null && Math.abs(y - last) > 2) {
-          out.push(line.trim());
-          line = '';
-        }
-        line += item.str + (item.hasEOL ? '\n' : ' ');
-        if (y !== null) last = y;
-      });
-      if (line.trim()) out.push(line.trim());
-      pages.push(out.join('\n'));
-    }
-    return pages.join('\n\n')
-      .replace(/[ \t]+/g, ' ')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
-  } catch (e) {
-    console.warn('PDF text extraction failed, will try sending the file:', e && e.message);
-    return '';
+    y += 4;
   }
-}
-
-async function buildPdfPayload(file) {
-  const text = await pdfToText(file);
-  if (text && text.replace(/\s/g, '').length >= PDF_TEXT_MIN_CHARS) {
-    return { contractText: text };
-  }
-  // Little or no text: probably a scan. Send the file so the model can read it.
-  if (file.size <= PDF_BASE64_MAX_BYTES) {
-    return { pdfBase64: await fileToBase64(file) };
-  }
-  throw new Error('This PDF appears to be a scan and is too large to review ('
-    + (file.size / 1024 / 1024).toFixed(1)
-    + 'MB, limit 4.2MB for scanned files). Try a text-based PDF, or email hello@locumslab.com.');
+  return doc.output('datauristring').split('base64,')[1];
 }
 
 function fileToBase64(file) {
@@ -4990,10 +4888,8 @@ async function analyzeContractFile(file) {
 
   try {
     const isWord = file.name.toLowerCase().endsWith('.docx');
-    const payload = isWord
-      ? { contractText: await docxToText(file) }
-      : await buildPdfPayload(file);
-    const analysis = await analyzeContractWithClaude(payload, file.name);
+    const base64 = isWord ? await docxToPdfBase64(file) : await fileToBase64(file);
+    const analysis = await analyzeContractWithClaude(base64, file.name);
 
     clearAnalysisProgress();
     displayRedFlagsResults(analysis);
@@ -5012,9 +4908,6 @@ async function analyzeContractFile(file) {
   }
 }
 
-// filename is deliberately not stored. Names like
-// "Jane_Doe_CRNA_Contract.docx" identify a person before anyone opens
-// anything. Only the user id and timestamp are kept.
 async function recordContractScan(filename) {
   // `sb` is the Supabase client. `window.supabase` is the UMD library itself,
   // which has no .from() method - that was the original bug here.
@@ -5024,7 +4917,7 @@ async function recordContractScan(filename) {
       .from('contract_scans')
       .insert({
         user_id: currentUserId,
-        filename: null
+        filename: filename
       });
     if (error) throw error;
   } catch (error) {
@@ -5032,74 +4925,18 @@ async function recordContractScan(filename) {
   }
 }
 
-// The review runs as a Netlify background function, which returns 202 at once
-// and keeps working for up to 15 minutes. That removes the synchronous timeout
-// that was killing long contracts. We create a job row first, hand its id to
-// the function, then poll for the result.
-const REVIEW_POLL_MS = 3000;
-const REVIEW_TIMEOUT_MS = 6 * 60 * 1000;
-
-async function analyzeContractWithClaude(payload, filename) {
- if (!currentUserId) {
- throw new Error('Please log in before running a contract review.');
- }
-
- const body = (typeof payload === 'string')
- ? { pdfBase64: payload }
- : Object.assign({}, payload);
-
- // 1. Create the job. RLS ties it to this user.
- const { data: job, error: jobError } = await sb
-.from('contract_reviews')
-.insert({ user_id: currentUserId, status: 'pending' })
-.select('id')
-.single();
-
- if (jobError || !job) {
- throw new Error('Could not start the review. Please try again.');
- }
-
- body.jobId = job.id;
-
- // 2. Hand it off. A background function replies 202 with no body.
- const response = await fetch('/.netlify/functions/analyze-contract-background', {
+async function analyzeContractWithClaude(base64PDF, filename) {
+ const response = await fetch('/.netlify/functions/analyze-contract', {
  method: 'POST',
- headers: { 'Content-Type': 'application/json' },
- body: JSON.stringify(body)
+ headers: {
+ 'Content-Type': 'application/json'
+ },
+ body: JSON.stringify({
+ pdfBase64: base64PDF,
+ filename: filename
+ })
  });
 
- if (!response.ok && response.status !== 202) {
- throw new Error('Could not start the review. Please try again.');
- }
-
- // 3. Poll until the row reports a terminal state.
- const startedAt = Date.now();
- while (Date.now() - startedAt < REVIEW_TIMEOUT_MS) {
- await new Promise(function (r) { setTimeout(r, REVIEW_POLL_MS); });
-
- const { data: row, error: pollError } = await sb
-.from('contract_reviews')
-.select('status, analysis, error')
-.eq('id', job.id)
-.gt('expires_at', new Date().toISOString())
-.single();
-
- if (pollError) continue; // transient network blip, keep waiting
-
- if (row && row.status === 'complete') {
- if (!row.analysis) throw new Error('The review finished but returned no result.');
- return normalizeContractAnalysis(row.analysis);
- }
- if (row && row.status === 'failed') {
- throw new Error(row.error || 'The contract review failed. Please try again.');
- }
- }
-
- throw new Error('The review is taking longer than expected. It may still finish - check back in a few minutes, or email hello@locumslab.com.');
-}
-
-// Kept for reference: the old synchronous response handler.
-async function _unusedSyncResponseHandling(response) {
  let data;
  try {
  data = await response.json();
