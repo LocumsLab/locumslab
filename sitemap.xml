@@ -1,109 +1,86 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-  <url>
-    <loc>https://locumslab.com/</loc>
-    <lastmod>2026-08-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
-  </url>
-
-  <url>
-    <loc>https://locumslab.com/blog/</loc>
-    <lastmod>2026-07-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://locumslab.com/blog/what-is-taxable-1099-crna.html</loc>
-    <lastmod>2026-07-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://locumslab.com/blog/should-crna-form-llc-before-locums.html</loc>
-    <lastmod>2026-06-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://locumslab.com/blog/hottest-locums-crna-markets-2026.html</loc>
-    <lastmod>2026-05-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://locumslab.com/blog/how-to-evaluate-locums-agency-crna.html</loc>
-    <lastmod>2026-05-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://locumslab.com/blog/locums-crna-negotiation.html</loc>
-    <lastmod>2026-05-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://locumslab.com/blog/tail-coverage-locums-crna.html</loc>
-    <lastmod>2026-05-04</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://locumslab.com/blog/top-3-mistakes-crna-going-1099.html</loc>
-    <lastmod>2026-04-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://locumslab.com/blog/locums-crna-dos-and-donts.html</loc>
-    <lastmod>2026-04-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://locumslab.com/blog/w2-vs-1099-crna-physician.html</loc>
-    <lastmod>2026-04-03</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://locumslab.com/blog/how-to-review-locums-contract.html</loc>
-    <lastmod>2026-04-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://locumslab.com/realized-annual-rate.html</loc>
-    <lastmod>2026-08-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://locumslab.com/cancellation-exposure.html</loc>
-    <lastmod>2026-08-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://locumslab.com/guide.html</loc>
-    <lastmod>2026-04-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
+<url>
+<loc>https://locumslab.com/</loc>
+<lastmod>2026-04-02</lastmod>
+<changefreq>monthly</changefreq>
+<priority>1.0</priority>
+</url>
+<url>
+<loc>https://locumslab.com/blog/</loc>
+<lastmod>2026-08-12</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://locumslab.com/blog/what-contract-analyzer-checks-crna.html</loc>
+<lastmod>2026-08-12</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://locumslab.com/blog/what-is-taxable-1099-crna.html</loc>
+<lastmod>2026-07-20</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://locumslab.com/blog/should-crna-form-llc-before-locums.html</loc>
+<lastmod>2026-06-07</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://locumslab.com/blog/hottest-locums-crna-markets-2026.html</loc>
+<lastmod>2026-05-12</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://locumslab.com/blog/how-to-evaluate-locums-agency-crna.html</loc>
+<lastmod>2026-05-10</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://locumslab.com/blog/locums-crna-negotiation.html</loc>
+<lastmod>2026-05-10</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://locumslab.com/blog/tail-coverage-locums-crna.html</loc>
+<lastmod>2026-05-04</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://locumslab.com/blog/top-3-mistakes-crna-going-1099.html</loc>
+<lastmod>2026-04-29</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://locumslab.com/blog/locums-crna-dos-and-donts.html</loc>
+<lastmod>2026-04-15</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://locumslab.com/blog/w2-vs-1099-crna-physician.html</loc>
+<lastmod>2026-04-03</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://locumslab.com/blog/how-to-review-locums-contract.html</loc>
+<lastmod>2026-04-02</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://locumslab.com/guide.html</loc>
+<lastmod>2026-04-02</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.6</priority>
+</url>
 </urlset>
