@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="What the LocumsLab contract analyzer actually checks in a locums CRNA contract -- financial risk, restriction clauses, ambiguous language, and termination terms explained.">
+<meta name="keywords" content="locums CRNA contract analyzer, contract review tool CRNA, CRNA contract red flags, locums contract financial risk, non-compete CRNA contract, locums contract termination clause">
+<meta property="og:title" content="What the LocumsLab Contract Analyzer Looks For in a Locums CRNA Contract">
+<meta property="og:description" content="A breakdown of the four risk categories the contract analyzer scores, what red flags it catches, and what it flags as missing from your contract.">
+<meta property="og:type" content="article">
+<link rel="canonical" href="https://locumslab.com/blog/what-contract-analyzer-checks-crna.html">
+<title>What the LocumsLab Contract Analyzer Checks | LocumsLab</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "What the LocumsLab Contract Analyzer Looks For in a Locums CRNA Contract",
+  "description": "A breakdown of the four risk categories the contract analyzer scores, what red flags it catches, and what it flags as missing from your contract.",
+  "datePublished": "2026-08-12",
+  "publisher": {
+    "@type": "Organization",
+    "name": "LocumsLab",
+    "url": "https://locumslab.com"
+  }
+}
+</script>
+<style>
+  :root {
+    --navy: #0a2540;
+    --blue: #0066cc;
+    --green: #10b981;
+    --red: #dc2626;
+    --amber: #d97706;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-600: #475569;
+    --gray-900: #0f172a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', -apple-system, sans-serif; color: var(--gray-900); background: white; line-height: 1.8; }
+
+  header { position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--gray-200); }
+  nav { max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--navy); text-decoration: none; }
+  .nav-right { display: flex; align-items: center; gap: 20px; }
+  .nav-link { color: var(--gray-600); text-decoration: none; font-size: 0.9375rem; }
+  .nav-link:hover { color: var(--navy); }
+  .nav-cta { background: var(--blue); color: white; padding: 9px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9375rem; }
+  .nav-cta:hover { background: #0052a3; }
+
+  article { max-width: 720px; margin: 60px auto; padding: 0 24px; }
+  .article-meta { color: var(--gray-600); font-size: 0.9375rem; margin-bottom: 24px; }
+  h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 2.75rem); line-height: 1.2; color: var(--navy); margin-bottom: 16px; letter-spacing: -0.02em; }
+  .article-intro { font-size: 1.25rem; color: var(--gray-600); margin-bottom: 40px; line-height: 1.7; }
+  h2 { font-family: 'DM Serif Display', serif; font-size: 1.75rem; color: var(--navy); margin: 48px 0 20px; letter-spacing: -0.01em; }
+  h3 { font-size: 1.125rem; font-weight: 700; color: var(--navy); margin: 32px 0 12px; }
+  p { margin-bottom: 24px; font-size: 1.0625rem; line-height: 1.8; }
+  strong { color: var(--navy); }
+  ul { margin: 0 0 24px 28px; }
+  li { margin-bottom: 10px; font-size: 1.0625rem; line-height: 1.7; }
+
+  .bucket { border-radius: 12px; padding: 28px 32px; margin: 28px 0; border: 1px solid var(--gray-200); }
+  .bucket-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+  .bucket-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; flex-shrink: 0; }
+  .bucket-title { font-size: 1.125rem; font-weight: 700; }
+  .bucket-subtitle { font-size: 0.875rem; color: var(--gray-600); margin-top: 2px; }
+  .bucket p { font-size: 1rem; color: var(--gray-600); margin-bottom: 16px; line-height: 1.75; }
+  .bucket p:last-child { margin-bottom: 0; }
+  .bucket ul { margin: 0 0 16px 20px; }
+  .bucket li { font-size: 0.9375rem; color: var(--gray-600); margin-bottom: 8px; }
+  .bucket-financial { background: rgba(220,38,38,0.04); border-color: rgba(220,38,38,0.2); }
+  .bucket-financial .bucket-icon { background: rgba(220,38,38,0.1); color: var(--red); }
+  .bucket-financial .bucket-title { color: var(--red); }
+  .bucket-restriction { background: rgba(217,119,6,0.04); border-color: rgba(217,119,6,0.2); }
+  .bucket-restriction .bucket-icon { background: rgba(217,119,6,0.1); color: var(--amber); }
+  .bucket-restriction .bucket-title { color: var(--amber); }
+  .bucket-ambiguity { background: rgba(0,102,204,0.04); border-color: rgba(0,102,204,0.15); }
+  .bucket-ambiguity .bucket-icon { background: rgba(0,102,204,0.1); color: var(--blue); }
+  .bucket-ambiguity .bucket-title { color: var(--blue); }
+  .bucket-termination { background: rgba(10,37,64,0.04); border-color: rgba(10,37,64,0.15); }
+  .bucket-termination .bucket-icon { background: rgba(10,37,64,0.1); color: var(--navy); }
+  .bucket-termination .bucket-title { color: var(--navy); }
+
+  .score-bar { display: flex; gap: 6px; margin: 10px 0 16px; }
+  .score-dot { width: 11px; height: 11px; border-radius: 50%; }
+
+  .callout { border-radius: 10px; padding: 24px 28px; margin: 28px 0; }
+  .callout-info { background: var(--gray-50); border-left: 4px solid var(--blue); }
+  .callout-info-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+  .callout-info p { font-size: 1rem; color: var(--gray-600); margin-bottom: 0; line-height: 1.75; }
+  .callout-info strong { color: var(--navy); }
+
+  .missing-item { display: flex; gap: 14px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--gray-200); }
+  .missing-item:last-child { border-bottom: none; }
+  .missing-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); flex-shrink: 0; margin-top: 8px; }
+  .missing-item strong { display: block; font-size: 1rem; color: var(--navy); margin-bottom: 4px; }
+  .missing-item p { font-size: 0.9375rem; color: var(--gray-600); margin-bottom: 0; line-height: 1.6; }
+
+  .tool-cta { background: var(--navy); border-radius: 12px; padding: 36px 40px; margin: 48px 0; color: white; }
+  .tool-cta h3 { color: white; margin: 0 0 10px; font-size: 1.25rem; }
+  .tool-cta p { color: rgba(255,255,255,0.8); margin-bottom: 24px; font-size: 1rem; line-height: 1.7; }
+  .tool-cta-btn { display: inline-block; background: var(--green); color: white; padding: 13px 28px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 1rem; }
+  .tool-cta-btn:hover { background: #059669; }
+
+  .share-bar { border-top: 1px solid var(--gray-200); margin-top: 56px; padding-top: 32px; }
+  .share-bar-label { font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-600); margin-bottom: 14px; }
+  .share-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+  .share-btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; text-decoration: none; border: 1.5px solid var(--gray-200); color: var(--navy); background: white; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+  .share-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--gray-50); }
+  .share-btn svg { flex-shrink: 0; }
+  .share-btn.copied { border-color: var(--green); color: var(--green); }
+
+  .footer-cta { background: var(--navy); color: white; text-align: center; padding: 60px 24px; margin-top: 80px; }
+  .footer-cta h2 { font-family: 'DM Serif Display', serif; color: white; margin-bottom: 16px; font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 400; }
+  .footer-cta p { color: rgba(255,255,255,0.75); margin-bottom: 32px; max-width: 480px; margin-left: auto; margin-right: auto; font-size: 1.0625rem; }
+  .footer-cta-btn { display: inline-block; background: var(--green); color: white; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 1rem; }
+  .footer-cta-btn:hover { background: #059669; }
+
+  @media (max-width: 640px) {
+    .tool-cta { padding: 28px 22px; }
+    .callout { padding: 18px 20px; }
+    .bucket { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="/" class="logo">LocumsLab</a>
+    <div class="nav-right">
+      <a href="/blog" class="nav-link">Blog</a>
+      <a href="/app.html" class="nav-cta">Open Calculator</a>
+    </div>
+  </nav>
+</header>
+
+<article>
+  <div class="article-meta">August 12, 2026 &middot; 7 min read</div>
+
+  <h1>What the LocumsLab Contract Analyzer Looks For in a Locums CRNA Contract</h1>
+
+  <p class="article-intro">When you upload a contract to the LocumsLab analyzer, it does not just scan for keywords. It reads the full document and scores it across four distinct risk categories, flags specific problematic clauses, identifies terms that are missing entirely, and generates the exact questions you should bring to your recruiter before signing. Here is a breakdown of what it is actually checking and why each category matters.</p>
+
+  <h2>How the Scoring Works</h2>
+
+  <p>Every contract gets scored across four risk buckets, each rated from Not Flagged to Watch to Moderate to High. The buckets are not weighted equally -- a High score in Financial or Termination carries more practical consequence than the same score in Ambiguity, because the dollar exposure is more direct. The overall risk level (Low, Medium, or High) reflects the combined picture across all four.</p>
+
+  <p>After the scoring, the analyzer produces three outputs that are often more useful than the scores themselves: a list of specific issues found in the contract language, a list of terms that are absent entirely, and a set of recruiter questions tailored to what was flagged. If the issues are serious enough, it also flags items that warrant legal review before signing.</p>
+
+  <div class="tool-cta">
+    <h3>Have a contract in front of you?</h3>
+    <p>If you want a first-pass read before you bring it to a recruiter or attorney, the contract analyzer is there. Upload the PDF and it will walk through the language for you.</p>
+    <a href="/app.html" class="tool-cta-btn">Take a Look</a>
+  </div>
+
+  <h2>The Four Risk Categories</h2>
+
+  <div class="bucket bucket-financial">
+    <div class="bucket-header">
+      <div class="bucket-icon">1</div>
+      <div>
+        <div class="bucket-title">Financial Risk</div>
+        <div class="bucket-subtitle">Clauses that affect your actual take-home pay</div>
+      </div>
+    </div>
+    <p>This bucket covers anything in the contract that creates direct financial exposure or uncertainty. It is the most consequential category for most CRNAs because the issues here affect what you actually get paid and what you might owe if something goes wrong.</p>
+    <p>What the analyzer looks for in this category:</p>
+    <ul>
+      <li>Whether your hourly rate, overtime rate, and call rate are explicitly stated or left undefined</li>
+      <li>Whether housing and travel stipend amounts are capped in a way that does not reflect the actual cost of living in that market</li>
+      <li>Malpractice coverage type (occurrence vs claims-made) and whether tail coverage responsibility is specified</li>
+      <li>Whether there are financial penalties for early termination and which party they apply to</li>
+      <li>Indemnification language that shifts liability costs to you</li>
+      <li>Whether credentialing, licensing, and DEA costs are covered or your responsibility</li>
+      <li>Payment terms and invoicing schedules that create cash flow gaps</li>
+    </ul>
+    <p>A high financial risk score means the contract has unresolved money questions that need answers before you sign. The most common triggers are undefined call compensation, missing tail coverage language, and indemnification clauses that are written entirely in the facility's favor.</p>
+  </div>
+
+  <div class="bucket bucket-restriction">
+    <div class="bucket-header">
+      <div class="bucket-icon">2</div>
+      <div>
+        <div class="bucket-title">Restriction Risk</div>
+        <div class="bucket-subtitle">Clauses that limit what you can do after the contract ends</div>
+      </div>
+    </div>
+    <p>Restriction risk covers language that constrains your future work. This is where non-compete clauses live, along with non-solicitation terms and any other provisions that govern where you can work and for whom after this assignment ends.</p>
+    <p>What the analyzer looks for:</p>
+    <ul>
+      <li>Non-compete clauses: geographic radius, duration, and whether they apply to direct employment, locums work, or both</li>
+      <li>Non-solicitation terms that prevent you from working directly with facility staff or administrators</li>
+      <li>Direct-hire restrictions that prevent the facility from recruiting you without going through the agency</li>
+      <li>Exclusivity clauses that restrict you from working with other agencies simultaneously</li>
+      <li>Intellectual property assignments that claim ownership of anything you create during the engagement</li>
+    </ul>
+    <p>A 50-mile non-compete in a dense metro area can lock you out of a significant portion of your regional market for one to two years. The analyzer flags the scope and duration of any restriction so you know what you are agreeing to before signing. Overly broad restrictions are among the most negotiable terms in any locums contract, but only if you catch them before you sign.</p>
+  </div>
+
+  <div class="bucket bucket-ambiguity">
+    <div class="bucket-header">
+      <div class="bucket-icon">3</div>
+      <div>
+        <div class="bucket-title">Ambiguity Risk</div>
+        <div class="bucket-subtitle">Vague language that leaves important terms undefined</div>
+      </div>
+    </div>
+    <p>Ambiguity risk captures contract language that is technically present but not specific enough to be enforceable or predictable. This is often the most underappreciated category. Vague language feels less threatening than a clear restriction or a financial penalty, but it becomes a serious problem the moment you and the facility disagree about what a term means.</p>
+    <p>What the analyzer looks for:</p>
+    <ul>
+      <li>Case mix described as "general anesthesia services" without specifying case types, patient population, or complexity level</li>
+      <li>Call described as "as needed" or "at the facility's discretion" with no defined frequency, rate, or backup structure</li>
+      <li>Work hours stated as "approximately" a weekly number with no minimum guarantee</li>
+      <li>Housing stipend described as "reasonable reimbursement" without a cap or methodology</li>
+      <li>Supervisory structure described vaguely without naming the responsible physician or specifying availability requirements</li>
+      <li>Renewal and extension terms that are left to "mutual agreement" with no defined process or timeline</li>
+    </ul>
+    <p>Ambiguous language almost always resolves in the facility's favor when there is a dispute, because they have more leverage once you are already on-site. The time to clarify is before you sign.</p>
+  </div>
+
+  <div class="bucket bucket-termination">
+    <div class="bucket-header">
+      <div class="bucket-icon">4</div>
+      <div>
+        <div class="bucket-title">Termination Risk</div>
+        <div class="bucket-subtitle">How the contract can end and what happens when it does</div>
+      </div>
+    </div>
+    <p>Termination risk covers the conditions under which the contract can be ended, by whom, with how much notice, and what the consequences are. This is the category that catches CRNAs off guard most often, usually because the termination section is buried at the back of the contract and the summary they were given never mentioned it.</p>
+    <p>What the analyzer looks for:</p>
+    <ul>
+      <li>Whether termination notice periods are symmetric (same requirement for both parties) or one-sided</li>
+      <li>Whether the facility can terminate "at will" or "for convenience" with minimal notice while requiring you to give 30 days</li>
+      <li>What constitutes "cause" for immediate termination and whether the definition is reasonable or overly broad</li>
+      <li>Whether there is any compensation or kill fee if the facility terminates early without cause</li>
+      <li>What happens to tail coverage if the contract is terminated by either party before the end date</li>
+      <li>Force majeure language and whether it eliminates compensation if the facility shuts down or cancels due to circumstances outside their control</li>
+    </ul>
+    <p>A CRNA who relocates for a 13-week assignment and gets terminated after two weeks with 24 hours notice, no kill fee, and a lease they are still paying has experienced a termination risk failure that the contract allowed. This category flags that exposure before it becomes a real situation.</p>
+  </div>
+
+  <h2>Missing Terms: What Is Not in the Contract</h2>
+
+  <p>The issues list catches what is wrong with language that exists. The missing terms list catches what was never addressed at all. Both matter, but missing terms are often more dangerous because the absence of a clause means you have no protection, not a weak one.</p>
+
+  <p>The most common terms the analyzer flags as missing:</p>
+
+  <div class="missing-item">
+    <div class="missing-dot"></div>
+    <div>
+      <strong>Malpractice coverage details</strong>
+      <p>Many contracts say malpractice is provided without specifying occurrence vs claims-made, the per-occurrence limit, the aggregate limit, or who pays for tail. Each of those omissions is a separate problem.</p>
+    </div>
+  </div>
+
+  <div class="missing-item">
+    <div class="missing-dot"></div>
+    <div>
+      <strong>Call rate and schedule</strong>
+      <p>If the contract mentions call without defining how often, what it pays, and how backup is structured, that entire section is effectively unenforceable in your favor.</p>
+    </div>
+  </div>
+
+  <div class="missing-item">
+    <div class="missing-dot"></div>
+    <div>
+      <strong>Credentialing timeline and responsibility</strong>
+      <p>Who coordinates credentialing, how long it is expected to take, and what happens if it takes longer than anticipated affects your start date and your income. Contracts that are silent on this leave you with no recourse if credentialing delays push your start back by weeks.</p>
+    </div>
+  </div>
+
+  <div class="missing-item">
+    <div class="missing-dot"></div>
+    <div>
+      <strong>Scope of practice definition</strong>
+      <p>A contract that describes your duties as "anesthesia services as required" without specifying case types gives the facility broad latitude to assign you to anything in the building. If your recent experience does not include certain case types, you need that excluded in writing.</p>
+    </div>
+  </div>
+
+  <div class="missing-item">
+    <div class="missing-dot"></div>
+    <div>
+      <strong>CME allowance or provision</strong>
+      <p>If CME is not mentioned, you are paying for it out of pocket on top of funding your own health insurance, malpractice, and business expenses. Not a dealbreaker, but it should be factored into your rate comparison.</p>
+    </div>
+  </div>
+
+  <div class="missing-item">
+    <div class="missing-dot"></div>
+    <div>
+      <strong>Dispute resolution and governing law</strong>
+      <p>If there is ever a disagreement, which state's law applies and where does the dispute get resolved? A contract requiring arbitration in the agency's home state under that state's law is a meaningful disadvantage if you are working in a different state.</p>
+    </div>
+  </div>
+
+  <h2>Recruiter Questions and Attorney Flags</h2>
+
+  <p>After the risk scoring and missing terms, the analyzer generates the specific questions to bring to your recruiter. These are not generic questions pulled from a template -- they are drawn from what was actually flagged in your specific contract. If your contract has a 50-mile non-compete with a 24-month duration, the question generated will ask about that specific scope and whether it is negotiable. If the call rate is missing, the question asks for the exact rate and frequency in writing.</p>
+
+  <p>For issues that rise above the recruiter level -- overly broad indemnification, one-sided termination language, unusual IP assignments, or large financial exposure -- the analyzer flags those separately as items that warrant review by a healthcare employment attorney before signing. Not every contract needs a lawyer. But the ones that do have specific characteristics, and the analyzer tells you which of yours those are.</p>
+
+  <h2>What the Analyzer Does Not Do</h2>
+
+  <p>It is a first-pass review, not a legal opinion. It reads contract language and applies pattern recognition across the categories above. It does not know the specific laws of your state, the history of a particular agency, or the context of verbal agreements you may have made with the recruiter. It also cannot tell you whether the rate you were offered is competitive for the market -- that is what the financial calculators are for.</p>
+
+  <p>Think of it the way you would think of a thorough pre-read before a more important conversation. It tells you where to look, what to ask, and what might need a professional's eyes. The decision is still yours.</p>
+
+  <div class="share-bar">
+    <div class="share-bar-label">Share this post</div>
+    <div class="share-buttons">
+      <button class="share-btn" onclick="copyLink(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <span>Copy link</span>
+      </button>
+      <a class="share-btn" id="fb-share" href="#" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        Facebook
+      </a>
+      <a class="share-btn" id="li-share" href="#" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        LinkedIn
+      </a>
+      <a class="share-btn" id="x-share" href="#" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.259 5.631zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X
+      </a>
+    </div>
+  </div>
+  <script>
+    (function() {
+      var url = window.location.href;
+      var title = encodeURIComponent(document.title);
+      var u = encodeURIComponent(url);
+      document.getElementById("fb-share").href = "https://www.facebook.com/sharer/sharer.php?u=" + u;
+      document.getElementById("li-share").href = "https://www.linkedin.com/sharing/share-offsite/?url=" + u;
+      document.getElementById("x-share").href = "https://x.com/intent/tweet?url=" + u + "&text=" + title;
+    })();
+    function copyLink(btn) {
+      navigator.clipboard.writeText(window.location.href).then(function() {
+        var span = btn.querySelector("span");
+        span.textContent = "Copied!";
+        btn.classList.add("copied");
+        setTimeout(function() { span.textContent = "Copy link"; btn.classList.remove("copied"); }, 2000);
+      });
+    }
+  </script>
+
+</article>
+
+<div class="footer-cta">
+  <h2>Have a contract you want to look at?</h2>
+  <p>The contract analyzer is available to Pro users. Upload your PDF and get a first-pass read before you talk to the recruiter.</p>
+  <a href="/app.html" class="footer-cta-btn">Open the App</a>
+</div>
+
+</body>
+</html>
