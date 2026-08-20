@@ -75,6 +75,9 @@ call_frequency: one of "none", "occasional", "defined_rotation", "undefined"
 Type rules:
 - indemnification is "mutual" only if the obligation genuinely runs both directions. If only the clinician indemnifies, use "crna_only". If the contract does not address indemnification at all, use null.
 - non_compete_radius_miles and non_compete_duration_months are null when a covenant exists but its scope is not stated numerically. Do not estimate.
+- Never derive a value by calculation. If the contract states a per-shift or per-diem rate, leave base_hourly_rate null rather than dividing by shift length.
+- A non-null value REQUIRES a verbatim quote. If you cannot quote text supporting the value, the value is null. This applies especially to "none": only use it where the contract affirmatively says the term does not apply.
+- If you find language relevant to a field but it does not fit the required type, set value to null and still put the language in "quote".
 - unilateral_scope_change is true only where the contract grants that right in the text.
 - Every quote must be copied verbatim from the contract. Never paraphrase inside a quote. If a value comes from a table, quote the row.`;
 
@@ -165,6 +168,9 @@ exports.handler = async (event) => {
     const message = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 8000,
+      // Extraction is a factual task. Sampling variance here shows up as a
+      // different letter grade for the same contract, so pin it down.
+      temperature: 0,
       system: SYSTEM_PROMPT,
       messages: [{
         role: 'user',
