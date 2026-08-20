@@ -53,7 +53,7 @@ licensure_expense: one of "agency", "crna", "split"
 
 PROTECTION
 cancellation_notice_days: number
-cancelled_shift_compensation: boolean, whether shifts cancelled inside the notice window are paid
+cancellation_pay_hours: number, hours of pay guaranteed when a scheduled shift is cancelled, or "none" if the contract states cancelled shifts are unpaid
 termination_notice_agency_days: number, notice the agency or facility must give to terminate without cause
 termination_notice_crna_days: number, notice the clinician must give to terminate without cause
 malpractice_type: one of "occurrence", "claims_made"
