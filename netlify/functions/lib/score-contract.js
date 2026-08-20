@@ -224,7 +224,8 @@ function scoreContract(extracted, rubric) {
       possible: spec.possible,
       lost: spec.possible - points,
       why: spec.why || '',
-      ask: spec.ask || ''
+      ask: spec.ask || '',
+      fallback: spec.fallback || ''
     });
   });
 
@@ -287,6 +288,7 @@ function scoreContract(extracted, rubric) {
         quote: f.quote,
         why: f.why,
         ask: f.ask,
+        fallback: f.fallback || '',
         priority: f.tier === 'heavy' ? 'High' : (f.tier === 'moderate' ? 'Moderate' : 'Low')
       };
     });
@@ -322,3 +324,4 @@ function scoreContract(extracted, rubric) {
 }
 
 module.exports = { scoreContract };
+
