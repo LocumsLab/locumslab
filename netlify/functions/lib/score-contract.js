@@ -159,6 +159,7 @@ function scoreContract(extracted, rubric) {
     let result = null;
     let quote = '';
     let value = null;
+    let unsupported = false;
 
     if (spec.type === 'derived') {
       const fn = DERIVATIONS[spec.derivation];
@@ -167,8 +168,19 @@ function scoreContract(extracted, rubric) {
       const read = readField(extracted, key);
       value = read.value;
       quote = read.quote;
-      if (spec.type === 'number') result = scoreNumberField(spec, value);
-      else if (spec.type === 'enum') result = scoreEnumField(spec, value);
+
+      // A stated term must be traceable to contract text. A value with no
+      // quote is the model asserting something it cannot point at, which is
+      // exactly how "not mentioned" turns into a scored "none". Drop it.
+      if (value !== null && value !== undefined && !String(quote).trim()) {
+        unsupported = true;
+        value = null;
+      }
+
+      if (!unsupported) {
+        if (spec.type === 'number') result = scoreNumberField(spec, value);
+        else if (spec.type === 'enum') result = scoreEnumField(spec, value);
+      }
     }
 
     if (result === null) {
@@ -177,10 +189,26 @@ function scoreContract(extracted, rubric) {
           key: key,
           label: spec.label,
           tier: spec.tier,
-          question: spec.clarifyAsk || spec.ask || ''
+          question: spec.clarifyAsk || spec.ask || '',
+          // The model found relevant language but could not fit it to the
+          // field type. Show it: the CRNA can read it even if we cannot score it.
+          relatedText: quote || '',
+          unsupportedValue: unsupported
         });
       }
       return; // excluded from numerator AND denominator
+    }
+
+    // Some stated values are scored but still worth raising with the recruiter.
+    if ((spec.clarifyWhenValue || []).indexOf(String(value)) !== -1) {
+      clarifications.push({
+        key: key,
+        label: spec.label,
+        tier: spec.tier,
+        question: spec.clarifyAskForValue || spec.ask || '',
+        relatedText: quote || '',
+        unsupportedValue: false
+      });
     }
 
     const points = Math.max(0, Math.min(spec.possible, result.points));
@@ -207,21 +235,39 @@ function scoreContract(extracted, rubric) {
     return Math.round((sum(list, function (f) { return f.points; }) / poss) * 1000) / 10;
   };
 
+  // A category's full weight, whether or not those fields were stated. Used to
+  // decide whether enough of the category is present to show a letter at all.
+  const categoryCeiling = {};
+  Object.keys(rubric.fields).forEach(function (k) {
+    const sp = rubric.fields[k];
+    categoryCeiling[sp.category] = (categoryCeiling[sp.category] || 0) + sp.possible;
+  });
+
+  const minCatFields = rubric.minCategoryFields || 3;
+  const minCatShare = rubric.minCategoryPossibleShare || 0.4;
+
   const categories = {};
   ['financial', 'protection', 'lifestyle'].forEach(function (cat) {
     const list = scored.filter(function (f) { return f.category === cat; });
     const p = pct(list);
+    const possible = sum(list, function (f) { return f.possible; });
+    const ceiling = categoryCeiling[cat] || 0;
+    // Two light-tier fields should never produce an F for a whole category.
+    const enough = list.length >= minCatFields && ceiling > 0 && (possible / ceiling) >= minCatShare;
     categories[cat] = {
       points: sum(list, function (f) { return f.points; }),
-      possible: sum(list, function (f) { return f.possible; }),
+      possible: possible,
       pct: p,
-      letter: p === null ? null : letterFor(p, rubric.thresholds),
-      fieldsScored: list.length
+      letter: (p === null || !enough) ? null : letterFor(p, rubric.thresholds),
+      fieldsScored: list.length,
+      insufficient: !enough
     };
   });
 
   const overallPct = pct(scored);
-  const minFields = rubric.provisionalBelowScoredFields || 12;
+  const totalFields = Object.keys(rubric.fields).length;
+  const minShare = rubric.provisionalBelowScoredShare || 0.6;
+  const scoredShare = totalFields ? (scored.length / totalFields) : 0;
 
   // Priorities: what cost the most points, heaviest tier first. Cap at three,
   // because a recruiter gives you two or three concessions, not eight.
@@ -262,7 +308,9 @@ function scoreContract(extracted, rubric) {
       pct: overallPct,
       letter: overallPct === null ? null : letterFor(overallPct, rubric.thresholds),
       fieldsScored: scored.length,
-      provisional: scored.length < minFields
+      fieldsTotal: totalFields,
+      scoredShare: Math.round(scoredShare * 100) / 100,
+      provisional: scoredShare < minShare
     },
     categories: categories,
     priorities: priorities,
