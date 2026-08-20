@@ -131,8 +131,6 @@ exports.handler = async (event) => {
     return { statusCode: 500, body: 'Server error' };
   }
 };
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL;
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
