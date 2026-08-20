@@ -1,0 +1,379 @@
+{
+  "version": "v1",
+  "appliesTo": ["crna_locums"],
+  "notes": [
+    "Weights total 100 across three tiers: heavy 55, moderate 30, light 15.",
+    "A field whose value is null is NOT scored. It is routed to clarifications and removed from both numerator and denominator.",
+    "A numeric field may return the string 'none' to mean the contract explicitly states there is no such term. That IS scored, at the worst band.",
+    "Rate is extracted and displayed but never scored. There is no honest absolute standard for it until market_observations has volume.",
+    "Edit points and bands here. Do not put grading logic in the extraction prompt."
+  ],
+  "thresholds": [
+    { "min": 93, "letter": "A" },
+    { "min": 90, "letter": "A-" },
+    { "min": 87, "letter": "B+" },
+    { "min": 83, "letter": "B" },
+    { "min": 80, "letter": "B-" },
+    { "min": 77, "letter": "C+" },
+    { "min": 73, "letter": "C" },
+    { "min": 70, "letter": "C-" },
+    { "min": 60, "letter": "D" },
+    { "min": 0, "letter": "F" }
+  ],
+  "provisionalBelowScoredFields": 12,
+
+  "fields": {
+    "indemnification": {
+      "label": "Indemnification",
+      "tier": "heavy",
+      "category": "protection",
+      "possible": 9,
+      "type": "enum",
+      "points": { "mutual": 9, "crna_only": 2 },
+      "clarifyWhenNull": true,
+      "why": "Indemnification decides who pays to defend a claim, and it survives long after the assignment ends. A one-way clause can put you on the hook for the facility's or agency's costs even where you were not at fault.",
+      "ask": "Is the indemnification clause mutual? If it runs only one direction, what is the reasoning, and would you consider mirroring it?",
+      "clarifyAsk": "The contract does not appear to address indemnification. Who indemnifies whom, and is there language you can add so it is explicit and mutual?"
+    },
+    "non_compete": {
+      "label": "Restrictive covenant",
+      "tier": "heavy",
+      "category": "protection",
+      "possible": 9,
+      "type": "derived",
+      "derivation": "non_compete",
+      "clarifyWhenNull": true,
+      "why": "A restrictive covenant limits where you can work after this assignment ends. Vague or unbounded geography and duration are the versions that cause real problems, because you cannot tell in advance what they rule out.",
+      "ask": "What is the exact geographic radius and duration of the restrictive covenant, and does it apply to the facility only or to any client of the agency?",
+      "clarifyAsk": "The contract references a restrictive covenant without a stated radius or duration. Can you specify both in writing?"
+    },
+    "guaranteed_hours_weekly": {
+      "label": "Guaranteed hours",
+      "tier": "heavy",
+      "category": "financial",
+      "possible": 8,
+      "type": "number",
+      "direction": "higher_better",
+      "bands": [
+        { "gte": 40, "points": 8, "label": "40+ hours guaranteed" },
+        { "gte": 36, "points": 7, "label": "36 to 39 hours guaranteed" },
+        { "gte": 32, "points": 5, "label": "32 to 35 hours guaranteed" },
+        { "gte": 24, "points": 3, "label": "24 to 31 hours guaranteed" },
+        { "gte": null, "points": 0, "label": "No meaningful guarantee" }
+      ],
+      "clarifyWhenNull": true,
+      "why": "Without guaranteed hours you carry the facility's census risk. A slow week costs you income you have already reserved the calendar for and cannot backfill.",
+      "ask": "How many hours per week are guaranteed, and what happens to pay if the facility cancels shifts for low census?",
+      "clarifyAsk": "The contract does not state a weekly hour guarantee. Are hours guaranteed, and if so at what number?"
+    },
+    "payment_terms_days": {
+      "label": "Payment terms",
+      "tier": "heavy",
+      "category": "financial",
+      "possible": 7,
+      "type": "number",
+      "direction": "lower_better",
+      "bands": [
+        { "lte": 15, "points": 7, "label": "Net 15 or faster" },
+        { "lte": 30, "points": 6, "label": "Net 30" },
+        { "lte": 45, "points": 2, "label": "Net 45" },
+        { "lte": null, "points": 0, "label": "Slower than Net 45" }
+      ],
+      "clarifyWhenNull": true,
+      "why": "As a 1099 you are financing the assignment until they pay. Long terms mean you are covering travel, housing, and quarterly tax on money you have earned but do not have.",
+      "ask": "How many days after invoice submission are payments issued, and is there a late-payment provision?",
+      "clarifyAsk": "The contract does not state payment timing. What is the invoice cycle and how many days until payment?"
+    },
+    "schedule_guarantee": {
+      "label": "Schedule commitment",
+      "tier": "heavy",
+      "category": "lifestyle",
+      "possible": 8,
+      "type": "enum",
+      "points": { "fixed": 8, "posted_in_advance": 6, "facility_discretion": 0 },
+      "clarifyWhenNull": true,
+      "why": "If the facility sets the schedule at its discretion, the shift pattern you agreed to verbally is not the one you are contractually owed. This is where a 4x10 quietly becomes 5x8 plus weekends.",
+      "ask": "Is the shift pattern fixed in the contract, and how far in advance is the schedule posted?",
+      "clarifyAsk": "The contract does not specify how the schedule is set. Is the shift pattern fixed, or set by the facility, and how much advance notice do you get?"
+    },
+    "overtime": {
+      "label": "Overtime terms",
+      "tier": "heavy",
+      "category": "financial",
+      "possible": 7,
+      "type": "derived",
+      "derivation": "overtime",
+      "clarifyWhenNull": true,
+      "why": "An undefined overtime threshold means extra hours can be treated as ordinary hours. Locums assignments routinely run long, so this is not a hypothetical.",
+      "ask": "At what hourly threshold does overtime begin, is it daily or weekly, and at what multiple is it paid?",
+      "clarifyAsk": "The contract does not define overtime. At what point do additional hours become overtime, and at what rate?"
+    },
+    "exclusivity_clause": {
+      "label": "Exclusivity",
+      "tier": "heavy",
+      "category": "protection",
+      "possible": 7,
+      "type": "enum",
+      "points": { "false": 7, "true": 0 },
+      "clarifyWhenNull": true,
+      "why": "An exclusivity clause can bar you from taking other assignments or working with other agencies during the term, including on days this assignment does not use.",
+      "ask": "Does this contract restrict me from working with other agencies or facilities during the term, including on off days?",
+      "clarifyAsk": "The contract's language around outside work is unclear. Am I free to take other assignments during the term?"
+    },
+
+    "tail_responsibility": {
+      "label": "Tail coverage",
+      "tier": "moderate",
+      "category": "protection",
+      "possible": 6,
+      "type": "enum",
+      "points": { "agency": 6, "not_applicable": 6, "crna": 0 },
+      "clarifyWhenNull": true,
+      "why": "With claims-made coverage, tail is what protects you against a claim filed after the assignment ends. Buying it yourself is a four- or five-figure expense that arrives long after the income stopped.",
+      "ask": "Who purchases tail coverage when the assignment ends, and is that stated in the contract?",
+      "clarifyAsk": "The contract does not say who is responsible for tail coverage. Can that be stated explicitly?"
+    },
+    "malpractice_type": {
+      "label": "Malpractice structure",
+      "tier": "moderate",
+      "category": "protection",
+      "possible": 3,
+      "type": "enum",
+      "points": { "occurrence": 3, "claims_made": 1 },
+      "clarifyWhenNull": true,
+      "why": "Occurrence coverage protects incidents that happened during the policy period no matter when the claim is filed. Claims-made only protects you while the policy is active, which is why tail matters.",
+      "ask": "Is the malpractice policy occurrence or claims-made, and what are the limits?",
+      "clarifyAsk": "The contract does not identify the malpractice policy type. Is it occurrence or claims-made, and what are the limits?"
+    },
+    "cancellation_notice_days": {
+      "label": "Cancellation notice",
+      "tier": "moderate",
+      "category": "protection",
+      "possible": 6,
+      "type": "number",
+      "direction": "higher_better",
+      "bands": [
+        { "gte": 30, "points": 6, "label": "30+ days" },
+        { "gte": 15, "points": 4, "label": "15 to 29 days" },
+        { "gte": 8, "points": 2, "label": "8 to 14 days" },
+        { "gte": null, "points": 0, "label": "7 days or fewer" }
+      ],
+      "clarifyWhenNull": true,
+      "why": "You reserve the calendar for this assignment and turn down others. Short notice means the income disappears with no realistic way to backfill the block.",
+      "ask": "Can the notice period for cancellation be increased to 30 days, or can shifts cancelled inside the window be compensated?",
+      "clarifyAsk": "The contract does not state a cancellation notice period. How much notice is required, and is there compensation for shifts cancelled inside it?"
+    },
+    "termination_asymmetry": {
+      "label": "Termination notice balance",
+      "tier": "moderate",
+      "category": "protection",
+      "possible": 5,
+      "type": "derived",
+      "derivation": "termination_asymmetry",
+      "clarifyWhenNull": true,
+      "why": "The gap between the two notice periods is the signal. If they can leave in 7 days and you owe 30, the flexibility runs one direction only.",
+      "ask": "Can the without-cause termination notice be made symmetric between the parties?",
+      "clarifyAsk": "The contract does not state notice periods for both sides. What notice does each party owe to terminate without cause?"
+    },
+    "call_pay_structure": {
+      "label": "Call compensation",
+      "tier": "moderate",
+      "category": "financial",
+      "possible": 4,
+      "type": "enum",
+      "points": { "none_required": 4, "hourly": 4, "stipend": 2, "unpaid": 0 },
+      "clarifyWhenNull": true,
+      "why": "Unpaid or stipend-only call converts hours of restricted availability into hours you are not really being paid for, which quietly lowers your effective rate.",
+      "ask": "How is call compensated, and does that differ between in-house and pager call?",
+      "clarifyAsk": "The contract does not describe call compensation. Is call required, and how is it paid?"
+    },
+    "unilateral_scope_change": {
+      "label": "Scope and location changes",
+      "tier": "moderate",
+      "category": "protection",
+      "possible": 3,
+      "type": "enum",
+      "points": { "false": 3, "true": 0 },
+      "clarifyWhenNull": true,
+      "why": "Language letting the facility reassign your location or duties means the assignment you evaluated is not necessarily the one you will work.",
+      "ask": "Can the facility reassign me to a different site or case mix during the term, and does that require my consent?",
+      "clarifyAsk": "The contract's language on site and duty assignment is unclear. Can either be changed during the term without my agreement?"
+    },
+    "auto_renewal": {
+      "label": "Auto-renewal",
+      "tier": "moderate",
+      "category": "protection",
+      "possible": 3,
+      "type": "enum",
+      "points": { "false": 3, "true": 0 },
+      "clarifyWhenNull": true,
+      "why": "An auto-renewal clause can extend the term, and every restriction in it, unless you give notice by a date you are unlikely to have calendared.",
+      "ask": "Does this contract renew automatically, and by what date must notice be given to prevent that?",
+      "clarifyAsk": "The contract does not clearly state whether it renews automatically. Does it, and what notice prevents renewal?"
+    },
+
+    "travel_reimbursement": {
+      "label": "Travel",
+      "tier": "light",
+      "category": "financial",
+      "possible": 2,
+      "type": "enum",
+      "points": { "actual": 2, "stipend": 2, "mileage": 1, "none": 0 },
+      "clarifyWhenNull": true,
+      "why": "Travel treatment is a known, bounded cost you can price in up front.",
+      "ask": "How is travel reimbursed, and is it per assignment or per trip home?",
+      "clarifyAsk": "The contract does not address travel. Is it reimbursed, and on what basis?"
+    },
+    "housing": {
+      "label": "Housing",
+      "tier": "light",
+      "category": "financial",
+      "possible": 2,
+      "type": "enum",
+      "points": { "provided": 2, "stipend": 2, "none": 0 },
+      "clarifyWhenNull": true,
+      "why": "Housing treatment is a known, bounded cost you can price in up front.",
+      "ask": "Is housing provided or paid by stipend, and what happens if the assignment is cut short?",
+      "clarifyAsk": "The contract does not address housing. Is it provided, stipended, or my responsibility?"
+    },
+    "credentialing_expense": {
+      "label": "Credentialing costs",
+      "tier": "light",
+      "category": "financial",
+      "possible": 2,
+      "type": "enum",
+      "points": { "agency": 2, "split": 1, "crna": 0 },
+      "clarifyWhenNull": true,
+      "why": "Credentialing costs are bounded and knowable, but they land before you have earned anything.",
+      "ask": "Who pays credentialing and privileging fees, and are they reimbursed if the assignment does not start?",
+      "clarifyAsk": "The contract does not say who bears credentialing costs. Who pays them?"
+    },
+    "licensure_expense": {
+      "label": "Licensure costs",
+      "tier": "light",
+      "category": "financial",
+      "possible": 2,
+      "type": "enum",
+      "points": { "agency": 2, "split": 1, "crna": 0 },
+      "clarifyWhenNull": true,
+      "why": "A new state license is a bounded cost, but check whether it is repayable if you leave early.",
+      "ask": "Who pays for state licensure, and is there a repayment obligation if the assignment ends early?",
+      "clarifyAsk": "The contract does not address licensure costs. Who pays, and is any of it repayable?"
+    },
+    "callback_multiplier": {
+      "label": "Callback rate",
+      "tier": "light",
+      "category": "financial",
+      "possible": 2,
+      "type": "number",
+      "direction": "higher_better",
+      "bands": [
+        { "gte": 1.5, "points": 2, "label": "1.5x or better" },
+        { "gte": 1.25, "points": 1, "label": "1.25x to 1.49x" },
+        { "gte": null, "points": 0, "label": "Straight time" }
+      ],
+      "clarifyWhenNull": true,
+      "why": "Callback at straight time makes being woken up worth the same as a scheduled hour.",
+      "ask": "At what multiple is callback paid, and is there a minimum number of hours per callback?",
+      "clarifyAsk": "The contract does not state a callback rate. How is callback paid?"
+    },
+    "call_frequency": {
+      "label": "Call frequency",
+      "tier": "light",
+      "category": "lifestyle",
+      "possible": 2,
+      "type": "enum",
+      "points": { "none": 2, "defined_rotation": 2, "occasional": 1, "undefined": 0 },
+      "clarifyWhenNull": true,
+      "why": "An undefined call obligation can expand without violating anything you signed.",
+      "ask": "How often is call required, and is the rotation defined anywhere in writing?",
+      "clarifyAsk": "The contract does not define call frequency. What is the expected rotation?"
+    },
+    "shift_length_hours": {
+      "label": "Shift length",
+      "tier": "light",
+      "category": "lifestyle",
+      "possible": 1,
+      "type": "number",
+      "direction": "lower_better",
+      "bands": [
+        { "lte": 10, "points": 1, "label": "10 hours or fewer" },
+        { "lte": 12, "points": 1, "label": "12 hours" },
+        { "lte": null, "points": 0, "label": "Longer than 12 hours" }
+      ],
+      "clarifyWhenNull": true,
+      "why": "Shift length interacts with the hour guarantee and overtime threshold more than it matters alone.",
+      "ask": "What is the scheduled shift length, and does it trigger overtime?",
+      "clarifyAsk": "The contract does not state shift length. What is the scheduled pattern?"
+    },
+    "site_count": {
+      "label": "Number of sites",
+      "tier": "light",
+      "category": "lifestyle",
+      "possible": 1,
+      "type": "number",
+      "direction": "lower_better",
+      "bands": [
+        { "lte": 1, "points": 1, "label": "Single site" },
+        { "lte": null, "points": 0, "label": "Multiple sites" }
+      ],
+      "clarifyWhenNull": true,
+      "why": "Floating between sites adds uncompensated drive time and a second set of workflows to learn.",
+      "ask": "How many sites does this assignment cover, and is drive time between them paid?",
+      "clarifyAsk": "The contract does not state how many sites are covered. Is this a single location?"
+    },
+    "contract_length_weeks": {
+      "label": "Assignment length",
+      "tier": "light",
+      "category": "lifestyle",
+      "possible": 1,
+      "type": "number",
+      "direction": "higher_better",
+      "bands": [
+        { "gte": 13, "points": 1, "label": "13 weeks or longer" },
+        { "gte": null, "points": 0, "label": "Shorter than 13 weeks" }
+      ],
+      "clarifyWhenNull": true,
+      "why": "Shorter assignments spread fixed credentialing and travel costs across fewer paid hours.",
+      "ask": "What is the assignment length, and is there an extension option at the same rate?",
+      "clarifyAsk": "The contract does not state an assignment length. How many weeks is it?"
+    }
+  },
+
+  "displayOnly": [
+    "base_hourly_rate",
+    "agency_name",
+    "facility_name",
+    "state",
+    "start_date",
+    "end_date",
+    "specialty_mix",
+    "weekly_hours_expected",
+    "overtime_threshold_hours",
+    "overtime_multiplier",
+    "termination_notice_agency_days",
+    "termination_notice_crna_days",
+    "non_compete_present",
+    "non_compete_radius_miles",
+    "non_compete_duration_months",
+    "cancelled_shift_compensation"
+  ],
+
+  "marketObservationFields": [
+    "state",
+    "contract_length_weeks",
+    "guaranteed_hours_weekly",
+    "payment_terms_days",
+    "cancellation_notice_days",
+    "tail_responsibility",
+    "malpractice_type",
+    "indemnification",
+    "non_compete_present",
+    "exclusivity_clause",
+    "schedule_guarantee",
+    "call_pay_structure",
+    "travel_reimbursement",
+    "housing",
+    "agency_name"
+  ]
+}
