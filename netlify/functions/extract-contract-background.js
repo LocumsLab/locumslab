@@ -1,7 +1,7 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const { createClient } = require('@supabase/supabase-js');
-const { scoreContract } = require('./score-contract');
-const RUBRIC = require('./rubric-v1.json');
+const { scoreContract } = require('./lib/score-contract');
+const RUBRIC = require('./lib/rubric-v1.json');
 
 // Additive. This does NOT replace analyze-contract-background.js. It writes to
 // new columns (extracted, score, rubric_version) on the same contract_reviews
