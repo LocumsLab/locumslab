@@ -162,22 +162,12 @@ exports.handler = async (event) => {
     return json(400, { success: false, error: 'No contract file was received.' });
   }
 
-  await finish(jobId, { extraction_error: 'DEBUG stage=start' });
-
   try {
-    if (!process.env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY missing');
-    if (!RUBRIC || !RUBRIC.fields) throw new Error('rubric did not load');
-    await finish(jobId, { extraction_error: 'DEBUG stage=calling-api rubric=' + RUBRIC.version
-      + ' fields=' + Object.keys(RUBRIC.fields).length });
-
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
     const message = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 8000,
-      // Extraction is a factual task. Sampling variance here shows up as a
-      // different letter grade for the same contract, so pin it down.
-      temperature: 0,
       system: SYSTEM_PROMPT,
       messages: [{
         role: 'user',
@@ -206,9 +196,6 @@ exports.handler = async (event) => {
     if (first !== -1 && last > first) text = text.slice(first, last + 1);
     text = text.replace(/,(\s*[}\]])/g, '$1');
 
-    await finish(jobId, { extraction_error: 'DEBUG stage=parsing stop=' + message.stop_reason
-      + ' len=' + text.length });
-
     let extracted;
     try {
       extracted = JSON.parse(text);
@@ -218,14 +205,12 @@ exports.handler = async (event) => {
       return json(200, { success: false });
     }
 
-    await finish(jobId, { extraction_error: 'DEBUG stage=scoring keys=' + Object.keys(extracted).length });
     const score = scoreContract(extracted, RUBRIC);
 
     await finish(jobId, {
       extracted: extracted,
       score: score,
-      rubric_version: RUBRIC.version,
-      extraction_error: null
+      rubric_version: RUBRIC.version
     });
 
     await recordObservation(extracted, score);
@@ -233,17 +218,8 @@ exports.handler = async (event) => {
     return json(200, { success: true, letter: score.overall.letter });
 
   } catch (error) {
-    // TEMPORARY DEBUG BUILD. Writes the real failure into the row because
-    // Netlify background functions do not retain logs. Revert after diagnosing:
-    // this column is readable by the user through RLS.
     console.error('Extraction error:', error && error.message);
-    const detail = [
-      (error && error.name) || 'Error',
-      (error && error.message) || String(error),
-      (error && error.status) ? ('status=' + error.status) : '',
-      'stack=' + String((error && error.stack) || '').split('\n').slice(0, 3).join(' | ')
-    ].filter(Boolean).join(' :: ');
-    await finish(jobId, { extraction_error: 'DEBUG ' + detail.slice(0, 900) });
+    await finish(jobId, { extraction_error: 'The term extraction failed to run.' });
     return json(200, { success: false });
   }
 };
