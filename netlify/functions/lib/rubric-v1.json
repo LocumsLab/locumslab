@@ -103,7 +103,7 @@
       "clarifyWhenNull": true,
       "why": "A restrictive covenant limits where you can work after this assignment ends. Vague or unbounded geography and duration are the versions that cause real problems, because you cannot tell in advance what they rule out.",
       "ask": "What is the exact geographic radius and duration of the restrictive covenant, and does it apply to the facility only or to any client of the agency?",
-      "clarifyAsk": "The contract references a restrictive covenant without a stated radius or duration. Can you specify both in writing?",
+      "clarifyAsk": "The contract does not clearly address restrictive covenants or non-solicitation. Is there any limit on where or for whom you can work after this assignment ends?",
       "fallback": "If the covenant stays, ask for a stated radius and end date in writing, and that it apply to this facility only rather than to any client of the agency."
     },
     "guaranteed_hours_weekly": {
