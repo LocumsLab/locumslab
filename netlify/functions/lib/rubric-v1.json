@@ -20,7 +20,9 @@
     { "min": 60, "letter": "D" },
     { "min": 0, "letter": "F" }
   ],
-  "provisionalBelowScoredFields": 12,
+  "provisionalBelowScoredShare": 0.6,
+  "minCategoryFields": 3,
+  "minCategoryPossibleShare": 0.4,
 
   "fields": {
     "indemnification": {
@@ -29,8 +31,10 @@
       "category": "protection",
       "possible": 9,
       "type": "enum",
-      "points": { "mutual": 9, "crna_only": 2 },
+      "points": { "mutual": 9, "crna_only": 5 },
       "clarifyWhenNull": true,
+      "clarifyWhenValue": ["crna_only"],
+      "clarifyAskForValue": "The indemnification clause appears to run only one direction. What is the reasoning, and would you consider making it mutual?",
       "why": "Indemnification decides who pays to defend a claim, and it survives long after the assignment ends. A one-way clause can put you on the hook for the facility's or agency's costs even where you were not at fault.",
       "ask": "Is the indemnification clause mutual? If it runs only one direction, what is the reasoning, and would you consider mirroring it?",
       "clarifyAsk": "The contract does not appear to address indemnification. Who indemnifies whom, and is there language you can add so it is explicit and mutual?"
