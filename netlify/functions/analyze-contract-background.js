@@ -64,17 +64,10 @@ Length limits. Exceeding these truncates the response and the whole review is lo
 - At most 6 recruiterQuestions, one sentence each.
 - At most 4 takeToAttorney items.
 
-Severity rubric. Apply it literally so the same contract always scores the same way:
-- High: the clause creates uncapped or unquantifiable exposure, removes a protection the CRNA cannot recover elsewhere, or misstates the scope of practice. Examples: uncovered tail, indemnification triggered by allegation alone, a non-compete with no geographic or time bound, a service description naming the wrong specialty.
-- Medium: the clause creates a real but bounded cost, or an important term is absent and negotiable. Examples: no guaranteed hours, no cancellation pay, undefined auto-renewal notice, shared malpractice limits.
-- Low: worth knowing before signing but unlikely to change the decision on its own.
-These examples are illustrative, not exhaustive. A serious problem that matches none of them is still High.
-
-Ordering. List issues by severity, High first, then Medium, then Low.
-
 Rules:
-- riskLevel is High if any issue is High, Medium if the worst is Medium, otherwise Low. It never reflects the number of issues.
-- severityBuckets are derived mechanically, not judged separately. For each category, the value is the highest severity among the issues you assigned to that bucket: 0 if you listed none, 1 if the worst is Low, 2 if the worst is Medium, 3 if the worst is High. Do not adjust these for overall impression.
+- riskLevel reflects the severity of the worst issues, never the number of issues. A single unbounded non-compete or an uncovered tail is High on its own.
+- severityBuckets are 0 to 3 per category: 0 nothing flagged, 1 worth watching, 2 moderate, 3 serious.
+- Every bucket value must be justified by the issues you listed.
 - finding and whyItMatters must say different things.
 - Write recommendations specific to the clause, never a generic instruction.`;
 
@@ -144,17 +137,10 @@ Length limits. Exceeding these truncates the response and the whole review is lo
 - At most 6 recruiterQuestions, one sentence each.
 - At most 4 takeToAttorney items.
 
-Severity rubric. Apply it literally so the same contract always scores the same way:
-- High: the clause creates uncapped or unquantifiable exposure, or removes a protection the nurse cannot recover elsewhere. Examples: a taxable base low enough to invite IRS recharacterization of the stipend, guaranteed hours voided by an at-will or low-census clause, uncapped reimbursement clawback on early termination.
-- Medium: the clause creates a real but bounded cost, or an important term is absent and negotiable. Examples: undefined float requirements, no cancellation pay window, unclear on-call or overtime rate, missing housing terms.
-- Low: worth knowing before signing but unlikely to change the decision on its own.
-These examples are illustrative, not exhaustive. A serious problem that matches none of them is still High.
-
-Ordering. List issues by severity, High first, then Medium, then Low.
-
 Rules:
-- riskLevel is High if any issue is High, Medium if the worst is Medium, otherwise Low. It never reflects the number of issues.
-- severityBuckets are derived mechanically, not judged separately. For each category, the value is the highest severity among the issues you assigned to that bucket: 0 if you listed none, 1 if the worst is Low, 2 if the worst is Medium, 3 if the worst is High. Do not adjust these for overall impression.
+- riskLevel reflects the severity of the worst issues, never the number of issues. A taxable base low enough to invite recharacterization, or guaranteed hours voided by an at-will clause, is High on its own.
+- severityBuckets are 0 to 3 per category: 0 nothing flagged, 1 worth watching, 2 moderate, 3 serious.
+- Every bucket value must be justified by the issues you listed.
 - finding and whyItMatters must say different things.
 - Write recommendations specific to the clause, never a generic instruction.`;
 
@@ -270,7 +256,6 @@ exports.handler = async (event) => {
     const message = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 16000,
-      temperature: 0,
       system: promptFor(type),
       messages: [{
         role: 'user',
