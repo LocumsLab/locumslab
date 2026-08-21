@@ -8,7 +8,9 @@
     "A field whose value is null is NOT scored. It is routed to clarifications and removed from both numerator and denominator.",
     "A numeric field may return the string 'none' to mean the contract explicitly states there is no such term. That IS scored, at the worst band.",
     "Rate is extracted and displayed but never scored. There is no honest absolute standard for it until market_observations has volume.",
-    "Edit points and bands here. Do not put grading logic in the extraction prompt."
+    "Edit points and bands here. Do not put grading logic in the extraction prompt.",
+    "Letters are coarse (A-F, no plus/minus) so that small extraction differences do not move the grade.",
+    "When overall.provisional is true the client must not display a letter. Show priorities and clarifications instead."
   ],
   "categoryMeta": {
     "financial": {
@@ -29,36 +31,16 @@
   },
   "thresholds": [
     {
-      "min": 93,
+      "min": 90,
       "letter": "A"
     },
     {
-      "min": 90,
-      "letter": "A-"
-    },
-    {
-      "min": 87,
-      "letter": "B+"
-    },
-    {
-      "min": 83,
+      "min": 80,
       "letter": "B"
     },
     {
-      "min": 80,
-      "letter": "B-"
-    },
-    {
-      "min": 77,
-      "letter": "C+"
-    },
-    {
-      "min": 73,
-      "letter": "C"
-    },
-    {
       "min": 70,
-      "letter": "C-"
+      "letter": "C"
     },
     {
       "min": 60,
@@ -592,6 +574,8 @@
     }
   },
   "displayOnly": [
+    "pay_rate_unit",
+    "pay_rate_amount",
     "base_hourly_rate",
     "agency_name",
     "facility_name",
