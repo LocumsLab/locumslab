@@ -29,7 +29,9 @@ Where a numeric field is explicitly stated as absent (for example, the contract 
 Fields and their types:
 
 IDENTIFIERS AND CONTEXT
-base_hourly_rate: number
+pay_rate_amount: number, the pay figure exactly as written, in whatever unit the contract uses
+pay_rate_unit: one of "hourly", "daily", "shift", "weekly", "biweekly", "monthly", "annual"
+base_hourly_rate: number, ONLY when the contract states an hourly figure directly. Leave null for any other unit; the hourly equivalent is computed downstream.
 agency_name: string
 facility_name: string
 state: two-letter US postal code
@@ -75,7 +77,8 @@ call_frequency: one of "none", "occasional", "defined_rotation", "undefined"
 Type rules:
 - indemnification is "mutual" only if the obligation genuinely runs both directions. If only the clinician indemnifies, use "crna_only". If the contract does not address indemnification at all, use null.
 - non_compete_radius_miles and non_compete_duration_months are null when a covenant exists but its scope is not stated numerically. Do not estimate.
-- Never derive a MONETARY value by calculation. If the contract states a per-shift or per-diem rate, leave base_hourly_rate null rather than dividing by shift length.
+- Never derive a MONETARY value by calculation. If the contract states a per-shift or per-diem rate, leave base_hourly_rate null and put the figure in pay_rate_amount with the matching pay_rate_unit.
+- pay_rate_amount must never be null when the contract states any compensation figure. This is the single most important field. If the contract says $2,500 per shift, that is pay_rate_amount 2500 and pay_rate_unit "shift".
 - Unit conversion of a stated duration is not derivation. One year is 52 weeks, six months is 26 weeks, ninety days is 13 weeks. Convert and quote the stated term.
 - The quote must support the specific value. Do not infer malpractice_type from a tail clause, or a party's expense obligation from a licensure-maintenance clause. If no sentence states the value directly, the value is null.
 - A non-null value REQUIRES a verbatim quote. If you cannot quote text supporting the value, the value is null. This applies especially to "none": only use it where the contract affirmatively says the term does not apply.
@@ -98,6 +101,64 @@ async function finish(jobId, patch) {
   }
 }
 
+// Normalise whatever unit the contract used into an hourly figure. Done here,
+// not by the model, so the assumption behind every number is visible and the
+// UI can label a derived rate as derived.
+function normaliseRate(extracted) {
+  const val = function (k) {
+    const f = extracted[k];
+    const v = f && typeof f === 'object' ? f.value : f;
+    const n = Number(v);
+    return isFinite(n) && n > 0 ? n : null;
+  };
+  const raw = function (k) {
+    const f = extracted[k];
+    const v = f && typeof f === 'object' ? f.value : f;
+    return typeof v === 'string' ? v.trim().toLowerCase() : null;
+  };
+  const quoteOf = function (k) {
+    const f = extracted[k];
+    return (f && typeof f === 'object' && typeof f.quote === 'string') ? f.quote : '';
+  };
+
+  const amount = val('pay_rate_amount');
+  const unit = raw('pay_rate_unit');
+  const statedHourly = val('base_hourly_rate');
+  const shiftHours = val('shift_length_hours');
+  const weekHours = val('weekly_hours_expected') || val('guaranteed_hours_weekly');
+  const quote = quoteOf('pay_rate_amount') || quoteOf('base_hourly_rate');
+
+  if (statedHourly) {
+    return { stated: '$' + statedHourly + '/hr', hourly: statedHourly, derived: false,
+             basis: 'Stated hourly in the contract.', quote: quote };
+  }
+  if (!amount || !unit) {
+    return { stated: null, hourly: null, derived: false, basis: '', quote: quote };
+  }
+
+  const label = { hourly: '/hr', daily: '/day', shift: '/shift', weekly: '/week',
+                  biweekly: ' per two weeks', monthly: '/month', annual: '/year' };
+  const stated = '$' + amount.toLocaleString() + (label[unit] || '');
+
+  let hourly = null, basis = '';
+  if (unit === 'hourly') { hourly = amount; basis = 'Stated hourly in the contract.'; }
+  else if ((unit === 'shift' || unit === 'daily') && shiftHours) {
+    hourly = Math.round((amount / shiftHours) * 100) / 100;
+    basis = '$' + amount.toLocaleString() + ' divided by the ' + shiftHours + '-hour shift stated in the contract.';
+  } else if (unit === 'weekly' && weekHours) {
+    hourly = Math.round((amount / weekHours) * 100) / 100;
+    basis = '$' + amount.toLocaleString() + ' divided by ' + weekHours + ' hours per week.';
+  } else if (unit === 'biweekly' && weekHours) {
+    hourly = Math.round((amount / (weekHours * 2)) * 100) / 100;
+    basis = '$' + amount.toLocaleString() + ' divided by ' + (weekHours * 2) + ' hours.';
+  } else {
+    basis = 'Hourly equivalent needs the shift length or weekly hours, which this contract does not state.';
+  }
+
+  return { stated: stated, hourly: hourly, derived: hourly !== null && unit !== 'hourly',
+           unit: unit, basis: basis, quote: quote };
+}
+
 function rateBand(rate) {
   const n = Number(rate);
   if (!isFinite(n) || n <= 0) return null;
@@ -112,14 +173,15 @@ async function recordObservation(extracted, score) {
   try {
     const row = { rubric_version: RUBRIC.version, observed_month: new Date().toISOString().slice(0, 7) + '-01' };
 
+    row.rate_unit = (score.rate && score.rate.unit) || null;
+
     (RUBRIC.marketObservationFields || []).forEach(function (key) {
       const raw = extracted[key];
       const v = raw && typeof raw === 'object' ? raw.value : raw;
       row[key] = v === undefined ? null : v;
     });
 
-    const rate = extracted.base_hourly_rate;
-    row.rate_band = rateBand(rate && typeof rate === 'object' ? rate.value : rate);
+    row.rate_band = rateBand(score.rate && score.rate.hourly);
     row.overall_letter = score.overall.letter;
     row.overall_pct = score.overall.pct;
 
@@ -208,6 +270,7 @@ exports.handler = async (event) => {
     }
 
     const score = scoreContract(extracted, RUBRIC);
+    score.rate = normaliseRate(extracted);
 
     await finish(jobId, {
       extracted: extracted,
