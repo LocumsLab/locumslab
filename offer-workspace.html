@@ -8,8 +8,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script src="shared.js"></script>
-<script src="score-contract.js"></script>
-<script src="map-offer-to-rubric.js"></script>
+<!-- Scoring runs server-side in netlify/functions/score-offer.js. The rubric
+     is never sent to the browser. -->
 <style>
   .hero-dark{background:linear-gradient(160deg,#17324d,#224f78);color:#fff;border:0;border-radius:18px;
     padding:24px;margin-bottom:16px}
@@ -74,7 +74,6 @@
   <footer style="text-align:center;font-size:.6875rem;color:#8a92a0;margin-top:30px;line-height:1.6;">© 2026 LocumsLab. All rights reserved. LocumsLab™ and the LocumsLab offer grade are trademarks of LocumsLab.</footer>
 
 <script>
-let RUBRIC = null;
 const token = qs('token');
 const sb = getSupabase();
 
@@ -95,12 +94,11 @@ function gClass(l){if(!l)return 'g-grey';const c=String(l).charAt(0);
 function when(iso){ if(!iso) return null;
   return new Date(iso).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }
 
-function render(row){
+function render(row, score){
   const o = row.offer_data || {};
   const norm = normalizeOffer(o);
-  const extracted = mapOfferToExtracted(o);
-  const score = scoreContract(extracted, RUBRIC);
-  const rateBand = gradeRate(norm.effective_hourly, RUBRIC);
+  const extracted = score.__extracted || {};
+  const rateBand = score.rate && score.rate.band;
   const prov = score.overall.provisional;
   const qs_ = Array.isArray(row.questions) ? row.questions : [];
 
@@ -225,12 +223,21 @@ function render(row){
     return;
   }
   try {
-    const rubricRes = await fetch('rubric-v1.json');
-    RUBRIC = await rubricRes.json();
-
     const { data, error } = await sb.rpc('get_offer_workspace', { p_edit_token: token });
     if (error || !data || !data.length) throw new Error('not found');
-    render(data[0]);
+
+    // Same grade the candidate sees, computed the same way, server-side.
+    const scoreRes = await fetch('/.netlify/functions/score-offer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ offer: data[0].offer_data })
+    });
+    const payload = await scoreRes.json();
+    if (!scoreRes.ok || !payload.success) throw new Error(payload.error || ('HTTP ' + scoreRes.status));
+    const score = payload.score;
+    score.__extracted = payload.extracted;
+
+    render(data[0], score);
   } catch (e) {
     host.innerHTML = '<div class="panel"><h2>Workspace unavailable</h2>'
       + '<p class="empty">This link may be incorrect, or the offer may have been removed.</p></div>';
