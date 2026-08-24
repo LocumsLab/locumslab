@@ -1,4 +1,5 @@
 {
+  "_copyright": "\u00a9 2026 LocumsLab. All rights reserved. The field set, weights, thresholds and explanatory copy in this file are proprietary to LocumsLab and are not licensed for reuse or redistribution. LocumsLab\u2122.",
   "version": "v1",
   "appliesTo": [
     "crna_locums"
@@ -51,6 +52,70 @@
       "letter": "F"
     }
   ],
+  "negotiationLevels": {
+    "rethinkBelowPct": 60,
+    "rethinkHeavyZeroed": 3,
+    "signableMinPct": 85,
+    "signableMaxHeavyLosses": 0,
+    "copy": {
+      "CLARIFY_FIRST": {
+        "label": "Clarify first",
+        "headline": "Too much is unwritten to negotiate yet.",
+        "detail": "Most of the terms that protect you are not in this contract. Get answers to the questions below in writing before treating this as a real offer, then re-run it."
+      },
+      "SIGNABLE": {
+        "label": "Signable",
+        "headline": "Strong contract. Maybe one small ask.",
+        "detail": "Nothing here shifts serious risk onto you. If you want to ask for something, pick one item and do not reopen the rate."
+      },
+      "NEGOTIATE": {
+        "label": "Negotiate",
+        "headline": "Good opportunity with terms worth fixing.",
+        "detail": "The underlying offer holds up. Spend your negotiating capital on the asks below, in that order, and leave the rest alone."
+      },
+      "RETHINK": {
+        "label": "Rethink",
+        "headline": "Too many terms shift risk onto you.",
+        "detail": "This is not a one or two clause fix. Several provisions move risk in the same direction, so decide whether the rate is worth it before you spend time negotiating."
+      }
+    },
+    "signableMaxNonLightZeroed": 1
+  },
+  "rateBands": {
+    "basis": "National CRNA locums bands. Not adjusted for state or cost of market. A rate that grades C nationally can be strong for its region.",
+    "bands": [
+      {
+        "min": 285,
+        "letter": "A",
+        "label": "Top of market",
+        "note": "At or above the top of the national range for CRNA locums."
+      },
+      {
+        "min": 240,
+        "letter": "B",
+        "label": "Above median",
+        "note": "Above the national median for CRNA locums."
+      },
+      {
+        "min": 225,
+        "letter": "C",
+        "label": "Around median",
+        "note": "At the national median for CRNA locums."
+      },
+      {
+        "min": 175,
+        "letter": "D",
+        "label": "Low end of market",
+        "note": "Below the national median. Reasonable in some low-cost markets, thin in most."
+      },
+      {
+        "min": 0,
+        "letter": "F",
+        "label": "Below market",
+        "note": "Below the low end of the national range. Worth asking what accounts for the gap."
+      }
+    ]
+  },
   "provisionalBelowScoredShare": 0.6,
   "minCategoryFields": 3,
   "minCategoryPossibleShare": 0.4,
@@ -73,7 +138,8 @@
       "why": "Indemnification decides who pays to defend a claim, and it survives long after the assignment ends. A one-way clause can put you on the hook for the facility's or agency's costs even where you were not at fault.",
       "ask": "Is the indemnification clause mutual? If it runs only one direction, what is the reasoning, and would you consider mirroring it?",
       "clarifyAsk": "The contract does not appear to address indemnification. Who indemnifies whom, and is there language you can add so it is explicit and mutual?",
-      "fallback": "If they will not make it mutual, ask that your obligation be limited to your own negligent acts, and exclude claims arising from facility staffing, equipment, or supervision."
+      "fallback": "If they will not make it mutual, ask that your obligation be limited to your own negligent acts, and exclude claims arising from facility staffing, equipment, or supervision.",
+      "clarifyAskOffer": "This offer doesn't mention indemnification. Who indemnifies whom, and can that be spelled out both ways?"
     },
     "non_compete": {
       "label": "Restrictive covenant",
@@ -83,10 +149,11 @@
       "type": "derived",
       "derivation": "non_compete",
       "clarifyWhenNull": true,
-      "why": "A restrictive covenant limits where you can work after this assignment ends. Vague or unbounded geography and duration are the versions that cause real problems, because you cannot tell in advance what they rule out.",
+      "why": "This limits where you can work after the assignment ends. The dangerous version is the one with no stated radius or end date, because you can't tell what it rules out until someone tells you.",
       "ask": "What is the exact geographic radius and duration of the restrictive covenant, and does it apply to the facility only or to any client of the agency?",
       "clarifyAsk": "The contract does not clearly address restrictive covenants or non-solicitation. Is there any limit on where or for whom you can work after this assignment ends?",
-      "fallback": "If the covenant stays, ask for a stated radius and end date in writing, and that it apply to this facility only rather than to any client of the agency."
+      "fallback": "If the covenant stays, ask for a stated radius and end date in writing, and that it apply to this facility only rather than to any client of the agency.",
+      "clarifyAskOffer": "This offer doesn't say anything about a non-compete or non-solicit. Is there any limit on where I can work after this ends?"
     },
     "guaranteed_hours_weekly": {
       "label": "Guaranteed hours",
@@ -126,7 +193,8 @@
       "why": "Without guaranteed hours you carry the facility's census risk. A slow week costs you income you have already reserved the calendar for and cannot backfill.",
       "ask": "How many hours per week are guaranteed, and what happens to pay if the facility cancels shifts for low census?",
       "clarifyAsk": "The contract does not state a weekly hour guarantee. Are hours guaranteed, and if so at what number?",
-      "fallback": "If they will not guarantee weekly hours, ask for a stated minimum on cancelled shifts. That is the term that actually protects the day you set aside."
+      "fallback": "If they will not guarantee weekly hours, ask for a stated minimum on cancelled shifts. That is the term that actually protects the day you set aside.",
+      "clarifyAskOffer": "This offer doesn't list a weekly hour guarantee. Are hours guaranteed, and at what number?"
     },
     "payment_terms_days": {
       "label": "Payment terms",
@@ -158,10 +226,11 @@
         }
       ],
       "clarifyWhenNull": true,
-      "why": "As a 1099 you are financing the assignment until they pay. Long terms mean you are covering travel, housing, and quarterly tax on money you have earned but do not have.",
+      "why": "As a 1099 you're floating the assignment until they pay. On Net 45 you're covering travel, housing, and quarterly tax out of pocket on money you've already earned.",
       "ask": "How many days after invoice submission are payments issued, and is there a late-payment provision?",
       "clarifyAsk": "The contract does not state payment timing. What is the invoice cycle and how many days until payment?",
-      "fallback": "If the cycle cannot move, ask for a stated late-payment remedy and confirmation of the invoice deadline that keeps you in each cycle."
+      "fallback": "If the cycle cannot move, ask for a stated late-payment remedy and confirmation of the invoice deadline that keeps you in each cycle.",
+      "clarifyAskOffer": "This offer doesn't say when I'd get paid. What's the invoice cycle and how many days until payment?"
     },
     "schedule_guarantee": {
       "label": "Schedule commitment",
@@ -178,7 +247,8 @@
       "why": "If the facility sets the schedule at its discretion, the shift pattern you agreed to verbally is not the one you are contractually owed. This is where a 4x10 quietly becomes 5x8 plus weekends.",
       "ask": "Is the shift pattern fixed in the contract, and how far in advance is the schedule posted?",
       "clarifyAsk": "The contract does not specify how the schedule is set. Is the shift pattern fixed, or set by the facility, and how much advance notice do you get?",
-      "fallback": "If the pattern cannot be fixed in the contract, ask for a stated minimum notice for the posted schedule and written confirmation of the shift pattern in the assignment letter."
+      "fallback": "If the pattern cannot be fixed in the contract, ask for a stated minimum notice for the posted schedule and written confirmation of the shift pattern in the assignment letter.",
+      "clarifyAskOffer": "This offer doesn't say how the schedule gets set. Is the shift pattern locked in, or does the facility set it?"
     },
     "overtime": {
       "label": "Overtime terms",
@@ -188,10 +258,11 @@
       "type": "derived",
       "derivation": "overtime",
       "clarifyWhenNull": true,
-      "why": "An undefined overtime threshold means extra hours can be treated as ordinary hours. Locums assignments routinely run long, so this is not a hypothetical.",
+      "why": "If the threshold isn't defined, extra hours are just hours. Assignments run long often enough that this comes up.",
       "ask": "At what hourly threshold does overtime begin, is it daily or weekly, and at what multiple is it paid?",
       "clarifyAsk": "The contract does not define overtime. At what point do additional hours become overtime, and at what rate?",
-      "fallback": "If they will not add a premium, ask that the overtime threshold be defined anyway, and that hours past it be billed at the standard rate rather than absorbed."
+      "fallback": "If they will not add a premium, ask that the overtime threshold be defined anyway, and that hours past it be billed at the standard rate rather than absorbed.",
+      "clarifyAskOffer": "This offer doesn't define overtime. When do extra hours count, and at what rate?"
     },
     "exclusivity_clause": {
       "label": "Exclusivity",
@@ -207,7 +278,8 @@
       "why": "An exclusivity clause can bar you from taking other assignments or working with other agencies during the term, including on days this assignment does not use.",
       "ask": "Does this contract restrict me from working with other agencies or facilities during the term, including on off days?",
       "clarifyAsk": "The contract's language around outside work is unclear. Am I free to take other assignments during the term?",
-      "fallback": "If exclusivity stays, ask that it be limited to the contracted days and to this facility, so your off days and other agencies remain open."
+      "fallback": "If exclusivity stays, ask that it be limited to the contracted days and to this facility, so your off days and other agencies remain open.",
+      "clarifyAskOffer": "This offer doesn't say whether I can take other work during the term. Can I?"
     },
     "tail_responsibility": {
       "label": "Tail coverage",
@@ -224,7 +296,8 @@
       "why": "With claims-made coverage, tail is what protects you against a claim filed after the assignment ends. Buying it yourself is a four- or five-figure expense that arrives long after the income stopped.",
       "ask": "Who purchases tail coverage when the assignment ends, and is that stated in the contract?",
       "clarifyAsk": "The contract does not say who is responsible for tail coverage. Can that be stated explicitly?",
-      "fallback": "If they will not purchase tail, ask for full or partial reimbursement of the premium, or that the policy be converted to occurrence coverage."
+      "fallback": "If they will not purchase tail, ask for full or partial reimbursement of the premium, or that the policy be converted to occurrence coverage.",
+      "clarifyAskOffer": "This offer doesn't say who buys tail coverage. Who does?"
     },
     "malpractice_type": {
       "label": "Malpractice structure",
@@ -237,10 +310,11 @@
         "claims_made": 1
       },
       "clarifyWhenNull": true,
-      "why": "Occurrence coverage protects incidents that happened during the policy period no matter when the claim is filed. Claims-made only protects you while the policy is active, which is why tail matters.",
+      "why": "Occurrence covers anything that happened while the policy was active, whenever the claim lands. Claims-made only covers you while the policy is still in force. That's what tail is for.",
       "ask": "Is the malpractice policy occurrence or claims-made, and what are the limits?",
       "clarifyAsk": "The contract does not identify the malpractice policy type. Is it occurrence or claims-made, and what are the limits?",
-      "fallback": "If the policy stays claims-made, ask who buys tail and get that in the contract rather than relying on practice."
+      "fallback": "If the policy stays claims-made, ask who buys tail and get that in the contract rather than relying on practice.",
+      "clarifyAskOffer": "This offer doesn't say what kind of malpractice policy it is. Occurrence or claims-made, and what are the limits?"
     },
     "cancellation_notice_days": {
       "label": "Cancellation notice",
@@ -256,14 +330,14 @@
           "label": "30+ days"
         },
         {
-          "gte": 15,
+          "gte": 14,
           "points": 3,
-          "label": "15 to 29 days"
+          "label": "14 to 29 days"
         },
         {
           "gte": 8,
           "points": 1,
-          "label": "8 to 14 days"
+          "label": "8 to 13 days"
         },
         {
           "gte": null,
@@ -275,7 +349,8 @@
       "why": "You reserve the calendar for this assignment and turn down others. Short notice means the income disappears with no realistic way to backfill the block.",
       "ask": "Can the notice period for cancellation be increased to 30 days, or can shifts cancelled inside the window be compensated?",
       "clarifyAsk": "The contract does not state a cancellation notice period. How much notice is required, and is there compensation for shifts cancelled inside it?",
-      "fallback": "If the notice period cannot move, ask for a stated minimum payment on shifts cancelled inside the window."
+      "fallback": "If the notice period cannot move, ask for a stated minimum payment on shifts cancelled inside the window.",
+      "clarifyAskOffer": "This offer doesn't list a cancellation notice period. How much notice, and do I get paid for shifts cancelled inside it?"
     },
     "cancellation_pay_hours": {
       "label": "Cancelled shift pay",
@@ -307,10 +382,11 @@
         }
       ],
       "clarifyWhenNull": true,
-      "why": "A shift cancelled on the day is a shift you could have worked somewhere else. Cancellation pay varies widely between contracts, from nothing to a full shift, so it is worth confirming rather than assuming.",
+      "why": "A shift cancelled that morning is a shift you could have worked somewhere else. Some contracts pay a full shift, some pay nothing. Worth asking rather than assuming.",
       "ask": "If a scheduled shift is cancelled, how many hours are paid?",
       "clarifyAsk": "The contract does not state what happens if a scheduled shift is cancelled. How many hours are paid, and does that change based on how much notice you get?",
-      "fallback": "If they will not pay a full shift, ask for a stated minimum on any shift cancelled after you have arrived or within 24 hours of the start time. Any stated number is better than silence."
+      "fallback": "If they will not pay a full shift, ask for a stated minimum on any shift cancelled after you have arrived or within 24 hours of the start time. Any stated number is better than silence.",
+      "clarifyAskOffer": "This offer doesn't say what happens if a shift gets cancelled. How many hours are paid?"
     },
     "termination_asymmetry": {
       "label": "Termination notice balance",
@@ -323,7 +399,8 @@
       "why": "The gap between the two notice periods is the signal. If they can leave in 7 days and you owe 30, the flexibility runs one direction only.",
       "ask": "Can the without-cause termination notice be made symmetric between the parties?",
       "clarifyAsk": "The contract does not state notice periods for both sides. What notice does each party owe to terminate without cause?",
-      "fallback": "If they will not make the notice periods equal, ask that yours be reduced to match theirs rather than raising theirs to match yours."
+      "fallback": "If they will not make the notice periods equal, ask that yours be reduced to match theirs rather than raising theirs to match yours.",
+      "clarifyAskOffer": "This offer doesn't list notice periods for both sides. What does each of us owe to end it early?"
     },
     "call_pay_structure": {
       "label": "Call compensation",
@@ -338,10 +415,11 @@
         "unpaid": 0
       },
       "clarifyWhenNull": true,
-      "why": "Unpaid or stipend-only call converts hours of restricted availability into hours you are not really being paid for, which quietly lowers your effective rate.",
+      "why": "Stipend-only call means you're tied to your phone for hours you're barely paid for. It comes straight off your effective rate.",
       "ask": "How is call compensated, and does that differ between in-house and pager call?",
       "clarifyAsk": "The contract does not describe call compensation. Is call required, and how is it paid?",
-      "fallback": "If call cannot be paid hourly, ask for a stated stipend plus hourly pay for any hours actually worked while on call."
+      "fallback": "If call cannot be paid hourly, ask for a stated stipend plus hourly pay for any hours actually worked while on call.",
+      "clarifyAskOffer": "This offer doesn't describe call pay. Is call required, and how is it paid?"
     },
     "unilateral_scope_change": {
       "label": "Scope and location changes",
@@ -354,10 +432,11 @@
         "true": 0
       },
       "clarifyWhenNull": true,
-      "why": "Language letting the facility reassign your location or duties means the assignment you evaluated is not necessarily the one you will work.",
+      "why": "If they can move your site or your case mix, the assignment you agreed to isn't necessarily the one you'll work.",
       "ask": "Can the facility reassign me to a different site or case mix during the term, and does that require my consent?",
       "clarifyAsk": "The contract's language on site and duty assignment is unclear. Can either be changed during the term without my agreement?",
-      "fallback": "If the clause stays, ask that any change of site or case mix require your written agreement, or trigger your right to terminate without penalty."
+      "fallback": "If the clause stays, ask that any change of site or case mix require your written agreement, or trigger your right to terminate without penalty.",
+      "clarifyAskOffer": "This offer doesn't say whether the site or case mix can change mid-assignment. Can it, without my say?"
     },
     "auto_renewal": {
       "label": "Auto-renewal",
@@ -373,7 +452,8 @@
       "why": "An auto-renewal clause can extend the term, and every restriction in it, unless you give notice by a date you are unlikely to have calendared.",
       "ask": "Does this contract renew automatically, and by what date must notice be given to prevent that?",
       "clarifyAsk": "The contract does not clearly state whether it renews automatically. Does it, and what notice prevents renewal?",
-      "fallback": "If the clause stays, ask for the notice date in writing and that renewal terms match the original rate rather than resetting."
+      "fallback": "If the clause stays, ask for the notice date in writing and that renewal terms match the original rate rather than resetting.",
+      "clarifyAskOffer": "This offer doesn't say whether it auto-renews. Does it, and what stops that?"
     },
     "travel_reimbursement": {
       "label": "Travel",
@@ -388,10 +468,11 @@
         "none": 0
       },
       "clarifyWhenNull": true,
-      "why": "Travel treatment is a known, bounded cost you can price in up front.",
+      "why": "You can price this one out ahead of time, which is why it's rarely worth a negotiation.",
       "ask": "How is travel reimbursed, and is it per assignment or per trip home?",
       "clarifyAsk": "The contract does not address travel. Is it reimbursed, and on what basis?",
-      "fallback": "If travel is not reimbursed, ask that it be built into the rate rather than treated as your cost."
+      "fallback": "If travel is not reimbursed, ask that it be built into the rate rather than treated as your cost.",
+      "clarifyAskOffer": "This offer doesn't cover travel. Is it reimbursed, and how?"
     },
     "housing": {
       "label": "Housing",
@@ -405,10 +486,11 @@
         "none": 0
       },
       "clarifyWhenNull": true,
-      "why": "Housing treatment is a known, bounded cost you can price in up front.",
+      "why": "Same. Know the number, price it in, move on.",
       "ask": "Is housing provided or paid by stipend, and what happens if the assignment is cut short?",
       "clarifyAsk": "The contract does not address housing. Is it provided, stipended, or my responsibility?",
-      "fallback": "If housing is not provided, ask for a stipend at the GSA rate for the assignment county."
+      "fallback": "If housing is not provided, ask for a stipend at the GSA rate for the assignment county.",
+      "clarifyAskOffer": "This offer doesn't cover housing. Provided, stipend, or on me?"
     },
     "credentialing_expense": {
       "label": "Credentialing costs",
@@ -425,7 +507,8 @@
       "why": "Credentialing costs are bounded and knowable, but they land before you have earned anything.",
       "ask": "Who pays credentialing and privileging fees, and are they reimbursed if the assignment does not start?",
       "clarifyAsk": "The contract does not say who bears credentialing costs. Who pays them?",
-      "fallback": "If you bear credentialing costs, ask that they be reimbursed once you complete a stated number of weeks."
+      "fallback": "If you bear credentialing costs, ask that they be reimbursed once you complete a stated number of weeks.",
+      "clarifyAskOffer": "This offer doesn't say who pays credentialing. Who does?"
     },
     "licensure_expense": {
       "label": "Licensure costs",
@@ -442,7 +525,8 @@
       "why": "A new state license is a bounded cost, but check whether it is repayable if you leave early.",
       "ask": "Who pays for state licensure, and is there a repayment obligation if the assignment ends early?",
       "clarifyAsk": "The contract does not address licensure costs. Who pays, and is any of it repayable?",
-      "fallback": "If you pay for licensure, ask that any repayment obligation be prorated rather than owed in full on early departure."
+      "fallback": "If you pay for licensure, ask that any repayment obligation be prorated rather than owed in full on early departure.",
+      "clarifyAskOffer": "This offer doesn't cover licensure costs. Who pays, and is any of it repayable if I leave early?"
     },
     "callback_multiplier": {
       "label": "Callback rate",
@@ -472,7 +556,8 @@
       "why": "Callback at straight time makes being woken up worth the same as a scheduled hour.",
       "ask": "At what multiple is callback paid, and is there a minimum number of hours per callback?",
       "clarifyAsk": "The contract does not state a callback rate. How is callback paid?",
-      "fallback": "If callback stays at straight time, ask for a two-hour minimum per callback."
+      "fallback": "If callback stays at straight time, ask for a two-hour minimum per callback.",
+      "clarifyAskOffer": "This offer doesn't list a callback rate. How is callback paid?"
     },
     "call_frequency": {
       "label": "Call frequency",
@@ -490,7 +575,8 @@
       "why": "An undefined call obligation can expand without violating anything you signed.",
       "ask": "How often is call required, and is the rotation defined anywhere in writing?",
       "clarifyAsk": "The contract does not define call frequency. What is the expected rotation?",
-      "fallback": "If the rotation cannot be fixed, ask for a stated maximum call obligation per month."
+      "fallback": "If the rotation cannot be fixed, ask for a stated maximum call obligation per month.",
+      "clarifyAskOffer": "This offer doesn't say how often call comes around. What's the rotation?"
     },
     "shift_length_hours": {
       "label": "Shift length",
@@ -520,7 +606,8 @@
       "why": "Shift length interacts with the hour guarantee and overtime threshold more than it matters alone.",
       "ask": "What is the scheduled shift length, and does it trigger overtime?",
       "clarifyAsk": "The contract does not state shift length. What is the scheduled pattern?",
-      "fallback": "If shift length cannot change, confirm the overtime threshold accounts for it."
+      "fallback": "If shift length cannot change, confirm the overtime threshold accounts for it.",
+      "clarifyAskOffer": "This offer doesn't list a shift length. What is it?"
     },
     "site_count": {
       "label": "Number of sites",
@@ -545,7 +632,8 @@
       "why": "Floating between sites adds uncompensated drive time and a second set of workflows to learn.",
       "ask": "How many sites does this assignment cover, and is drive time between them paid?",
       "clarifyAsk": "The contract does not state how many sites are covered. Is this a single location?",
-      "fallback": "If the assignment covers multiple sites, ask that travel time between them be paid or that sites be named in the contract."
+      "fallback": "If the assignment covers multiple sites, ask that travel time between them be paid or that sites be named in the contract.",
+      "clarifyAskOffer": "This offer doesn't say how many sites this covers. Is it one location?"
     },
     "contract_length_weeks": {
       "label": "Assignment length",
@@ -570,7 +658,8 @@
       "why": "Shorter assignments spread fixed credentialing and travel costs across fewer paid hours.",
       "ask": "What is the assignment length, and is there an extension option at the same rate?",
       "clarifyAsk": "The contract does not state an assignment length. How many weeks is it?",
-      "fallback": "If the term is short, ask for an extension option at the same rate rather than renegotiating later."
+      "fallback": "If the term is short, ask for an extension option at the same rate rather than renegotiating later.",
+      "clarifyAskOffer": "This offer doesn't state a length. How many weeks?"
     }
   },
   "displayOnly": [
@@ -609,5 +698,6 @@
     "housing",
     "agency_name",
     "cancellation_pay_hours"
-  ]
+  ],
+  "minPriorityLoss": 2
 }
