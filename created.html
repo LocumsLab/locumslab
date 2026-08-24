@@ -8,19 +8,16 @@
 </head>
 <body>
 <div class="wrap">
-
   <header class="topbar">
     <div class="logo">LocumsLab</div>
     <a class="toplink" href="offer-form.html">Create another →</a>
   </header>
-
   <div class="hero">
     <div class="eyebrow-tag">Summary created</div>
     <h1>Your shareable offer summary is ready.</h1>
-    <p>Send the candidate link to your CRNA. Keep the edit link for yourself — you'll
-      need it if anything about the offer changes.</p>
+    <p>Send the candidate link to your CRNA. Keep the workspace link for yourself — it's how you
+      see the grade, update terms, and read any questions they send back.</p>
   </div>
-
   <div class="form-grid">
     <main class="panel">
       <h2>Candidate link</h2>
@@ -33,23 +30,41 @@
         <a id="openPublic" class="btn btn-secondary" target="_blank">Open summary →</a>
       </div>
     </main>
-
     <aside class="panel">
-      <h2>Private edit link</h2>
-      <p class="sub">Do not send this to the candidate. Anyone with this link can change the offer.</p>
+      <h2>Your workspace link</h2>
+      <p class="sub">Don't send this to the candidate. It opens the offer, its grade, and any
+        questions they send you. Anyone with this link can change the offer.</p>
       <div class="copy-row">
         <input id="editUrl" readonly>
         <button class="btn btn-secondary" data-copy="editUrl">Copy</button>
       </div>
-      <p class="link-warning">There's no login or password recovery in this pilot — bookmark or save this link somewhere safe.</p>
+      <div class="form-actions">
+        <a id="openWorkspace" class="btn btn-primary">Open workspace →</a>
+      </div>
+      <p class="link-warning">This link is the only way back in — there's no login to recover.
+        Bookmark it or save it somewhere you'll find it.</p>
     </aside>
   </div>
-</div>
 
+  <footer style="text-align:center;font-size:.6875rem;color:#8a92a0;margin-top:30px;line-height:1.6;">
+    © 2026 LocumsLab. All rights reserved. LocumsLab™ and the LocumsLab offer grade are
+    trademarks of LocumsLab.
+  </footer>
+</div>
 <script>
-document.getElementById('publicUrl').value = sessionStorage.getItem('lastOfferPublicUrl') || '';
-document.getElementById('editUrl').value = sessionStorage.getItem('lastOfferEditUrl') || '';
-document.getElementById('openPublic').href = document.getElementById('publicUrl').value;
+const _publicUrl = sessionStorage.getItem('lastOfferPublicUrl') || '';
+const _editUrl = sessionStorage.getItem('lastOfferEditUrl') || '';
+
+document.getElementById('publicUrl').value = _publicUrl;
+document.getElementById('editUrl').value = _editUrl;
+document.getElementById('openPublic').href = _publicUrl;
+
+// The workspace is the same edit token on a page that also shows the grade,
+// the completeness meter, and any questions the candidate sent.
+const _token = (_editUrl.split('token=')[1] || '').split('&')[0];
+document.getElementById('openWorkspace').href = _token
+  ? 'offer-workspace.html?token=' + _token
+  : _editUrl;
 
 document.querySelectorAll('[data-copy]').forEach(btn => {
   btn.addEventListener('click', async () => {
