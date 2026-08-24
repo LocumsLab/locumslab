@@ -1,3 +1,8 @@
+/* LocumsLab — © 2026 LocumsLab. All rights reserved.
+ * LocumsLab™ is a trademark of LocumsLab.
+ * This file, including the rubric weights, field definitions and explanatory copy,
+ * is proprietary. Not licensed for reuse or redistribution.
+ */
 // Deterministic contract scoring. No API calls, no randomness.
 // Same extracted input always produces the same grade, which is the whole
 // point of splitting this out of the model call.
@@ -190,6 +195,7 @@ function scoreContract(extracted, rubric) {
           label: spec.label,
           tier: spec.tier,
           question: spec.clarifyAsk || spec.ask || '',
+          questionOffer: spec.clarifyAskOffer || spec.clarifyAsk || spec.ask || '',
           // The model found relevant language but could not fit it to the
           // field type. Show it: the CRNA can read it even if we cannot score it.
           relatedText: quote || '',
@@ -206,6 +212,7 @@ function scoreContract(extracted, rubric) {
         label: spec.label,
         tier: spec.tier,
         question: spec.clarifyAskForValue || spec.ask || '',
+        questionOffer: spec.clarifyAskForValue || spec.ask || '',
         relatedText: quote || '',
         unsupportedValue: false
       });
@@ -272,8 +279,9 @@ function scoreContract(extracted, rubric) {
 
   // Priorities: what cost the most points, heaviest tier first. Cap at three,
   // because a recruiter gives you two or three concessions, not eight.
+  const minLoss = rubric.minPriorityLoss || 2;
   const priorities = scored
-    .filter(function (f) { return f.lost > 0; })
+    .filter(function (f) { return f.lost >= minLoss; })
     .sort(function (a, b) {
       if (b.lost !== a.lost) return b.lost - a.lost;
       return TIER_ORDER[a.tier] - TIER_ORDER[b.tier];
@@ -302,8 +310,46 @@ function scoreContract(extracted, rubric) {
     .sort(function (a, b) { return b.possible - a.possible; })
     .map(function (f) { return { key: f.key, label: f.label, term: f.band, quote: f.quote }; });
 
+  // Negotiation level answers a different question than the grade. The grade
+  // says how good the contract is; the level says what to do about it. Both
+  // are computed from the same scored fields, so they cannot disagree.
+  const cfg = rubric.negotiationLevels || {};
+  const heavy = scored.filter(function (f) { return f.tier === 'heavy'; });
+  const heavyLost = heavy.filter(function (f) { return f.lost > 0; }).length;
+  const heavyZeroed = heavy.filter(function (f) { return f.points === 0; }).length;
+  // Signable must also account for the moderate tier. Tail on you scores zero
+  // without touching a heavy field, and that is plainly worth an ask.
+  const nonLightZeroed = scored.filter(function (f) {
+    return f.tier !== 'light' && f.points === 0;
+  }).length;
+
+  let levelCode;
+  if (scoredShare < minShare) {
+    levelCode = 'CLARIFY_FIRST';
+  } else if (overallPct < (cfg.rethinkBelowPct || 60)
+             || heavyZeroed >= (cfg.rethinkHeavyZeroed || 3)) {
+    levelCode = 'RETHINK';
+  } else if (heavyLost <= (cfg.signableMaxHeavyLosses || 0)
+             && nonLightZeroed <= (cfg.signableMaxNonLightZeroed || 1)
+             && overallPct >= (cfg.signableMinPct || 85)) {
+    levelCode = 'SIGNABLE';
+  } else {
+    levelCode = 'NEGOTIATE';
+  }
+
+  const levelCopy = (cfg.copy && cfg.copy[levelCode]) || {};
+
   return {
     rubricVersion: rubric.version,
+    level: {
+      code: levelCode,
+      label: levelCopy.label || levelCode,
+      headline: levelCopy.headline || '',
+      detail: levelCopy.detail || '',
+      heavyLost: heavyLost,
+      heavyZeroed: heavyZeroed,
+      nonLightZeroed: nonLightZeroed
+    },
     overall: {
       points: sum(scored, function (f) { return f.points; }),
       possible: sum(scored, function (f) { return f.possible; }),
@@ -323,5 +369,34 @@ function scoreContract(extracted, rubric) {
   };
 }
 
-module.exports = { scoreContract };
+// Rate is graded on its own band and never folded into the overall letter. A
+// strong rate should not paper over CRNA-funded tail, and a fair rural rate
+// should not drag down an otherwise clean contract.
+function gradeRate(hourly, rubric) {
+  const cfg = (rubric && rubric.rateBands) || {};
+  const bands = cfg.bands || [];
+  const n = Number(hourly);
+  if (!isFinite(n) || n <= 0 || !bands.length) return null;
+  for (let i = 0; i < bands.length; i++) {
+    if (n >= bands[i].min) {
+      return {
+        letter: bands[i].letter,
+        label: bands[i].label,
+        note: bands[i].note,
+        basis: cfg.basis || '',
+        hourly: n
+      };
+    }
+  }
+  return null;
+}
 
+// Works in the Netlify bundle and in the browser. The offer summary page needs
+// the same scorer the contract analyzer uses; two implementations would drift.
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { scoreContract, gradeRate };
+}
+if (typeof window !== 'undefined') {
+  window.scoreContract = scoreContract;
+  window.gradeRate = gradeRate;
+}
