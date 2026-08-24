@@ -30,6 +30,7 @@
 
   <header class="topbar">
     <div class="logo">LocumsLab</div>
+    <a class="toplink" id="backToWorkspace" href="#">&larr; Back to workspace</a>
   </header>
 
   <div class="hero">
@@ -331,6 +332,7 @@
       </div>
       <div class="form-actions">
         <button class="btn btn-primary" type="submit">Save changes</button>
+        <a class="btn btn-secondary" id="doneEditing" href="#">Done &mdash; back to workspace</a>
       </div>
     </form>
   </main>
@@ -357,6 +359,14 @@ const SCORED = [
   'exclusivity_clause','auto_renewal','termination_notice_agency_days',
   'termination_notice_crna_days'
 ];
+
+(function setWorkspaceLinks() {
+  const href = token ? ('offer-workspace.html?token=' + encodeURIComponent(token)) : '#';
+  ['backToWorkspace', 'doneEditing'].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) el.href = href;
+  });
+})();
 
 function msg(t, type) {
   flash.textContent = t;
@@ -429,6 +439,7 @@ form.addEventListener('submit', async (e) => {
 
   msg('Changes saved. The candidate link now reflects this update.', 'success');
   updateMeter();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 </script>
 </body>
