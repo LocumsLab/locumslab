@@ -8,9 +8,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script src="shared.js"></script>
-<!-- Same rubric and scorer the contract analyzer uses. One rubric, two inputs. -->
-<script src="score-contract.js"></script>
-<script src="map-offer-to-rubric.js"></script>
+<!-- Scoring happens server-side in netlify/functions/score-offer.js so the
+     rubric weights and thresholds are never sent to the browser. -->
 <style>
   .grade-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
   @media(max-width:460px){.grade-grid{grid-template-columns:1fr}}
@@ -69,8 +68,6 @@
 </div>
 
 <script>
-let RUBRIC = null;
-
 function gClass(letter) {
   if (!letter) return 'g-grey';
   const c = String(letter).charAt(0);
@@ -83,11 +80,10 @@ function esc(s) {
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function render(raw, meta) {
+function render(raw, meta, score) {
   const o = normalizeOffer(raw);
-  const extracted = mapOfferToExtracted(raw);
-  const score = scoreContract(extracted, RUBRIC);
-  const rateBand = gradeRate(o.effective_hourly, RUBRIC);
+  const extracted = score.__extracted || {};
+  const rateBand = score.rate && score.rate.band;
   const enteredBy = [o.recruiter_name, o.agency_name].filter(Boolean).join(' · ');
   const agency = o.agency_name || 'the agency';
   const lv = score.level || {};
@@ -276,22 +272,6 @@ function failScreen(title, detail) {
   const sb = getSupabase();
   if (!sb) { failScreen('Temporarily unavailable', 'Please try again in a moment.'); console.error('offer.html: Supabase client unavailable. Check config.js.'); return; }
 
-  // Loaded separately so a missing asset does not look like a dead link.
-  try {
-    const rubricRes = await fetch('rubric-v1.json');
-    if (!rubricRes.ok) throw new Error('HTTP ' + rubricRes.status);
-    RUBRIC = await rubricRes.json();
-  } catch (e) {
-    failScreen('Temporarily unavailable', 'This offer could not be graded just now. Please refresh, or ask your recruiter to resend the link.');
-    console.error('offer.html: could not load rubric-v1.json.', e && e.message);
-    return;
-  }
-  if (typeof scoreContract !== 'function' || typeof mapOfferToExtracted !== 'function') {
-    failScreen('Temporarily unavailable', 'This offer could not be graded just now. Please refresh.');
-    console.error('offer.html: score-contract.js or map-offer-to-rubric.js did not load.');
-    return;
-  }
-
   try {
     const { data, error } = await sb.rpc('get_offer_by_public_token', { p_public_token: id });
     if (error) {
@@ -304,7 +284,25 @@ function failScreen(title, detail) {
       return;
     }
 
-    render(data[0].offer_data, data[0]);
+    // Grade it server-side. The rubric never reaches the browser.
+    let score;
+    try {
+      const scoreRes = await fetch('/.netlify/functions/score-offer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ offer: data[0].offer_data })
+      });
+      const payload = await scoreRes.json();
+      if (!scoreRes.ok || !payload.success) throw new Error(payload.error || ('HTTP ' + scoreRes.status));
+      score = payload.score;
+      score.__extracted = payload.extracted;
+    } catch (e) {
+      failScreen('Temporarily unavailable', 'This offer could not be graded just now. Please refresh, or ask your recruiter to resend the link.');
+      console.error('offer.html: score-offer failed.', e && e.message);
+      return;
+    }
+
+    render(data[0].offer_data, data[0], score);
 
     // Engagement, scoped to this offer. The recruiter sees that it was opened,
     // nothing about what the candidate concluded.
