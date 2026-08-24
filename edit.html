@@ -8,6 +8,22 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script src="shared.js"></script>
+<style>
+  /* Completeness meter. The candidate sees an unanswered question for every
+     field left blank here, so show the recruiter that count before they send. */
+  .meter { border:1px solid var(--border,#e5e0d7); border-radius:14px; padding:16px 18px;
+    margin-bottom:22px; background:#fbf7ef; }
+  .meter-top { display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
+  .meter-top strong { font-size:1.0625rem; }
+  .meter-top span { font-size:.8125rem; color:#5b6573; }
+  .meter-bar { height:7px; border-radius:99px; background:#efe5d4; margin-top:10px; overflow:hidden; }
+  .meter-fill { height:100%; background:#12835c; width:0%; transition:width .35s ease; }
+  .meter p { font-size:.8125rem; color:#5b6573; margin-top:9px; line-height:1.55; }
+  .group-head { grid-column:1/-1; margin-top:8px; padding-top:16px; border-top:1px solid #e5e0d7; }
+  .group-head h3 { font-size:.9375rem; margin:0 0 2px; }
+  .group-head p { font-size:.8125rem; color:#5b6573; margin:0; }
+  .optional { font-weight:400; color:#5b6573; font-size:.8125rem; }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -24,6 +40,16 @@
 
   <main class="panel" style="max-width:760px;">
     <div id="flash" class="flash"></div>
+
+    <div class="meter">
+      <div class="meter-top">
+        <strong id="meterCount">—</strong>
+        <span id="meterQs"></span>
+      </div>
+      <div class="meter-bar"><div class="meter-fill" id="meterFill"></div></div>
+      <p>Every term you leave blank shows on the candidate's page as an unanswered question. Offers with most
+        terms filled in get a grade; sparse ones show "not enough stated to grade."</p>
+    </div>
 
     <form id="editForm">
       <div class="fields">
@@ -75,10 +101,10 @@
           <label>Cancellation notice</label>
           <select name="cancellation_notice">
             <option value="unknown">Unknown</option>
-            <option value="7 days">7 days</option>
-            <option value="14 days">14 days</option>
-            <option value="30 days">30 days</option>
-            <option value="60+ days">60+ days</option>
+            <option value="7">7 days</option>
+            <option value="14">14 days</option>
+            <option value="30">30 days</option>
+            <option value="60">60+ days</option>
           </select>
         </div>
 
@@ -103,6 +129,190 @@
           </select>
         </div>
 
+        <!-- ── Terms candidates ask about most ─────────────────────────── -->
+        <div class="group-head">
+          <h3>Pay terms <span class="optional">Optional, but each one removes a question</span></h3>
+          <p>These are the terms CRNAs raise most often when they aren't stated.</p>
+        </div>
+
+        <div class="field">
+          <label>Payment terms</label>
+          <select name="payment_terms_days">
+            <option value="unknown">Unknown</option>
+            <option value="15">Net 15</option>
+            <option value="30">Net 30</option>
+            <option value="45">Net 45</option>
+            <option value="60">Net 60</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Overtime starts after</label>
+          <select name="overtime_threshold_hours">
+            <option value="unknown">Unknown</option>
+            <option value="8">8 hrs / day</option>
+            <option value="36">36 hrs / week</option>
+            <option value="40">40 hrs / week</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Overtime rate</label>
+          <select name="overtime_multiplier">
+            <option value="unknown">Unknown</option>
+            <option value="none">Straight time</option>
+            <option value="1.25">1.25&times;</option>
+            <option value="1.5">1.5&times;</option>
+            <option value="2">2&times;</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Pay if a shift is cancelled</label>
+          <select name="cancellation_pay_hours">
+            <option value="unknown">Unknown</option>
+            <option value="none">Not paid</option>
+            <option value="4">4 hours</option>
+            <option value="6">6 hours</option>
+            <option value="8">Full shift</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Credentialing costs</label>
+          <select name="credentialing_expense">
+            <option value="unknown">Unknown</option>
+            <option value="agency">Agency pays</option>
+            <option value="split">Split</option>
+            <option value="crna">Candidate pays</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Licensure costs</label>
+          <select name="licensure_expense">
+            <option value="unknown">Unknown</option>
+            <option value="agency">Agency pays</option>
+            <option value="split">Split</option>
+            <option value="crna">Candidate pays</option>
+          </select>
+        </div>
+
+        <!-- ── Schedule and contract ───────────────────────────────────── -->
+        <div class="group-head">
+          <h3>Schedule and contract terms <span class="optional">Optional</span></h3>
+          <p>Unstated schedule and restriction terms are the ones that cause disputes mid-assignment.</p>
+        </div>
+
+        <div class="field">
+          <label>Schedule commitment</label>
+          <select name="schedule_guarantee">
+            <option value="unknown">Unknown</option>
+            <option value="fixed">Fixed pattern in the contract</option>
+            <option value="posted_in_advance">Posted in advance</option>
+            <option value="facility_discretion">Set by the facility</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Shift length</label>
+          <select name="shift_length_hours">
+            <option value="unknown">Unknown</option>
+            <option value="8">8 hours</option>
+            <option value="10">10 hours</option>
+            <option value="12">12 hours</option>
+            <option value="24">24 hours</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Number of sites</label>
+          <select name="site_count">
+            <option value="unknown">Unknown</option>
+            <option value="1">Single site</option>
+            <option value="2">2 sites</option>
+            <option value="3">3 or more</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Indemnification</label>
+          <select name="indemnification">
+            <option value="unknown">Unknown</option>
+            <option value="mutual">Mutual</option>
+            <option value="crna_only">Candidate only</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Restrictive covenant</label>
+          <select name="non_compete_present">
+            <option value="unknown">Unknown</option>
+            <option value="false">None</option>
+            <option value="true">Yes, there is one</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Exclusivity during the term</label>
+          <select name="exclusivity_clause">
+            <option value="unknown">Unknown</option>
+            <option value="false">Candidate may take other work</option>
+            <option value="true">Exclusive to this agency</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Auto-renewal</label>
+          <select name="auto_renewal">
+            <option value="unknown">Unknown</option>
+            <option value="false">Does not auto-renew</option>
+            <option value="true">Auto-renews</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Termination notice, agency</label>
+          <select name="termination_notice_agency_days">
+            <option value="unknown">Unknown</option>
+            <option value="14">14 days</option>
+            <option value="30">30 days</option>
+            <option value="60">60 days</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Termination notice, candidate</label>
+          <select name="termination_notice_crna_days">
+            <option value="unknown">Unknown</option>
+            <option value="14">14 days</option>
+            <option value="30">30 days</option>
+            <option value="60">60 days</option>
+          </select>
+        </div>
+
+        <!-- ── How long the offer stands ───────────────────────────────── -->
+        <div class="group-head">
+          <h3>How long this offer stands</h3>
+          <p>After this window the candidate link shows as expired and asks them to contact you for a new offer.</p>
+        </div>
+
+        <div class="field">
+          <label>Offer valid for</label>
+          <select id="expiryDays">
+            <option value="">No expiry</option>
+            <option value="7">7 days</option>
+            <option value="14">14 days</option>
+            <option value="21">21 days</option>
+            <option value="30">30 days (maximum)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Currently expires</label>
+          <input id="expiryShown" readonly value="No expiry set">
+        </div>
+
         <div class="field full">
           <label>Additional notes</label>
           <textarea name="notes"></textarea>
@@ -124,6 +334,8 @@
       </div>
     </form>
   </main>
+
+  <footer style="text-align:center;font-size:.6875rem;color:#8a92a0;margin-top:30px;line-height:1.6;">© 2026 LocumsLab. All rights reserved. LocumsLab™ and the LocumsLab offer grade are trademarks of LocumsLab.</footer>
 </div>
 
 <script>
@@ -131,30 +343,92 @@ const token = qs('token');
 const sb = getSupabase();
 const form = document.getElementById('editForm');
 const flash = document.getElementById('flash');
+const expiryDays = document.getElementById('expiryDays');
+const expiryShown = document.getElementById('expiryShown');
+
+// Fields the rubric can score. Anything left unknown becomes a question on the
+// candidate's page, so the meter counts these and nothing else.
+const SCORED = [
+  'rate','guaranteed_hours','contract_weeks','travel_support','call_required',
+  'cancellation_notice','malpractice','tail','payment_terms_days',
+  'overtime_threshold_hours','overtime_multiplier','cancellation_pay_hours',
+  'credentialing_expense','licensure_expense','schedule_guarantee',
+  'shift_length_hours','site_count','indemnification','non_compete_present',
+  'exclusivity_clause','auto_renewal','termination_notice_agency_days',
+  'termination_notice_crna_days'
+];
 
 function msg(t, type) {
   flash.textContent = t;
   flash.className = 'flash ' + type + ' show';
 }
 
+function updateMeter() {
+  let filled = 0;
+  SCORED.forEach(function (name) {
+    const el = form.elements[name];
+    if (!el) return;
+    const v = String(el.value || '').trim().toLowerCase();
+    if (v && v !== 'unknown') filled++;
+  });
+  const total = SCORED.length;
+  const missing = total - filled;
+  document.getElementById('meterCount').textContent = filled + ' of ' + total + ' terms specified';
+  document.getElementById('meterQs').textContent = missing === 0
+    ? 'No open questions'
+    : missing + (missing === 1 ? ' question on the candidate page' : ' questions on the candidate page');
+  document.getElementById('meterFill').style.width = Math.round((filled / total) * 100) + '%';
+}
+
+function showExpiry(iso) {
+  if (!iso) { expiryShown.value = 'No expiry set'; return; }
+  const d = new Date(iso);
+  const lapsed = d < new Date();
+  expiryShown.value = (lapsed ? 'Expired ' : 'Expires ') + d.toLocaleDateString(undefined,
+    { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
 (async () => {
-  if (!token || !sb) { msg('This edit link is missing or Supabase is not configured.', 'error'); form.style.display = 'none'; return; }
+  if (!token || !sb) {
+    msg('This edit link is missing or Supabase is not configured.', 'error');
+    form.style.display = 'none';
+    return;
+  }
   const { data, error } = await sb.rpc('get_offer_for_edit', { p_edit_token: token });
   if (error || !data || !data.length) {
     msg('This edit link is invalid or the summary was removed.', 'error');
     form.style.display = 'none';
     return;
   }
-  const o = data[0].offer_data;
+  const row = data[0];
+  const o = row.offer_data || {};
   Object.entries(o).forEach(([k, v]) => { if (form.elements[k]) form.elements[k].value = v; });
+
+  if (row.expiry_days) expiryDays.value = String(row.expiry_days);
+  showExpiry(row.offer_expires_at);
+  updateMeter();
 })();
+
+form.addEventListener('input', updateMeter);
+form.addEventListener('change', updateMeter);
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const offer_data = Object.fromEntries(new FormData(form).entries());
-  const { data, error } = await sb.rpc('update_offer_by_edit_token', { p_edit_token: token, p_offer_data: offer_data });
-  if (error || !data) msg('Could not save changes. ' + (error ? error.message : ''), 'error');
-  else msg('Changes saved. The candidate link now reflects this update.', 'success');
+
+  const { error } = await sb.rpc('update_offer_by_edit_token',
+    { p_edit_token: token, p_offer_data: offer_data });
+  if (error) { msg('Could not save changes. ' + error.message, 'error'); return; }
+
+  // Expiry lives in its own columns, not in offer_data, because the 30-day cap
+  // is enforced by a database constraint rather than by this form.
+  const days = expiryDays.value ? Number(expiryDays.value) : null;
+  const exp = await sb.rpc('set_offer_expiry', { p_edit_token: token, p_days: days });
+  if (exp.error) { msg('Terms saved, but the expiry did not update. ' + exp.error.message, 'error'); return; }
+  if (exp.data && exp.data.length) showExpiry(exp.data[0].offer_expires_at);
+
+  msg('Changes saved. The candidate link now reflects this update.', 'success');
+  updateMeter();
 });
 </script>
 </body>
