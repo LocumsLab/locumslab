@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offer Workspace — LocumsLab</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="shared.js"></script>
+<script src="score-contract.js"></script>
+<script src="map-offer-to-rubric.js"></script>
+<style>
+  .hero-dark{background:linear-gradient(160deg,#17324d,#224f78);color:#fff;border:0;border-radius:18px;
+    padding:24px;margin-bottom:16px}
+  .hero-dark .eyebrow{font-size:.6875rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+    color:#9ec3ff;margin-bottom:7px}
+  .hero-dark h1{font-size:1.5rem;letter-spacing:-.025em;margin:0 0 6px}
+  .hero-dark p{color:#d8e6f1;font-size:.9375rem;line-height:1.55;margin:0}
+  .mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:18px}
+  .mini-stat{background:rgba(255,255,255,.1);border-radius:12px;padding:12px;text-align:center}
+  .mini-stat strong{display:block;font-size:1.4rem;font-weight:800;letter-spacing:-.02em}
+  .mini-stat span{font-size:.6875rem;color:#c3d6e6;text-transform:uppercase;letter-spacing:.05em}
+
+  .panel{background:#fff;border:1px solid #e5e0d7;border-radius:16px;padding:20px;margin-bottom:16px}
+  .panel h2{font-size:1.0625rem;margin:0 0 3px}
+  .panel .sub{font-size:.8125rem;color:#5b6573;margin:0 0 15px;line-height:1.55}
+
+  .gwrap{display:flex;align-items:center;gap:15px;flex-wrap:wrap}
+  .gtile{width:66px;height:66px;min-width:66px;border-radius:16px;display:grid;place-items:center;
+    font-size:1.9rem;font-weight:900;letter-spacing:-.04em;border:1px solid #e5e0d7;background:#fffdf8}
+  .g-good{color:#12835c}.g-mid{color:#b7791f}.g-bad{color:#c2410c}.g-grey{color:#5b6573}
+  .gmeta strong{display:block;font-size:.9375rem}
+  .gmeta span{font-size:.8125rem;color:#5b6573;line-height:1.5}
+
+  .meter-bar{height:7px;border-radius:99px;background:#efe5d4;margin-top:12px;overflow:hidden}
+  .meter-fill{height:100%;background:#12835c;width:0%;transition:width .35s ease}
+  .meter-note{font-size:.8125rem;color:#5b6573;margin-top:9px;line-height:1.55}
+
+  .rows{border-top:1px solid #e5e0d7}
+  .row{display:flex;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid #e5e0d7;
+    font-size:.875rem}
+  .row span:first-child{color:#5b6573}
+  .row span:last-child{font-weight:650;text-align:right}
+  .row .unstated{color:#b7791f;font-weight:700}
+
+  .qitem{border-left:3px solid #b7791f;padding:2px 0 2px 14px;margin-bottom:16px}
+  .qitem h4{font-size:.9375rem;margin:0 0 3px}
+  .qitem p{font-size:.875rem;color:#5b6573;line-height:1.6;margin:0}
+  .qitem .when{font-size:.75rem;color:#8a92a0;margin-top:5px}
+
+  .empty{font-size:.875rem;color:#5b6573;line-height:1.65}
+  .copy-row{display:flex;gap:8px;margin-top:6px}
+  .copy-row input{flex:1;min-width:0;border:1px solid #e5e0d7;border-radius:10px;padding:11px 12px;
+    font:inherit;font-size:.8125rem;background:#fffdf8;color:#10253f}
+  .privacy{font-size:.75rem;color:#5b6573;line-height:1.6;border-top:1px solid #e5e0d7;
+    padding-top:13px;margin-top:16px}
+  .btn-row{display:grid;gap:9px;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="logo">LocumsLab</div>
+    <a class="toplink" href="offer-form.html">Create another →</a>
+  </header>
+
+  <div id="flash" class="flash"></div>
+  <div id="ws">Loading workspace…</div>
+
+</div>
+
+  <footer style="text-align:center;font-size:.6875rem;color:#8a92a0;margin-top:30px;line-height:1.6;">© 2026 LocumsLab. All rights reserved. LocumsLab™ and the LocumsLab offer grade are trademarks of LocumsLab.</footer>
+
+<script>
+let RUBRIC = null;
+const token = qs('token');
+const sb = getSupabase();
+
+const SCORED_FORM_FIELDS = [
+  'rate','guaranteed_hours','contract_weeks','travel_support','call_required',
+  'cancellation_notice','malpractice','tail','payment_terms_days',
+  'overtime_threshold_hours','overtime_multiplier','cancellation_pay_hours',
+  'credentialing_expense','licensure_expense','schedule_guarantee',
+  'shift_length_hours','site_count','indemnification','non_compete_present',
+  'exclusivity_clause','auto_renewal','termination_notice_agency_days',
+  'termination_notice_crna_days'
+];
+
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function gClass(l){if(!l)return 'g-grey';const c=String(l).charAt(0);
+  return (c==='A'||c==='B')?'g-good':c==='C'?'g-mid':'g-bad';}
+function when(iso){ if(!iso) return null;
+  return new Date(iso).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }
+
+function render(row){
+  const o = row.offer_data || {};
+  const norm = normalizeOffer(o);
+  const extracted = mapOfferToExtracted(o);
+  const score = scoreContract(extracted, RUBRIC);
+  const rateBand = gradeRate(norm.effective_hourly, RUBRIC);
+  const prov = score.overall.provisional;
+  const qs_ = Array.isArray(row.questions) ? row.questions : [];
+
+  let filled = 0;
+  SCORED_FORM_FIELDS.forEach(function(k){
+    const v = String(o[k] == null ? '' : o[k]).trim().toLowerCase();
+    if (v && v !== 'unknown') filled++;
+  });
+  const total = SCORED_FORM_FIELDS.length;
+  const missing = total - filled;
+
+  const publicUrl = location.origin + location.pathname.replace(/[^/]+$/, '') + 'offer.html?id=' + row.public_token;
+
+  const TERMS = [
+    ['Rate', norm.rate ? money(norm.rate) + (o.rate_type==='weekly'?'/wk':'/hr') : null],
+    ['Guaranteed hours', norm.guaranteed_hours ? norm.guaranteed_hours + ' / week' : null],
+    ['Contract length', norm.contract_weeks ? norm.contract_weeks + ' weeks' : null],
+    ['Cancellation notice', extracted.cancellation_notice_days.value ? extracted.cancellation_notice_days.value + ' days' : null],
+    ['Malpractice', extracted.malpractice_type.value === 'occurrence' ? 'Occurrence'
+        : extracted.malpractice_type.value === 'claims_made' ? 'Claims-made' : null],
+    ['Tail coverage', extracted.tail_responsibility.value === 'agency' ? 'Agency pays'
+        : extracted.tail_responsibility.value === 'crna' ? 'Candidate pays'
+        : extracted.tail_responsibility.value === 'not_applicable' ? 'Not applicable' : null],
+    ['Schedule', extracted.schedule_guarantee.value === 'fixed' ? 'Fixed in contract'
+        : extracted.schedule_guarantee.value === 'posted_in_advance' ? 'Posted in advance'
+        : extracted.schedule_guarantee.value === 'facility_discretion' ? 'Set by facility' : null],
+    ['Payment terms', extracted.payment_terms_days.value ? 'Net ' + extracted.payment_terms_days.value : null],
+    ['Housing / travel', (o.travel_support && o.travel_support !== 'unknown') ? pretty(o.travel_support) : null]
+  ];
+
+  document.getElementById('ws').innerHTML =
+    '<div class="hero-dark">'
+    + '<div class="eyebrow">Offer workspace</div>'
+    + '<h1>' + esc([o.agency_name, o.facility_name].filter(Boolean).join(' \u00b7 ') || 'CRNA locums offer') + '</h1>'
+    + '<p>Everything the candidate sees, plus what they have done with it.</p>'
+    + '<div class="mini-stats">'
+    +   '<div class="mini-stat"><strong>' + (row.opened_count || 0) + '</strong><span>Opened</span></div>'
+    +   '<div class="mini-stat"><strong>' + (row.reviewed_at ? 1 : 0) + '</strong><span>Reviewed</span></div>'
+    +   '<div class="mini-stat"><strong>' + qs_.length + '</strong><span>Questions</span></div>'
+    + '</div></div>'
+
+    + '<div class="panel">'
+    + '<h2>The grade your candidate sees</h2>'
+    + '<p class="sub">Every offer is graded against the same rubric. You cannot change it, and neither can we.</p>'
+    + '<div class="gwrap">'
+    +   '<div class="gtile ' + gClass(rateBand && rateBand.letter) + '">'
+    +     esc(rateBand ? rateBand.letter : '\u2014') + '</div>'
+    +   '<div class="gmeta"><strong>Rate \u00b7 ' + esc(rateBand ? rateBand.label : 'not stated') + '</strong>'
+    +     '<span>' + money(norm.effective_hourly) + '/hr effective</span></div>'
+    + '</div>'
+    + '<div class="gwrap" style="margin-top:14px;">'
+    +   '<div class="gtile ' + (prov ? 'g-grey' : gClass(score.overall.letter)) + '">'
+    +     (prov ? '\u2014' : esc(score.overall.letter)) + '</div>'
+    +   '<div class="gmeta"><strong>Offer terms \u00b7 ' + esc(score.level.label) + '</strong>'
+    +     '<span>' + (prov
+          ? 'Not enough terms stated for a grade. The candidate sees a dash and a list of questions.'
+          : esc(score.level.headline)) + '</span></div>'
+    + '</div>'
+    + '<div class="meter-bar"><div class="meter-fill" style="width:' + Math.round((filled/total)*100) + '%"></div></div>'
+    + '<div class="meter-note"><strong>' + filled + ' of ' + total + ' terms specified.</strong> '
+    + (missing === 0
+        ? 'Nothing is left open on the candidate page.'
+        : missing + ' unanswered ' + (missing === 1 ? 'question is' : 'questions are')
+          + ' showing on the candidate page right now. '
+          + '<a href="offer-edit.html?token=' + esc(token) + '">Fill them in</a> and the grade updates immediately.')
+    + '</div></div>'
+
+    + '<div class="panel">'
+    + '<h2>What you sent</h2>'
+    + '<div class="rows">'
+    + TERMS.map(function(t){
+        return '<div class="row"><span>' + esc(t[0]) + '</span>'
+          + (t[1] ? '<span>' + esc(t[1]) + '</span>' : '<span class="unstated">Not stated</span>') + '</div>';
+      }).join('')
+    + '</div>'
+    + '<div class="btn-row">'
+    +   '<div class="copy-row"><input id="pubUrl" readonly value="' + esc(publicUrl) + '">'
+    +     '<button class="btn btn-primary" id="copyBtn">Copy</button></div>'
+    +   '<a class="btn btn-secondary" href="offer-edit.html?token=' + esc(token) + '">Edit this offer</a>'
+    + '</div></div>'
+
+    + '<div class="panel">'
+    + '<h2>Candidate activity</h2>'
+    + '<p class="sub">Whether the offer was opened, and which questions the candidate chose to send.</p>'
+    + '<div class="rows">'
+    +   '<div class="row"><span>First opened</span><span>' + esc(when(row.first_opened_at) || 'Not yet') + '</span></div>'
+    +   '<div class="row"><span>Last opened</span><span>' + esc(when(row.last_opened_at) || '\u2014') + '</span></div>'
+    +   '<div class="row"><span>Review completed</span><span>' + esc(when(row.reviewed_at) || 'Not yet') + '</span></div>'
+    +   '<div class="row"><span>Questions sent</span><span>' + esc(when(row.questions_sent_at) || 'None yet') + '</span></div>'
+    + '</div>'
+    + '<div class="privacy">You see that the offer was opened and the questions the candidate sent you. '
+    + 'You do not see their negotiation report, what they were advised to ask for, their fallback positions, '
+    + 'or whether they are considering other assignments.</div>'
+    + '</div>'
+
+    + '<div class="panel">'
+    + '<h2>Questions from the candidate</h2>'
+    + (qs_.length
+        ? '<p class="sub">Answering these in the offer itself removes them from the candidate page.</p>'
+          + qs_.map(function(q){
+              return '<div class="qitem"><h4>' + esc(q.label) + '</h4><p>' + esc(q.question) + '</p>'
+                + '<div class="when">' + esc(when(q.sent_at)) + '</div></div>';
+            }).join('')
+        : '<p class="empty">No questions yet. If the candidate sends any, they appear here.'
+          + (missing > 0 ? ' Most questions come from the ' + missing + ' terms you have not specified.' : '')
+          + '</p>')
+    + '</div>';
+
+  const btn = document.getElementById('copyBtn');
+  if (btn) btn.addEventListener('click', async function(){
+    await navigator.clipboard.writeText(document.getElementById('pubUrl').value);
+    btn.textContent = 'Copied';
+    setTimeout(function(){ btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+(async () => {
+  const host = document.getElementById('ws');
+  if (!token || !sb) {
+    host.innerHTML = '<div class="panel"><h2>Workspace unavailable</h2>'
+      + '<p class="empty">This link is missing its token, or Supabase is not configured.</p></div>';
+    return;
+  }
+  try {
+    const rubricRes = await fetch('rubric-v1.json');
+    RUBRIC = await rubricRes.json();
+
+    const { data, error } = await sb.rpc('get_offer_workspace', { p_edit_token: token });
+    if (error || !data || !data.length) throw new Error('not found');
+    render(data[0]);
+  } catch (e) {
+    host.innerHTML = '<div class="panel"><h2>Workspace unavailable</h2>'
+      + '<p class="empty">This link may be incorrect, or the offer may have been removed.</p></div>';
+  }
+})();
+</script>
+</body>
+</html>
