@@ -241,8 +241,8 @@ function render(raw, meta) {
         return { label: c.label, question: c.questionOffer || c.question };
       });
       try {
-        const res = await getSupabase().rpc('send_offer_questions',
-          { p_public_token: qs('id'), p_questions: payload });
+        const res = await Promise.resolve(getSupabase().rpc('send_offer_questions',
+          { p_public_token: qs('id'), p_questions: payload }));
         if (res.error) throw res.error;
         sendBtn.textContent = 'Sent to ' + agency;
         document.getElementById('sendQsNote').textContent =
@@ -308,8 +308,18 @@ function failScreen(title, detail) {
 
     // Engagement, scoped to this offer. The recruiter sees that it was opened,
     // nothing about what the candidate concluded.
-    sb.rpc('log_offer_event', { p_public_token: id, p_event: 'opened' }).catch(function(){});
-    sb.rpc('log_offer_event', { p_public_token: id, p_event: 'reviewed' }).catch(function(){});
+    //
+    // supabase-js v2 returns a thenable builder, not a Promise, so it has no
+    // .catch(). Wrapping in Promise.resolve() gives us one, and this must never
+    // be able to throw: the page has already rendered by this point.
+    ['opened', 'reviewed'].forEach(function (ev) {
+      try {
+        Promise.resolve(sb.rpc('log_offer_event', { p_public_token: id, p_event: ev }))
+          .catch(function (e) { console.warn('offer.html: event log failed', ev, e && e.message); });
+      } catch (e) {
+        console.warn('offer.html: event log threw', ev, e && e.message);
+      }
+    });
   } catch (e) {
     failScreen('Something went wrong', 'This offer could not be displayed. Please refresh, or ask your recruiter to resend the link.');
     console.error('offer.html: render failed.', e && e.message, e && e.stack);
