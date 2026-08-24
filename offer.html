@@ -262,21 +262,47 @@ function render(raw, meta) {
   document.getElementById('compareLink').href = cmp.href;
 }
 
-(async () => {
+function failScreen(title, detail) {
   const app = document.getElementById('app');
+  app.className = '';
+  app.innerHTML = '<div class="glance-card"><div class="glance-title">' + title + '</div>'
+    + '<div class="glance-sub">' + detail + '</div></div>';
+}
+
+(async () => {
+  const id = qs('id');
+  if (!id) { failScreen("This link isn't working", 'The link is missing its offer id. Ask your recruiter for a new one.'); return; }
+
+  const sb = getSupabase();
+  if (!sb) { failScreen('Temporarily unavailable', 'Please try again in a moment.'); console.error('offer.html: Supabase client unavailable. Check config.js.'); return; }
+
+  // Loaded separately so a missing asset does not look like a dead link.
   try {
-    const id = qs('id');
-    if (!id) throw new Error('missing id');
-    const sb = getSupabase();
-    if (!sb) throw new Error('not configured');
-
     const rubricRes = await fetch('rubric-v1.json');
-    if (!rubricRes.ok) throw new Error('rubric unavailable');
+    if (!rubricRes.ok) throw new Error('HTTP ' + rubricRes.status);
     RUBRIC = await rubricRes.json();
+  } catch (e) {
+    failScreen('Temporarily unavailable', 'This offer could not be graded just now. Please refresh, or ask your recruiter to resend the link.');
+    console.error('offer.html: could not load rubric-v1.json.', e && e.message);
+    return;
+  }
+  if (typeof scoreContract !== 'function' || typeof mapOfferToExtracted !== 'function') {
+    failScreen('Temporarily unavailable', 'This offer could not be graded just now. Please refresh.');
+    console.error('offer.html: score-contract.js or map-offer-to-rubric.js did not load.');
+    return;
+  }
 
-    // Token-scoped RPC — returns a row ONLY for this exact public_token.
+  try {
     const { data, error } = await sb.rpc('get_offer_by_public_token', { p_public_token: id });
-    if (error || !data || !data.length) throw new Error('not found');
+    if (error) {
+      failScreen('Temporarily unavailable', 'Please try again in a moment.');
+      console.error('offer.html: get_offer_by_public_token failed.', error.message);
+      return;
+    }
+    if (!data || !data.length) {
+      failScreen("This link isn't working", 'It may be wrong, or the offer may have been taken down. Ask your recruiter for a new one.');
+      return;
+    }
 
     render(data[0].offer_data, data[0]);
 
@@ -285,10 +311,8 @@ function render(raw, meta) {
     sb.rpc('log_offer_event', { p_public_token: id, p_event: 'opened' }).catch(function(){});
     sb.rpc('log_offer_event', { p_public_token: id, p_event: 'reviewed' }).catch(function(){});
   } catch (e) {
-    app.className = '';
-    app.innerHTML = '<div class="glance-card"><div class="glance-title">This link isn\'t working</div>'
-      + '<div class="glance-sub">It may be wrong, or the offer may have been taken down. '
-      + 'Ask your recruiter for a new one.</div></div>';
+    failScreen('Something went wrong', 'This offer could not be displayed. Please refresh, or ask your recruiter to resend the link.');
+    console.error('offer.html: render failed.', e && e.message, e && e.stack);
   }
 })();
 </script>
