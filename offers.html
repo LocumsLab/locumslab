@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your offers — LocumsLab</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="shared.js"></script>
+<style>
+  .auth-card{background:#fff;border:1px solid #e5e0d7;border-radius:16px;padding:26px;max-width:440px;margin:0 auto}
+  .auth-card h2{font-size:1.125rem;margin:0 0 5px}
+  .auth-card .sub{font-size:.875rem;color:#5b6573;margin:0 0 18px;line-height:1.6}
+  .auth-card label{display:block;font-size:.8125rem;font-weight:700;margin:0 0 5px}
+  .auth-card input{width:100%;border:1px solid #e5e0d7;border-radius:10px;padding:12px;
+    font:inherit;font-size:.9375rem;background:#fffdf8;color:#10253f;margin-bottom:13px}
+  .auth-note{font-size:.75rem;color:#5b6573;line-height:1.6;margin-top:14px;
+    border-top:1px solid #e5e0d7;padding-top:13px}
+
+  .bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+  .who{font-size:.8125rem;color:#5b6573}
+  .who strong{color:#10253f}
+
+  .offer{background:#fff;border:1px solid #e5e0d7;border-radius:14px;padding:16px;margin-bottom:11px}
+  .otop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .oname{font-size:.9375rem;font-weight:800}
+  .ometa{font-size:.8125rem;color:#5b6573;margin-top:3px}
+  .ograde{font-size:1.5rem;font-weight:900;line-height:1;letter-spacing:-.03em;flex-shrink:0}
+  .g-good{color:#12835c}.g-mid{color:#b7791f}.g-bad{color:#c2410c}.g-grey{color:#5b6573}
+  .tagrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+  .tag{font-size:.6875rem;font-weight:700;padding:4px 9px;border-radius:999px;border:1px solid #e5e0d7;color:#5b6573}
+  .tag.q{border-color:rgba(183,121,31,.38);color:#b7791f;background:rgba(183,121,31,.07)}
+  .tag.open{border-color:rgba(31,111,235,.3);color:#1f6feb;background:rgba(31,111,235,.06)}
+  .tag.exp{border-color:rgba(194,65,12,.32);color:#c2410c;background:rgba(194,65,12,.06)}
+  .olinks{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+  .olinks a{font-size:.8125rem;font-weight:700;color:#12835c;text-decoration:none}
+  .olinks a:hover{text-decoration:underline}
+  .empty{font-size:.9375rem;color:#5b6573;line-height:1.7}
+  .loading{font-size:.9375rem;color:#5b6573}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="logo">LocumsLab</div>
+    <a class="toplink" href="offer-form.html">Create an offer →</a>
+  </header>
+
+  <div id="flash" class="flash"></div>
+  <div id="view" class="loading">Loading…</div>
+
+  <footer style="text-align:center;font-size:.6875rem;color:#8a92a0;margin-top:34px;line-height:1.6;">
+    © 2026 LocumsLab. All rights reserved. LocumsLab™ and the LocumsLab offer grade are
+    trademarks of LocumsLab.
+  </footer>
+</div>
+
+<script>
+const sb = getSupabase();
+const view = document.getElementById('view');
+const flash = document.getElementById('flash');
+
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function gClass(l){if(!l)return 'g-grey';const c=String(l).charAt(0);
+  return (c==='A'||c==='B')?'g-good':c==='C'?'g-mid':'g-bad';}
+function msg(t,type){flash.textContent=t;flash.className='flash '+type+' show';}
+function when(iso){ return iso ? new Date(iso).toLocaleDateString(undefined,
+  {month:'short',day:'numeric',year:'numeric'}) : null; }
+
+// ---- signed out ----------------------------------------------------------
+function renderSignIn() {
+  view.className = '';
+  view.innerHTML =
+    '<div class="auth-card">'
+    + '<h2>Your offers, in one place</h2>'
+    + '<p class="sub">Sign in and every offer you send shows up here with its grade, whether the '
+    + 'candidate opened it, and anything they asked about. No password &mdash; we email you a link.</p>'
+    + '<label for="email">Work email</label>'
+    + '<input id="email" type="email" autocomplete="email" placeholder="you@agency.com">'
+    + '<button class="btn btn-primary" id="sendLink" style="width:100%;">Email me a sign-in link</button>'
+    + '<p class="auth-note">Offer links you have already sent keep working either way. '
+    + 'Signing in only collects them into one list.</p>'
+    + '</div>';
+
+  document.getElementById('sendLink').addEventListener('click', async function () {
+    const email = document.getElementById('email').value.trim();
+    if (!email) { msg('Enter your email first.', 'error'); return; }
+    const btn = document.getElementById('sendLink');
+    btn.disabled = true; btn.textContent = 'Sending…';
+    const { error } = await sb.auth.signInWithOtp({
+      email: email,
+      options: { emailRedirectTo: location.origin + location.pathname }
+    });
+    btn.disabled = false; btn.textContent = 'Email me a sign-in link';
+    if (error) { msg('Could not send that link. ' + error.message, 'error'); return; }
+    msg('Check your email for a sign-in link.', 'success');
+  });
+}
+
+// ---- signed in, no agency yet -------------------------------------------
+function renderNewAgency(email) {
+  view.className = '';
+  view.innerHTML =
+    '<div class="auth-card">'
+    + '<h2>One more thing</h2>'
+    + '<p class="sub">Signed in as ' + esc(email) + '. What agency are you with? This is what candidates '
+    + 'see on the offer page.</p>'
+    + '<label for="agency">Agency name</label>'
+    + '<input id="agency" type="text" placeholder="Northstar Locums">'
+    + '<button class="btn btn-primary" id="createAgency" style="width:100%;">Continue</button>'
+    + '</div>';
+
+  document.getElementById('createAgency').addEventListener('click', async function () {
+    const name = document.getElementById('agency').value.trim();
+    if (!name) { msg('Enter your agency name.', 'error'); return; }
+    const { error } = await sb.rpc('create_agency', { p_name: name });
+    if (error) { msg('Could not save that. ' + error.message, 'error'); return; }
+    start();
+  });
+}
+
+// ---- signed in, with agency ---------------------------------------------
+async function renderOffers(agency, email) {
+  view.className = 'loading';
+  view.textContent = 'Loading your offers…';
+
+  const { data, error } = await sb.rpc('my_agency_offers');
+  if (error) { view.className=''; view.innerHTML = '<p class="empty">Could not load your offers.</p>'; return; }
+
+  const rows = data || [];
+
+  // Grade every offer through the same server-side scorer the candidate page
+  // uses, so a row and its offer page can never disagree.
+  const graded = await Promise.all(rows.map(async function (r) {
+    try {
+      const res = await fetch('/.netlify/functions/score-offer', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ offer: r.offer_data })
+      });
+      const p = await res.json();
+      return p.success ? p.score : null;
+    } catch (e) { return null; }
+  }));
+
+  let html =
+    '<div class="bar">'
+    + '<div><h1 style="font-size:1.375rem;letter-spacing:-.02em;margin:0;">' + esc(agency.agency_name) + '</h1>'
+    + '<div class="who">' + rows.length + (rows.length === 1 ? ' offer' : ' offers')
+    + ' &middot; signed in as <strong>' + esc(email) + '</strong></div></div>'
+    + '<button class="btn btn-secondary" id="signOut">Sign out</button>'
+    + '</div>';
+
+  if (!rows.length) {
+    html += '<p class="empty">No offers yet. Create one and it will appear here with its grade '
+      + 'and whatever the candidate asks about.<br><br>'
+      + 'Offers you created before signing in are not listed here, but their links still work. '
+      + 'Open the workspace link for one and it will be added.</p>';
+  }
+
+  rows.forEach(function (r, i) {
+    const o = r.offer_data || {};
+    const score = graded[i];
+    const prov = score && score.overall.provisional;
+    const letter = (score && !prov) ? score.overall.letter : null;
+    const rateBand = score && score.rate && score.rate.band;
+    const name = [o.agency_name, o.facility_name].filter(Boolean).join(' \u00b7 ')
+      || (o.state ? ('Assignment in ' + o.state) : 'CRNA locums offer');
+    const rate = o.rate ? (money(o.rate) + (o.rate_type === 'weekly' ? '/wk' : '/hr')) : null;
+
+    html += '<div class="offer">'
+      + '<div class="otop"><div><div class="oname">' + esc(name) + '</div>'
+      + '<div class="ometa">' + esc(when(r.created_at))
+      + (rate ? ' &middot; ' + esc(rate) : '')
+      + (rateBand ? ' &middot; ' + esc(rateBand.label) : '') + '</div></div>'
+      + (letter
+          ? '<div class="ograde ' + gClass(letter) + '">' + esc(letter) + '</div>'
+          : '<div class="ograde g-grey" title="Not enough terms stated to grade">&mdash;</div>')
+      + '</div>'
+      + '<div class="tagrow">'
+      + (score ? '<span class="tag">' + esc(score.level.label) + '</span>' : '')
+      + (r.opened_count > 0
+          ? '<span class="tag open">Opened ' + r.opened_count + '&times;</span>'
+          : '<span class="tag">Not opened</span>')
+      + (r.questions_count > 0
+          ? '<span class="tag q">' + r.questions_count + ' question'
+            + (r.questions_count === 1 ? '' : 's') + '</span>'
+          : '')
+      + (r.is_expired ? '<span class="tag exp">Expired</span>' : '')
+      + '</div>'
+      + '<div class="olinks">'
+      + '<a href="offer-workspace.html?token=' + esc(r.edit_token) + '">Open workspace</a>'
+      + '<a href="offer-edit.html?token=' + esc(r.edit_token) + '">Edit</a>'
+      + '<a href="offer.html?id=' + esc(r.public_token) + '" target="_blank">Candidate view</a>'
+      + '</div></div>';
+  });
+
+  view.className = '';
+  view.innerHTML = html;
+
+  const so = document.getElementById('signOut');
+  if (so) so.addEventListener('click', async function () {
+    await sb.auth.signOut();
+    location.reload();
+  });
+}
+
+// ---- boot ----------------------------------------------------------------
+async function start() {
+  if (!sb) { view.className=''; view.innerHTML = '<p class="empty">Sign-in is unavailable right now.</p>'; return; }
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { renderSignIn(); return; }
+
+  const email = session.user.email;
+
+  // An offer created before signing in can be adopted by opening its workspace
+  // link once. That link puts the token in sessionStorage; claim it here.
+  const pending = sessionStorage.getItem('lastOfferEditUrl') || '';
+  const pendingToken = (pending.split('token=')[1] || '').split('&')[0];
+
+  const { data: mine } = await sb.rpc('my_agency');
+  if (!mine || !mine.length) { renderNewAgency(email); return; }
+
+  if (pendingToken) {
+    try { await sb.rpc('claim_offer', { p_edit_token: pendingToken }); } catch (e) {}
+    sessionStorage.removeItem('lastOfferEditUrl');
+  }
+
+  renderOffers(mine[0], email);
+}
+
+sb && sb.auth.onAuthStateChange(function (event) {
+  if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') start();
+});
+start();
+</script>
+</body>
+</html>
