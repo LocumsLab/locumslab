@@ -1,6 +1,6 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const { createClient } = require('@supabase/supabase-js');
-const { scoreContract } = require('./lib/score-contract');
+const { scoreContract, gradeRate } = require('./lib/score-contract');
 const RUBRIC = require('./lib/rubric-v1.json');
 
 // Additive. This does NOT replace analyze-contract-background.js. It writes to
@@ -271,6 +271,9 @@ exports.handler = async (event) => {
 
     const score = scoreContract(extracted, RUBRIC);
     score.rate = normaliseRate(extracted);
+    // Rate gets its own A-F band, shown beside the offer grade but never folded
+    // into it. Without this the analyzer renders a rate with no letter.
+    score.rate.band = gradeRate(score.rate.hourly, RUBRIC);
 
     await finish(jobId, {
       extracted: extracted,
