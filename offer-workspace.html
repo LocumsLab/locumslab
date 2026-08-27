@@ -63,7 +63,7 @@
 
   <header class="topbar">
     <div class="logo">LocumsLab</div>
-    <a class="toplink" href="offer-form.html">Create another →</a>
+    <a class="toplink" href="offers.html">All offers →</a>
   </header>
 
   <div id="flash" class="flash"></div>
@@ -225,6 +225,14 @@ function render(row, score){
   try {
     const { data, error } = await sb.rpc('get_offer_workspace', { p_edit_token: token });
     if (error || !data || !data.length) throw new Error('not found');
+
+    // If a recruiter is signed in, attach this offer to their agency so it
+    // appears on offers.html. Silent no-op when signed out, which keeps the
+    // token-only flow working exactly as before.
+    try {
+      const { data: sess } = await sb.auth.getSession();
+      if (sess && sess.session) await sb.rpc('claim_offer', { p_edit_token: token });
+    } catch (e) { /* claiming is optional */ }
 
     // Same grade the candidate sees, computed the same way, server-side.
     const scoreRes = await fetch('/.netlify/functions/score-offer', {
