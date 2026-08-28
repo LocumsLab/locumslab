@@ -41,8 +41,18 @@ function isExplicitNone(v) {
   return typeof v === 'string' && v.trim().toLowerCase() === 'none';
 }
 
+// "Not applicable" is not "zero". A callback rate on an assignment with no
+// callback cannot cost the clinician anything, so it scores full marks rather
+// than being penalised or nagged about in clarifications.
+function isNotApplicable(v) {
+  return typeof v === 'string' && v.trim().toLowerCase() === 'not_applicable';
+}
+
 function scoreNumberField(spec, value) {
   const bands = spec.bands || [];
+  if (isNotApplicable(value)) {
+    return { points: spec.possible, band: 'Not applicable' };
+  }
   if (isExplicitNone(value)) {
     const last = bands[bands.length - 1] || { points: 0, label: 'Not provided' };
     return { points: 0, band: last.label };
