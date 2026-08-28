@@ -53,8 +53,8 @@
   </div>
 
   <div class="attribution">
-    The agency entered the offer. <strong>LocumsLab graded it</strong>, using the same rubric
-    on every offer it sees. Nobody paid for a better grade and the agency can't change it.
+    The agency entered the offer. <strong>LocumsLab graded it</strong> using the same rubric it
+    runs on every offer. The agency can't change the grade, and they can't pay to improve it.
   </div>
 
   <div id="app" class="loading-state">Loading offer summary…</div>
@@ -203,8 +203,9 @@ function render(raw, meta, score) {
 
     + (clar.length
         ? '<section><div class="clarify-box">'
-          + '<div class="clarify-title">' + clar.length + ' things they didn\'t fill in</div>'
-          + '<div class="clarify-sub">Not confirmed either way. One tap sends the lot.</div>'
+          + '<div class="clarify-title">Questions worth asking</div>'
+          + '<div class="clarify-sub">The agency didn\'t fill in these ' + clar.length + ' terms. '
+          + 'Here\'s what to ask your recruiter.</div>'
           + '<ul class="clarify-list">' + clarList + '</ul>'
           + '<button id="sendQs" class="cta-btn" style="margin-top:14px;border:none;cursor:pointer;">'
           + 'Send these to ' + esc(agency) + '</button>'
