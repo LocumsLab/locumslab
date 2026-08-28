@@ -179,6 +179,49 @@
           </select>
         </div>
 
+
+        <div class="field">
+          <label>Call pay</label>
+          <select name="call_pay">
+            <option value="unknown">Unknown</option>
+            <option value="none_required">No call required</option>
+            <option value="hourly">Paid hourly</option>
+            <option value="stipend">Stipend only</option>
+            <option value="unpaid">Unpaid</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Call frequency</label>
+          <select name="call_frequency">
+            <option value="unknown">Unknown</option>
+            <option value="none">No call</option>
+            <option value="occasional">Occasional</option>
+            <option value="defined_rotation">Defined rotation</option>
+            <option value="undefined">Not defined</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Callback rate</label>
+          <select name="callback_multiplier">
+            <option value="unknown">Unknown</option>
+            <option value="none">Straight time</option>
+            <option value="1.25">1.25&times;</option>
+            <option value="1.5">1.5&times;</option>
+            <option value="2">2&times;</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Site or duty changes mid-assignment</label>
+          <select name="unilateral_scope_change">
+            <option value="unknown">Unknown</option>
+            <option value="false">Requires candidate agreement</option>
+            <option value="true">Facility can change without consent</option>
+          </select>
+        </div>
+
         <div class="field">
           <label>Credentialing costs</label>
           <select name="credentialing_expense">
@@ -357,7 +400,8 @@ const SCORED = [
   'credentialing_expense','licensure_expense','schedule_guarantee',
   'shift_length_hours','site_count','indemnification','non_compete_present',
   'exclusivity_clause','auto_renewal','termination_notice_agency_days',
-  'termination_notice_crna_days'
+  'termination_notice_crna_days','call_pay','call_frequency',
+  'callback_multiplier','unilateral_scope_change'
 ];
 
 (function setWorkspaceLinks() {
