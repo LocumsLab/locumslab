@@ -45,7 +45,7 @@
 
   <header class="topbar">
     <div class="logo">LocumsLab</div>
-    <a class="toplink" href="offer-form.html">Create an offer →</a>
+    <a class="toplink" id="topCreate" href="offer-form.html" style="display:none;">Create an offer →</a>
   </header>
 
   <div id="flash" class="flash"></div>
@@ -83,7 +83,10 @@ function renderSignIn() {
     + '<button class="btn btn-primary" id="sendLink" style="width:100%;">Email me a sign-in link</button>'
     + '<p class="auth-note">Offer links you have already sent keep working either way. '
     + 'Signing in only collects them into one list.</p>'
-    + '</div>';
+    + '</div>'
+    + '<p style="text-align:center;font-size:.875rem;color:#5b6573;margin:18px auto 0;max-width:440px;'
+    + 'line-height:1.65;">Just sending one offer? You don\'t need an account. '
+    + '<a href="offer-form.html" style="color:#12835c;font-weight:700;">Create an offer</a>.</p>';
 
   document.getElementById('sendLink').addEventListener('click', async function () {
     const email = document.getElementById('email').value.trim();
@@ -94,9 +97,31 @@ function renderSignIn() {
       email: email,
       options: { emailRedirectTo: location.origin + location.pathname }
     });
-    btn.disabled = false; btn.textContent = 'Email me a sign-in link';
-    if (error) { msg('Could not send that link. ' + error.message, 'error'); return; }
+    if (error) {
+      btn.disabled = false; btn.textContent = 'Email me a sign-in link';
+      msg('Could not send that link. ' + error.message, 'error');
+      return;
+    }
+
     msg('Check your email for a sign-in link.', 'success');
+    // Sent. Leave the button spent rather than inviting a second request, which
+    // just burns the first link and trips Supabase's rate limit.
+    btn.textContent = 'Link sent to ' + email;
+    btn.style.background = '#eaf5f0';
+    btn.style.color = '#12835c';
+    document.getElementById('email').disabled = true;
+
+    const again = document.createElement('p');
+    again.style.cssText = 'font-size:.8125rem;color:#5b6573;margin-top:12px;line-height:1.6;text-align:center;';
+    again.innerHTML = 'Didn\'t arrive? Check spam, or '
+      + '<a href="#" id="resend" style="color:#12835c;font-weight:700;">send it again</a>.';
+    btn.parentNode.insertBefore(again, btn.nextSibling);
+
+    document.getElementById('resend').addEventListener('click', function (ev) {
+      ev.preventDefault();
+      renderSignIn();
+      document.getElementById('email').value = email;
+    });
   });
 }
 
@@ -199,6 +224,9 @@ async function renderOffers(agency, email) {
 
   view.className = '';
   view.innerHTML = html;
+
+  const topCreate = document.getElementById('topCreate');
+  if (topCreate) topCreate.style.display = '';
 
   const so = document.getElementById('signOut');
   if (so) so.addEventListener('click', async function () {
