@@ -130,6 +130,16 @@ function mapOfferToExtracted(raw) {
     : null
   );
 
+  // If the offer says no callback is required, the callback rate cannot hurt
+  // the clinician. That is not the same as callback paid at straight time.
+  if (o.callback_multiplier === 'none_required'
+      || o.call_pay === 'none_required'
+      || o.call_required === 'no') {
+    if (isUnknown(o.callback_multiplier) || o.callback_multiplier === 'none_required') {
+      o.callback_multiplier = 'not_applicable';
+    }
+  }
+
   // ---- optional extended fields ---------------------------------------
   // Present only if the offer form is extended to collect them. Absent stays
   // null, which routes to clarifications rather than scoring as unfavorable.
