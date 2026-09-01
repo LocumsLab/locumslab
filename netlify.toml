@@ -20,6 +20,28 @@
 # Setting this does not by itself raise the limit. Netlify gates extended
 # synchronous timeouts server-side per site, so it also needs a support request
 # at answers.netlify.com naming the site and function.
+#
+# Netlify's publish dir is the repo root, so every file in the repo is also
+# served as a static asset. Functions are bundled separately at /.netlify/,
+# so blocking /netlify/ removes the source without touching the runtime.
+# force = true is required: static files win over redirects otherwise.
+[[redirects]]
+  from = "/netlify/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/migrations/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/scripts/*"
+  to = "/404.html"
+  status = 404
+  force = true
 [functions."analyze-contract"]
   timeout = 26
 
