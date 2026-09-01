@@ -77,17 +77,6 @@
 const token = qs('token');
 const sb = getSupabase();
 
-const SCORED_FORM_FIELDS = [
-  'rate','guaranteed_hours','contract_weeks','travel_support','call_required',
-  'cancellation_notice','malpractice','tail','payment_terms_days',
-  'overtime_threshold_hours','overtime_multiplier','cancellation_pay_hours',
-  'credentialing_expense','licensure_expense','schedule_guarantee',
-  'shift_length_hours','site_count','indemnification','non_compete_present',
-  'exclusivity_clause','auto_renewal','termination_notice_agency_days',
-  'termination_notice_crna_days','call_pay','call_frequency',
-  'callback_multiplier','unilateral_scope_change'
-];
-
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
   .replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function gClass(l){if(!l)return 'g-grey';const c=String(l).charAt(0);
@@ -95,45 +84,38 @@ function gClass(l){if(!l)return 'g-grey';const c=String(l).charAt(0);
 function when(iso){ if(!iso) return null;
   return new Date(iso).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }
 
+// Profession lives in its own column rather than inside offer_data, so it
+// cannot be changed by editing the form payload. Fold it in for the scorer.
+function withProfession(row) {
+  const o = Object.assign({}, row.offer_data || {});
+  o.profession = row.profession || o.profession || 'crna_locums';
+  return o;
+}
+
 function render(row, score){
-  const o = row.offer_data || {};
-  const norm = normalizeOffer(o);
-  const extracted = score.__extracted || {};
+  // Everything profession-specific — the terms table, the package math, the
+  // completeness count — is built server-side in lib/offer-display.js.
+  //
+  // This page used to read extracted.<key>.value directly for ten rows and keep
+  // its own 27-item copy of the scored-field list. Both broke on a profession
+  // with a different field set, and the read threw AFTER the grade was
+  // computed, so the failure card painted over a working page.
+  const disp = score.display || { terms: [], package:{rows:[],note:''}, completeness:{} };
   const rateBand = score.rate && score.rate.band;
   const prov = score.overall.provisional;
   const qs_ = Array.isArray(row.questions) ? row.questions : [];
 
-  let filled = 0;
-  SCORED_FORM_FIELDS.forEach(function(k){
-    const v = String(o[k] == null ? '' : o[k]).trim().toLowerCase();
-    if (v && v !== 'unknown') filled++;
-  });
-  const total = SCORED_FORM_FIELDS.length;
-  const missing = total - filled;
+  const filled  = disp.completeness.scored  || 0;
+  const total   = disp.completeness.total   || 0;
+  const missing = disp.completeness.missing || 0;
 
-  const publicUrl = location.origin + location.pathname.replace(/[^/]+$/, '') + 'offer.html?id=' + row.public_token;
-
-  const TERMS = [
-    ['Rate', norm.rate ? money(norm.rate) + (o.rate_type==='weekly'?'/wk':'/hr') : null],
-    ['Guaranteed hours', norm.guaranteed_hours ? norm.guaranteed_hours + ' / week' : null],
-    ['Contract length', norm.contract_weeks ? norm.contract_weeks + ' weeks' : null],
-    ['Cancellation notice', extracted.cancellation_notice_days.value ? extracted.cancellation_notice_days.value + ' days' : null],
-    ['Malpractice', extracted.malpractice_type.value === 'occurrence' ? 'Occurrence'
-        : extracted.malpractice_type.value === 'claims_made' ? 'Claims-made' : null],
-    ['Tail coverage', extracted.tail_responsibility.value === 'agency' ? 'Agency pays'
-        : extracted.tail_responsibility.value === 'crna' ? 'Candidate pays'
-        : extracted.tail_responsibility.value === 'not_applicable' ? 'Not applicable' : null],
-    ['Schedule', extracted.schedule_guarantee.value === 'fixed' ? 'Fixed in contract'
-        : extracted.schedule_guarantee.value === 'posted_in_advance' ? 'Posted in advance'
-        : extracted.schedule_guarantee.value === 'facility_discretion' ? 'Set by facility' : null],
-    ['Payment terms', extracted.payment_terms_days.value ? 'Net ' + extracted.payment_terms_days.value : null],
-    ['Housing / travel', (o.travel_support && o.travel_support !== 'unknown') ? pretty(o.travel_support) : null]
-  ];
+  const publicUrl = location.origin + location.pathname.replace(/[^/]+$/, '')
+    + 'offer.html?id=' + row.public_token;
 
   document.getElementById('ws').innerHTML =
     '<div class="hero-dark">'
-    + '<div class="eyebrow">Offer workspace</div>'
-    + '<h1>' + esc([o.agency_name, o.facility_name].filter(Boolean).join(' \u00b7 ') || 'CRNA locums offer') + '</h1>'
+    + '<div class="eyebrow">' + esc(disp.professionNoun) + ' workspace</div>'
+    + '<h1>' + esc(disp.headline) + '</h1>'
     + '<p>Everything the candidate sees, plus what they have done with it.</p>'
     + '<div class="mini-stats">'
     +   '<div class="mini-stat"><strong>' + (row.opened_count || 0) + '</strong><span>Opened</span></div>'
@@ -143,12 +125,15 @@ function render(row, score){
 
     + '<div class="panel">'
     + '<h2>The grade your candidate sees</h2>'
-    + '<p class="sub">Every offer is graded against the same rubric. You cannot change it, and neither can we.</p>'
+    + '<p class="sub">Every offer is graded against the same rubric for its profession. '
+    + 'You cannot change it, and neither can we.</p>'
     + '<div class="gwrap">'
     +   '<div class="gtile ' + gClass(rateBand && rateBand.letter) + '">'
     +     esc(rateBand ? rateBand.letter : '\u2014') + '</div>'
-    +   '<div class="gmeta"><strong>Rate \u00b7 ' + esc(rateBand ? rateBand.label : 'not stated') + '</strong>'
-    +     '<span>' + money(norm.effective_hourly) + '/hr effective</span></div>'
+    +   '<div class="gmeta"><strong>' + esc(score.rate.label || 'Rate') + ' \u00b7 '
+    +     esc(rateBand ? rateBand.label : 'not stated') + '</strong>'
+    +     '<span>' + (score.rate.hourly ? money(score.rate.hourly) + '/hr' : 'Not stated')
+    +     (score.rate.blended ? ' blended. ' + esc(score.rate.basis || '') : '') + '</span></div>'
     + '</div>'
     + '<div class="gwrap" style="margin-top:14px;">'
     +   '<div class="gtile ' + (prov ? 'g-grey' : gClass(score.overall.letter)) + '">'
@@ -158,8 +143,9 @@ function render(row, score){
           ? 'Not enough terms stated for a grade. The candidate sees a dash and a list of questions.'
           : esc(score.level.headline)) + '</span></div>'
     + '</div>'
-    + '<div class="meter-bar"><div class="meter-fill" style="width:' + Math.round((filled/total)*100) + '%"></div></div>'
-    + '<div class="meter-note"><strong>' + filled + ' of ' + total + ' terms specified.</strong> '
+    + '<div class="meter-bar"><div class="meter-fill" style="width:'
+    +   (disp.completeness.pct || 0) + '%"></div></div>'
+    + '<div class="meter-note"><strong>' + filled + ' of ' + total + ' graded terms stated.</strong> '
     + (missing === 0
         ? 'Nothing is left open on the candidate page.'
         : missing + ' unanswered ' + (missing === 1 ? 'question is' : 'questions are')
@@ -170,9 +156,12 @@ function render(row, score){
     + '<div class="panel">'
     + '<h2>What you sent</h2>'
     + '<div class="rows">'
-    + TERMS.map(function(t){
-        return '<div class="row"><span>' + esc(t[0]) + '</span>'
-          + (t[1] ? '<span>' + esc(t[1]) + '</span>' : '<span class="unstated">Not stated</span>') + '</div>';
+    +   '<div class="row"><span>Package</span><span>'
+    +     esc((disp.package.rows[0] && disp.package.rows[0].value) || '\u2014') + ' / week</span></div>'
+    + disp.terms.map(function(t){
+        return '<div class="row"><span>' + esc(t.label) + '</span>'
+          + (t.stated ? '<span>' + esc(t.value) + '</span>'
+                      : '<span class="unstated">Not stated</span>') + '</div>';
       }).join('')
     + '</div>'
     + '<div class="btn-row">'
@@ -239,17 +228,16 @@ function render(row, score){
     const scoreRes = await fetch('/.netlify/functions/score-offer', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ offer: data[0].offer_data })
+      body: JSON.stringify({ offer: withProfession(data[0]) })
     });
     const payload = await scoreRes.json();
     if (!scoreRes.ok || !payload.success) throw new Error(payload.error || ('HTTP ' + scoreRes.status));
-    const score = payload.score;
-    score.__extracted = payload.extracted;
 
-    render(data[0], score);
+    render(data[0], payload.score);
   } catch (e) {
     host.innerHTML = '<div class="panel"><h2>Workspace unavailable</h2>'
       + '<p class="empty">This link may be incorrect, or the offer may have been removed.</p></div>';
+    console.error('offer-workspace: ' + (e && e.message));
   }
 })();
 </script>
