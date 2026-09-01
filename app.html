@@ -4497,14 +4497,27 @@ async function analyzeContractWithClaude(payload, filename) {
  while (Date.now() - startedAt < REVIEW_TIMEOUT_MS) {
  await new Promise(function (r) { setTimeout(r, REVIEW_POLL_MS); });
 
+ // maybeSingle, not single: single() returns HTTP 406 when zero rows match,
+ // and the handler below treated every error as a transient blip. A row the
+ // poll could not see was therefore indistinguishable from a row still being
+ // worked on, for the full six minutes, with nothing in the console.
+ //
+ // The expires_at filter is gone. It was never a security control — the RLS
+ // policy already scopes this row to auth.uid() = user_id — and it gave the
+ // poll a second way to match nothing.
  const { data: row, error: pollError } = await sb
 .from('contract_reviews')
 .select('status, analysis, error')
 .eq('id', job.id)
-.gt('expires_at', new Date().toISOString())
-.single();
+.maybeSingle();
 
- if (pollError) continue; // transient network blip, keep waiting
+ // Log rather than swallow. A real failure now names itself on the first poll,
+ // three seconds in, instead of surfacing as a timeout six minutes later.
+ if (pollError) {
+ console.error('Review poll failed:', pollError.code, pollError.message);
+ continue;
+ }
+ if (!row) continue; // not visible yet, keep waiting
 
  if (row && row.status === 'complete') {
  if (!row.analysis) throw new Error('The review finished but returned no result.');
