@@ -3,7 +3,11 @@
  * This file, including the rubric weights, field definitions and explanatory copy,
  * is proprietary. Not licensed for reuse or redistribution.
  */
-/* LocumsLab — offer form to rubric adapter.
+/* LocumsLab — CRNA locums offer form to rubric adapter.
+ *
+ * One of a pair. The travel RN equivalent is map-offer-to-rubric-rn.js.
+ * rubrics.js picks between them by profession; nothing else should require
+ * either one directly.
  *
  * One rubric, two inputs. The contract analyzer produces `extracted` from a
  * signed document; this produces the same shape from what a recruiter typed
@@ -132,11 +136,14 @@ function mapOfferToExtracted(raw) {
 
   // If the offer says no callback is required, the callback rate cannot hurt
   // the clinician. That is not the same as callback paid at straight time.
+  //
+  // Written to a local rather than back onto `o`, which is the caller's object.
+  let callbackMultiplier = o.callback_multiplier;
   if (o.callback_multiplier === 'none_required'
       || o.call_pay === 'none_required'
       || o.call_required === 'no') {
     if (isUnknown(o.callback_multiplier) || o.callback_multiplier === 'none_required') {
-      o.callback_multiplier = 'not_applicable';
+      callbackMultiplier = 'not_applicable';
     }
   }
 
@@ -153,7 +160,7 @@ function mapOfferToExtracted(raw) {
     'credentialing_expense', 'licensure_expense'
   ];
   passthrough.forEach(function (k) {
-    const v = o[k];
+    const v = k === 'callback_multiplier' ? callbackMultiplier : o[k];
     e[k] = f(isUnknown(v) ? null : v);
   });
 
