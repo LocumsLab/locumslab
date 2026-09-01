@@ -161,9 +161,11 @@ async function renderOffers(agency, email) {
   // uses, so a row and its offer page can never disagree.
   const graded = await Promise.all(rows.map(async function (r) {
     try {
+      const offer = Object.assign({}, r.offer_data || {});
+      offer.profession = r.profession || offer.profession || 'crna_locums';
       const res = await fetch('/.netlify/functions/score-offer', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ offer: r.offer_data })
+        body: JSON.stringify({ offer: offer })
       });
       const p = await res.json();
       return p.success ? p.score : null;
@@ -191,9 +193,15 @@ async function renderOffers(agency, email) {
     const prov = score && score.overall.provisional;
     const letter = (score && !prov) ? score.overall.letter : null;
     const rateBand = score && score.rate && score.rate.band;
-    const name = [o.agency_name, o.facility_name].filter(Boolean).join(' \u00b7 ')
-      || (o.state ? ('Assignment in ' + o.state) : 'CRNA locums offer');
-    const rate = o.rate ? (money(o.rate) + (o.rate_type === 'weekly' ? '/wk' : '/hr')) : null;
+    const disp = score && score.display;
+    const name = (disp && disp.headline)
+      || [o.agency_name, o.facility_name].filter(Boolean).join(' \u00b7 ')
+      || (o.state ? ('Assignment in ' + o.state) : 'Offer');
+    // A blended travel figure and an hourly locums figure are different scales,
+    // so the row says which one it is showing.
+    const rate = (score && score.rate && score.rate.hourly)
+      ? money(score.rate.hourly) + '/hr' + (score.rate.blended ? ' blended' : '')
+      : null;
 
     html += '<div class="offer">'
       + '<div class="otop"><div><div class="oname">' + esc(name) + '</div>'
@@ -205,6 +213,8 @@ async function renderOffers(agency, email) {
           : '<div class="ograde g-grey" title="Not enough terms stated to grade">&mdash;</div>')
       + '</div>'
       + '<div class="tagrow">'
+      + (score && score.profession === 'travel_rn'
+          ? '<span class="tag">Travel RN</span>' : '')
       + (score ? '<span class="tag">' + esc(score.level.label) + '</span>' : '')
       + (r.opened_count > 0
           ? '<span class="tag open">Opened ' + r.opened_count + '&times;</span>'
