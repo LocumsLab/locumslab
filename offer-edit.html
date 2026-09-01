@@ -23,6 +23,14 @@
   .group-head h3 { font-size:.9375rem; margin:0 0 2px; }
   .group-head p { font-size:.8125rem; color:#5b6573; margin:0; }
   .optional { font-weight:400; color:#5b6573; font-size:.8125rem; }
+  /* Which profession this offer is graded against. Set at creation and shown
+     rather than edited: changing it mid-offer would re-grade a link the
+     candidate may already have opened, against a different rubric. */
+  .prof-note { display:flex; align-items:baseline; gap:9px; flex-wrap:wrap;
+    border:1px solid #e5e0d7; border-radius:12px; padding:13px 16px; margin-bottom:18px;
+    background:#fffdf8; font-size:.875rem; }
+  .prof-note b { font-size:.9375rem; }
+  .prof-note span { color:#5b6573; font-size:.8125rem; line-height:1.55; }
 </style>
 </head>
 <body>
@@ -41,6 +49,23 @@
 
   <main class="panel" style="max-width:760px;">
     <div id="flash" class="flash"></div>
+
+    <div class="prof-note">
+      <div id="profEditable" style="display:none;width:100%;">
+        <label for="professionSel" style="display:block;font-size:.8125rem;font-weight:700;margin:0 0 5px;">
+          Assignment type</label>
+        <select id="professionSel" style="width:100%;border:1px solid #e5e0d7;border-radius:10px;
+          padding:11px 12px;font:inherit;font-size:.9375rem;background:#fffdf8;color:#10253f;">
+          <option value="crna_locums">CRNA locum tenens</option>
+          <option value="travel_rn">Travel nursing</option>
+        </select>
+        <span id="profNote" style="display:block;margin-top:7px;">Picks the rubric this offer is graded against.</span>
+      </div>
+      <div id="profLocked" style="display:none;">
+        <b id="profName">—</b>
+        <span id="profLockNote"></span>
+      </div>
+    </div>
 
     <div class="meter">
       <div class="meter-top">
@@ -131,7 +156,7 @@
         </div>
 
         <!-- ── Terms candidates ask about most ─────────────────────────── -->
-        <div class="group-head">
+        <div class="group-head crna-only">
           <h3>Pay terms <span class="optional">Optional, but each one removes a question</span></h3>
           <p>These are the terms CRNAs raise most often when they aren't stated.</p>
         </div>
@@ -244,7 +269,7 @@
         </div>
 
         <!-- ── Schedule and contract ───────────────────────────────────── -->
-        <div class="group-head">
+        <div class="group-head crna-only">
           <h3>Schedule and contract terms <span class="optional">Optional</span></h3>
           <p>Unstated schedule and restriction terms are the ones that cause disputes mid-assignment.</p>
         </div>
@@ -337,6 +362,193 @@
         </div>
 
         <!-- ── How long the offer stands ───────────────────────────────── -->
+        <div class="group-head rn-only">
+          <h3>The pay package <span class="optional">Travel assignments</span></h3>
+          <p>Enter the taxable base and the stipends separately. The blended weekly number
+            is computed from them, and the split is graded on its own.</p>
+        </div>
+
+        <div class="field rn-only">
+          <label>Taxable hourly base</label>
+          <div class="input-prefix"><span>$</span>
+            <input name="taxable_base_hourly" type="number" min="0" step="0.01"></div>
+        </div>
+
+        <div class="field rn-only">
+          <label>Weekly housing stipend</label>
+          <div class="input-prefix"><span>$</span>
+            <input name="weekly_housing_stipend" type="number" min="0" step="1"></div>
+        </div>
+
+        <div class="field rn-only">
+          <label>Weekly meal stipend <span class="hint">M&amp;IE</span></label>
+          <div class="input-prefix"><span>$</span>
+            <input name="weekly_mie_stipend" type="number" min="0" step="1"></div>
+        </div>
+
+        <div class="field rn-only">
+          <label>Weekly gross <span class="hint">If you only quote a blended number</span></label>
+          <div class="input-prefix"><span>$</span>
+            <input name="blended_weekly_total" type="number" min="0" step="1"></div>
+        </div>
+
+        <div class="group-head rn-only">
+          <h3>Cancellation and stipend</h3>
+          <p>The most common question nurses send back. A cancelled shift costs hours and,
+            in most contracts, stipend as well.</p>
+        </div>
+
+        <div class="field full rn-only">
+          <label>If the facility cancels a shift, the stipend is</label>
+          <select name="cancelled_shift_stipend">
+            <option value="unknown">Not confirmed</option>
+            <option value="full">Paid in full</option>
+            <option value="prorated">Prorated for the missed time</option>
+            <option value="forfeited">Forfeited for the missed time</option>
+          </select>
+        </div>
+
+        <div class="field rn-only">
+          <label>Stipend is reduced</label>
+          <select name="stipend_proration">
+            <option value="unknown">Not confirmed</option>
+            <option value="not_prorated">Not reduced at all</option>
+            <option value="hourly">Hour by hour</option>
+            <option value="per_shift">Per shift missed</option>
+            <option value="weekly_threshold">Below a weekly hours threshold</option>
+          </select>
+        </div>
+
+        <div class="field rn-only">
+          <label>Guaranteed hours are paid at</label>
+          <select name="guaranteed_hours_pay">
+            <option value="unknown">Not confirmed</option>
+            <option value="blended">The full blended rate</option>
+            <option value="base_plus_stipend">Base plus stipend</option>
+            <option value="base_only">Taxable base only</option>
+            <option value="not_paid">Not paid</option>
+          </select>
+        </div>
+
+        <div class="field rn-only">
+          <label>Facility cancellations vs nurse call-offs</label>
+          <select name="call_off_distinction">
+            <option value="unknown">Not confirmed</option>
+            <option value="facility_exempt">Facility cancellations don't count against the nurse</option>
+            <option value="partial">Partly distinguished</option>
+            <option value="no_distinction">Treated the same</option>
+          </select>
+        </div>
+
+        <div class="field rn-only">
+          <label>Facility call-offs allowed <span class="hint">Over the assignment</span></label>
+          <input name="call_off_cap" type="number" min="0" step="1">
+        </div>
+
+        <div class="field rn-only">
+          <label>If the nurse calls off</label>
+          <select name="self_cancel_policy">
+            <option value="unknown">Not confirmed</option>
+            <option value="no_penalty">No penalty</option>
+            <option value="hours_only">Loses the hours only</option>
+            <option value="makeup_shift">Make-up shift required</option>
+            <option value="stipend_penalty">Stipend penalty</option>
+            <option value="treated_as_cause">Treated as cause</option>
+          </select>
+        </div>
+
+        <div class="group-head rn-only">
+          <h3>Float, schedule and clawback</h3>
+        </div>
+
+        <div class="field full rn-only">
+          <label>Float scope</label>
+          <select name="float_scope">
+            <option value="unknown">Not confirmed</option>
+            <option value="named_units">Named units only</option>
+            <option value="comparable_acuity">Comparable acuity or competency</option>
+            <option value="department_only">Within the department</option>
+            <option value="facility_wide">Anywhere in the facility</option>
+            <option value="any_facility">Any facility in the system</option>
+          </select>
+        </div>
+
+        <div class="field rn-only">
+          <label>Charge duty</label>
+          <select name="charge_duty">
+            <option value="unknown">Not confirmed</option>
+            <option value="excluded">Excluded</option>
+            <option value="paid_differential">Paid at a differential</option>
+            <option value="required_unpaid">Required, no differential</option>
+          </select>
+        </div>
+
+        <div class="field rn-only">
+          <label>Bonus and reimbursement clawback</label>
+          <select name="bonus_clawback">
+            <option value="unknown">Not confirmed</option>
+            <option value="none">Nothing repayable</option>
+            <option value="prorated">Prorated by weeks worked</option>
+            <option value="cause_only">Only if the nurse leaves for cause</option>
+            <option value="full_repayment">Full repayment</option>
+          </select>
+        </div>
+
+        <div class="field rn-only">
+          <label>Returning to the facility later</label>
+          <select name="facility_return">
+            <option value="unknown">Not confirmed</option>
+            <option value="none">No restriction</option>
+            <option value="conversion_fee_only">Conversion fee only</option>
+            <option value="restricted_under_12_months">Restricted, under 12 months</option>
+            <option value="restricted_12_months_or_more">Restricted, 12 months or more</option>
+          </select>
+        </div>
+
+        <div class="field rn-only">
+          <label>Handbook or confirmation sheet</label>
+          <select name="incorporated_documents">
+            <option value="unknown">Not confirmed</option>
+            <option value="none">Nothing incorporated</option>
+            <option value="named_and_provided">Named and provided to the nurse</option>
+            <option value="named_not_provided">Named but not provided</option>
+            <option value="open_ended">Policies as amended from time to time</option>
+          </select>
+        </div>
+
+        <div class="field rn-only">
+          <label>License and certification costs</label>
+          <select name="license_costs">
+            <option value="unknown">Not confirmed</option>
+            <option value="agency">Agency pays</option>
+            <option value="split">Split</option>
+            <option value="nurse">Nurse pays</option>
+            <option value="not_needed">Not applicable</option>
+          </select>
+        </div>
+
+        <div class="field rn-only">
+          <label>Notice the agency must give</label>
+          <select name="termination_notice_agency">
+            <option value="unknown">Not confirmed</option>
+            <option value="0 days">None</option>
+            <option value="7 days">7 days</option>
+            <option value="14 days">14 days</option>
+            <option value="28 days">28 days</option>
+          </select>
+        </div>
+
+        <div class="field rn-only">
+          <label>Notice the nurse must give</label>
+          <select name="termination_notice_nurse">
+            <option value="unknown">Not confirmed</option>
+            <option value="0 days">None</option>
+            <option value="7 days">7 days</option>
+            <option value="14 days">14 days</option>
+            <option value="28 days">28 days</option>
+          </select>
+        </div>
+
         <div class="group-head">
           <h3>How long this offer stands</h3>
           <p>After this window the candidate link shows as expired and asks them to contact you for a new offer.</p>
@@ -392,18 +604,91 @@ const flash = document.getElementById('flash');
 const expiryDays = document.getElementById('expiryDays');
 const expiryShown = document.getElementById('expiryShown');
 
-// Fields the rubric can score. Anything left unknown becomes a question on the
-// candidate's page, so the meter counts these and nothing else.
-const SCORED = [
-  'rate','guaranteed_hours','contract_weeks','travel_support','call_required',
-  'cancellation_notice','malpractice','tail','payment_terms_days',
-  'overtime_threshold_hours','overtime_multiplier','cancellation_pay_hours',
-  'credentialing_expense','licensure_expense','schedule_guarantee',
-  'shift_length_hours','site_count','indemnification','non_compete_present',
-  'exclusivity_clause','auto_renewal','termination_notice_agency_days',
-  'termination_notice_crna_days','call_pay','call_frequency',
-  'callback_multiplier','unilateral_scope_change'
-];
+// Which fields to show, by profession. The rubric decides what is graded; this
+// only decides what the form asks about, so the two lists can differ without
+// anything breaking — an unasked field stays null and becomes a question on the
+// candidate page, which is the correct default.
+const PROFESSIONS = {
+  crna_locums: { label: 'CRNA locum tenens',
+    note: 'Graded against the CRNA locums rubric. Rate is shown as an hourly figure.' },
+  travel_rn:   { label: 'Travel nursing assignment',
+    note: 'Graded against the travel nursing rubric. Rate is shown as a blended hourly figure, '
+        + 'and the taxable/stipend split is graded separately.' }
+};
+
+let profession = 'crna_locums';
+
+// Editable until a candidate has opened the offer, locked afterwards.
+//
+// Before anyone has seen it, a recruiter who picked the wrong type should be
+// able to fix it rather than create a new offer. After, switching would change
+// the letter on a link they already looked at, computed from a rubric with a
+// different field set — from their side the agency would appear to have moved
+// the grade, which is the one thing the candidate page promises cannot happen.
+function setProfessionLock(openedCount) {
+  const locked = Number(openedCount) > 0;
+  document.getElementById('profEditable').style.display = locked ? 'none' : '';
+  document.getElementById('profLocked').style.display = locked ? '' : 'none';
+  if (locked) {
+    document.getElementById('profLockNote').textContent =
+      'The candidate has already opened this offer, so the assignment type is fixed. '
+      + 'Changing it now would change the grade they saw. Create a new offer instead.';
+  }
+}
+
+function applyProfession(p) {
+  profession = PROFESSIONS[p] ? p : 'crna_locums';
+  const meta = PROFESSIONS[profession];
+  document.getElementById('profName').textContent = meta.label;
+  document.getElementById('profNote').textContent = meta.note;
+  const sel = document.getElementById('professionSel');
+  if (sel && sel.value !== profession) sel.value = profession;
+
+  const isRn = profession === 'travel_rn';
+  document.querySelectorAll('.rn-only').forEach(function (el) {
+    el.style.display = isRn ? '' : 'none';
+  });
+  document.querySelectorAll('.crna-only').forEach(function (el) {
+    el.style.display = isRn ? 'none' : '';
+  });
+
+  // A hidden field must not be submitted, or a CRNA offer would carry empty RN
+  // keys into offer_data and vice versa. Disabled inputs are skipped by FormData.
+  form.querySelectorAll('.rn-only input, .rn-only select, .rn-only textarea')
+    .forEach(function (el) { el.disabled = !isRn; });
+  form.querySelectorAll('.crna-only input, .crna-only select, .crna-only textarea')
+    .forEach(function (el) { el.disabled = isRn; });
+}
+
+// The completeness meter now reports what the rubric actually graded, not how
+// many form controls were touched. This page and offer-workspace.html each kept
+// their own 27-item list of scored field names; a second profession would have
+// made four hand-maintained lists that silently disagree with the rubric.
+let meterTimer = null;
+async function updateMeter() {
+  const offer_data = Object.fromEntries(new FormData(form).entries());
+  offer_data.profession = profession;
+  try {
+    const res = await fetch('/.netlify/functions/score-offer', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ offer: offer_data })
+    });
+    const p = await res.json();
+    if (!p.success) return;
+    const c = p.score.display.completeness;
+    document.getElementById('meterCount').textContent =
+      c.scored + ' of ' + c.total + ' graded terms stated';
+    document.getElementById('meterQs').textContent = c.missing === 0
+      ? 'No open questions'
+      : c.missing + (c.missing === 1 ? ' question on the candidate page' : ' questions on the candidate page');
+    document.getElementById('meterFill').style.width = c.pct + '%';
+  } catch (e) { /* the meter is advisory; never block editing on it */ }
+}
+
+function scheduleMeter() {
+  clearTimeout(meterTimer);
+  meterTimer = setTimeout(updateMeter, 400);
+}
 
 (function setWorkspaceLinks() {
   const href = token ? ('offer-workspace.html?token=' + encodeURIComponent(token)) : '#';
@@ -457,6 +742,15 @@ function showExpiry(iso) {
   }
   const row = data[0];
   const o = row.offer_data || {};
+
+  // Applied before populating so RN controls are enabled in time to receive
+  // their values, and CRNA controls are disabled before they receive stale ones.
+  // opened_count may be absent until get_offer_for_edit returns it; an unknown
+  // count is treated as not-yet-opened, which is correct for a fresh offer and
+  // fails toward editable rather than toward a stuck wrong type.
+  setProfessionLock(row.opened_count);
+  applyProfession(row.profession || o.profession || 'crna_locums');
+
   Object.entries(o).forEach(([k, v]) => { if (form.elements[k]) form.elements[k].value = v; });
 
   if (row.expiry_days) expiryDays.value = String(row.expiry_days);
@@ -464,12 +758,20 @@ function showExpiry(iso) {
   updateMeter();
 })();
 
-form.addEventListener('input', updateMeter);
-form.addEventListener('change', updateMeter);
+(function wireProfessionSelect() {
+  const sel = document.getElementById('professionSel');
+  if (sel) sel.addEventListener('change', function () { applyProfession(this.value); });
+})();
+
+form.addEventListener('input', scheduleMeter);
+form.addEventListener('change', scheduleMeter);
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const offer_data = Object.fromEntries(new FormData(form).entries());
+  // Stored in its own column as well as here, so it selects the rubric and
+  // cannot be changed by editing the jsonb payload directly.
+  offer_data.profession = profession;
 
   const { error } = await sb.rpc('update_offer_by_edit_token',
     { p_edit_token: token, p_offer_data: offer_data });
