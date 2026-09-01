@@ -81,8 +81,10 @@ function esc(s) {
 }
 
 function render(raw, meta, score) {
+  // normalizeOffer still supplies the plain passthrough fields (notes, agency,
+  // recruiter, hours, weeks). All money and all term rows now come from the
+  // server, which is the only place that knows this offer's profession.
   const o = normalizeOffer(raw);
-  const extracted = score.__extracted || {};
   const rateBand = score.rate && score.rate.band;
   const enteredBy = [o.recruiter_name, o.agency_name].filter(Boolean).join(' · ');
   const agency = o.agency_name || 'the agency';
@@ -92,30 +94,17 @@ function render(raw, meta, score) {
   const lvColor = { SIGNABLE:'#12835c', NEGOTIATE:'#b7791f', RETHINK:'#c2410c', CLARIFY_FIRST:'#5b6573' }[lv.code] || '#5b6573';
 
   // Terms the recruiter stated, and just as importantly the ones they did not.
-  const TERMS = [
-    ['Cancellation notice', extracted.cancellation_notice_days.value, function(v){ return v + ' days'; }],
-    ['Malpractice coverage', extracted.malpractice_type.value, function(v){ return v === 'occurrence' ? 'Occurrence' : 'Claims-made'; }],
-    ['Tail coverage', extracted.tail_responsibility.value, function(v){
-      return v === 'agency' ? 'Agency pays' : v === 'crna' ? 'You pay' : 'Not applicable'; }],
-    ['Call', extracted.call_pay_structure.value, function(v){
-      return v === 'none_required' ? 'Not required' : v === 'hourly' ? 'Paid hourly'
-           : v === 'stipend' ? 'Stipend' : 'Unpaid'; }],
-    ['Housing / travel', o.travel_support && o.travel_support !== 'unknown' ? pretty(o.travel_support) : null, function(v){ return v; }],
-    ['Payment terms', extracted.payment_terms_days.value, function(v){ return 'Net ' + v; }],
-    ['Overtime', extracted.overtime_multiplier.value, function(v){ return v === 'none' ? 'Straight time' : v + '\u00d7'; }],
-    ['Schedule', extracted.schedule_guarantee.value, function(v){
-      return v === 'fixed' ? 'Fixed in contract' : v === 'posted_in_advance' ? 'Posted in advance' : 'Set by facility'; }],
-    ['Indemnification', extracted.indemnification.value, function(v){ return v === 'mutual' ? 'Mutual' : 'You only'; }],
-    ['Restrictive covenant', extracted.non_compete_present.value, function(v){
-      return (v === true || v === 'true') ? 'Yes' : 'None'; }]
-  ];
+  //
+  // Built server-side in lib/offer-display.js. This page used to read
+  // extracted.<key>.value directly for each row, which threw a TypeError on any
+  // profession whose field set differs — and it threw AFTER the grade was
+  // computed, so the failure card painted over a working page.
+  const disp = score.display || { terms: [], package: { rows: [], note: '' }, completeness: {} };
 
-  const termRows = TERMS.map(function (t) {
-    const v = t[1];
-    const has = v !== null && v !== undefined && v !== '';
-    return '<div class="term-row"><div><div class="term-name">' + esc(t[0]) + '</div></div>'
-      + (has ? '<span class="pill pill-neutral">' + esc(t[2](v)) + '</span>'
-             : '<span class="pill pill-warn">Not stated</span>') + '</div>';
+  const termRows = disp.terms.map(function (t) {
+    return '<div class="term-row"><div><div class="term-name">' + esc(t.label) + '</div></div>'
+      + (t.stated ? '<span class="pill pill-neutral">' + esc(t.value) + '</span>'
+                  : '<span class="pill pill-warn">Not stated</span>') + '</div>';
   }).join('');
 
   const asks = (score.priorities || [])
@@ -131,6 +120,10 @@ function render(raw, meta, score) {
       + '</div>';
   }).join('');
 
+  // Travel assignments usually reference a confirmation sheet that is part of
+  // the agreement, so the "get the real document" nudge names it.
+  const isRn = score.profession === 'travel_rn';
+
   const clar = score.clarifications || [];
   const clarList = clar.map(function (c) {
     return '<li><strong>' + esc(c.label) + '</strong> — ' + esc(c.questionOffer || c.question) + '</li>';
@@ -139,7 +132,8 @@ function render(raw, meta, score) {
   const expiredBlock = meta && meta.is_expired
     ? '<div class="expired"><strong>This offer expired on '
       + new Date(meta.offer_expires_at).toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'})
-      + '. {Agency} set the window. What\'s below may not be on the table anymore. Ask them to send a new one.</span></div>'
+      + '.</strong><span>' + esc(agency) + ' set the window. What\'s below may not be on the table '
+      + 'anymore. Ask them to send a new one.</span></div>'
     : (meta && meta.offer_expires_at
         ? '<div class="stat-note" style="margin-bottom:16px;">This offer is valid through '
           + new Date(meta.offer_expires_at).toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'})
@@ -151,12 +145,13 @@ function render(raw, meta, score) {
     expiredBlock
     + '<section>'
     + '<div class="grade-grid">'
-    +   '<div class="gcell"><div class="lbl">Rate</div>'
+    +   '<div class="gcell"><div class="lbl">' + esc(score.rate.label || 'Rate') + '</div>'
     +     '<div class="big ' + gClass(rateBand && rateBand.letter) + '">'
     +       esc(rateBand ? rateBand.letter : '\u2014') + '</div>'
     +     '<div class="cap ' + gClass(rateBand && rateBand.letter) + '">'
     +       esc(rateBand ? rateBand.label : 'Rate not stated') + '</div>'
-    +     '<div class="fine">' + money(o.effective_hourly) + '/hr'
+    +     '<div class="fine">' + (score.rate.hourly ? money(score.rate.hourly) + '/hr' : 'Not stated')
+    +       (score.rate.blended ? ' blended' : '')
     +       (rateBand ? '. ' + esc(rateBand.note) : '') + '</div></div>'
     +   '<div class="gcell"><div class="lbl">Offer terms</div>'
     +     '<div class="big ' + (prov ? 'g-grey' : gClass(score.overall.letter)) + '">'
@@ -176,16 +171,12 @@ function render(raw, meta, score) {
     + '<section>'
     + '<div class="section-label">What you\'d gross</div>'
     + '<div class="stat-row">'
-    +   '<div class="stat-card"><div class="num">' + money(o.weekly_gross) + '</div>'
-    +     '<div class="lbl">Weekly guaranteed gross</div></div>'
-    +   '<div class="stat-card"><div class="num">' + money(o.contract_gross) + '</div>'
-    +     '<div class="lbl">Guaranteed contract gross</div></div>'
-    +   '<div class="stat-card"><div class="num">' + money(o.effective_hourly) + '/hr</div>'
-    +     '<div class="lbl">Effective hourly rate</div></div>'
+    + disp.package.rows.map(function (r) {
+        return '<div class="stat-card"><div class="num">' + esc(r.value || '\u2014') + '</div>'
+          + '<div class="lbl">' + esc(r.label) + '</div></div>';
+      }).join('')
     + '</div>'
-    + '<div class="stat-note">' + (o.guaranteed_hours || 0) + ' hours \u00d7 '
-    +   (o.contract_weeks || 0) + ' weeks at the stated rate. Before tax, before overtime and call, '
-    +   'and before anything you pay for yourself.</div>'
+    + '<div class="stat-note">' + esc(disp.package.note) + '</div>'
     + '</section>'
 
     + '<section>'
@@ -217,18 +208,22 @@ function render(raw, meta, score) {
     + '<section><div class="clarify-box">'
     + '<div class="clarify-title">When the contract shows up</div>'
     + '<div class="clarify-sub">This grade is based on what the agency typed into a form. The contract '
-    + 'is the thing that binds you.</div>'
+    + 'is the thing that binds you.'
+    + (isRn ? ' Ask for the confirmation sheet too — days off and unit restrictions agreed verbally '
+            + 'are only enforceable if they appear on it.' : '') + '</div>'
     + '<div class="analyzer-note">Upload it to the '
     + '<a href="https://locumslab.com/app.html">Contract Analyzer</a> and you\'ll get the same grade on '
     + 'the real document, plus every spot where it doesn\'t match what you were told here.</div>'
     + '</div></section>'
 
-    + '<section><div class="cta-card">'
-    + '<h3>How does this compare to your staff job?</h3>'
-    + '<p>Put in your salary, benefits, and expenses and see the two side by side with taxes '
-    + 'and time off accounted for.</p>'
-    + '<a id="compareLink" class="cta-btn" href="#">Compare staff vs locums \u2192</a>'
-    + '</div></section>';
+    + (score.profession === 'crna_locums'
+        ? '<section><div class="cta-card">'
+          + '<h3>How does this compare to your staff job?</h3>'
+          + '<p>Put in your salary, benefits, and expenses and see the two side by side with taxes '
+          + 'and time off accounted for.</p>'
+          + '<a id="compareLink" class="cta-btn" href="#">Compare staff vs locums \u2192</a>'
+          + '</div></section>'
+        : '');
 
   const sendBtn = document.getElementById('sendQs');
   if (sendBtn) {
@@ -252,11 +247,17 @@ function render(raw, meta, score) {
     });
   }
 
-  const cmp = new URL(window.LOCUMSLAB_CONFIG.fullComparisonUrl);
-  cmp.searchParams.set('offer_rate', o.effective_hourly);
-  cmp.searchParams.set('guaranteed_hours', o.guaranteed_hours);
-  cmp.searchParams.set('contract_weeks', o.contract_weeks);
-  document.getElementById('compareLink').href = cmp.href;
+  // Only rendered for CRNA. The comparison tool takes an hourly wage, and a
+  // travel RN blended figure is not one — feeding it $62 blended against a staff
+  // wage would overstate the comparison by the whole stipend.
+  const cmpLink = document.getElementById('compareLink');
+  if (cmpLink) {
+    const cmp = new URL(window.LOCUMSLAB_CONFIG.fullComparisonUrl);
+    cmp.searchParams.set('offer_rate', score.rate.hourly || '');
+    cmp.searchParams.set('guaranteed_hours', o.guaranteed_hours);
+    cmp.searchParams.set('contract_weeks', o.contract_weeks);
+    cmpLink.href = cmp.href;
+  }
 }
 
 function failScreen(title, detail) {
