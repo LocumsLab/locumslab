@@ -1,0 +1,558 @@
+{
+  "_copyright": "© 2026 LocumsLab. All rights reserved. The field set, weights, thresholds and explanatory copy in this file are proprietary to LocumsLab and are not licensed for reuse or redistribution. LocumsLab™.",
+  "version": "rn-v1",
+  "profession": "travel_rn",
+  "label": "Travel nursing assignment",
+  "appliesTo": ["travel_rn"],
+  "notes": [
+    "Weights total 100 across three tiers: heavy 55, moderate 30, light 15. Same shape as the CRNA rubric so the two grades read the same way, not because the terms are the same.",
+    "A field whose value is null is NOT scored. It is routed to clarifications and removed from both numerator and denominator.",
+    "Rate is extracted and displayed but never scored. For travel nursing the displayed figure is the BLENDED hourly equivalent, taxable base plus stipends divided by guaranteed hours, and it is labelled as blended wherever it is shown.",
+    "The taxable/stipend split is scored, separately from rate, because the split is a risk the nurse carries and the rate is not.",
+    "UNCALIBRATED, GREG TO SET: rateBands.bands minimums; fields.wage_recharacterization_risk.shareBands cut points; fields.stipend_on_cancellation.points split. These three are placeholders chosen to be defensible, not observed. They must be checked against ten real travel contracts before this rubric grades anything a nurse will remember.",
+    "Letters are coarse (A-F, no plus/minus) so that small extraction differences do not move the grade.",
+    "When overall.provisional is true the client must not display a letter. Show priorities and clarifications instead."
+  ],
+  "categoryMeta": {
+    "financial": {
+      "label": "Financial",
+      "short": "What the package actually pays, and what happens when it doesn't.",
+      "description": "The taxable base and stipend split, guaranteed hours, what a cancelled shift costs you, overtime, and which costs fall on you rather than the agency."
+    },
+    "protection": {
+      "label": "Protection",
+      "short": "What happens if something goes wrong, or ends early.",
+      "description": "Cancellation and termination notice, bonus and reimbursement clawback, self-cancel penalties, facility return restrictions, and liability coverage."
+    },
+    "lifestyle": {
+      "label": "Lifestyle",
+      "short": "What the work actually looks like week to week.",
+      "description": "Float scope, how the schedule is set, shift length, charge duty, and assignment length."
+    }
+  },
+  "thresholds": [
+    { "min": 90, "letter": "A" },
+    { "min": 80, "letter": "B" },
+    { "min": 70, "letter": "C" },
+    { "min": 60, "letter": "D" },
+    { "min": 0, "letter": "F" }
+  ],
+  "negotiationLevels": {
+    "rethinkBelowPct": 60,
+    "rethinkHeavyZeroed": 3,
+    "signableMinPct": 85,
+    "signableMaxHeavyLosses": 0,
+    "signableMaxNonLightZeroed": 1,
+    "copy": {
+      "CLARIFY_FIRST": {
+        "label": "Clarify first",
+        "headline": "Too much is unwritten to negotiate yet.",
+        "detail": "Most of the terms that decide what this assignment actually pays are not in this contract. Get answers to the questions below in writing before treating this as a real offer, then re-run it."
+      },
+      "SIGNABLE": {
+        "label": "Signable",
+        "headline": "Strong contract. Maybe one small ask.",
+        "detail": "Nothing here shifts serious risk onto you. If you want to ask for something, pick one item and do not reopen the rate."
+      },
+      "NEGOTIATE": {
+        "label": "Negotiate",
+        "headline": "Good assignment with terms worth fixing.",
+        "detail": "The underlying offer holds up. Spend your negotiating capital on the asks below, in that order, and leave the rest alone."
+      },
+      "RETHINK": {
+        "label": "Rethink",
+        "headline": "Too many terms shift risk onto you.",
+        "detail": "This is not a one or two clause fix. Several provisions move risk in the same direction, so decide whether the package is worth it before you spend time negotiating."
+      }
+    }
+  },
+  "rateBands": {
+    "basis": "National travel RN bands, expressed as BLENDED hourly: taxable base plus housing and meal stipends, divided by guaranteed weekly hours. Not adjusted for state, specialty, or crisis pricing. A rate that grades C nationally can be strong for its market. PLACEHOLDER BANDS — not yet calibrated against observed data.",
+    "bands": [
+      { "min": 68, "letter": "A", "label": "Top of market", "note": "At or above the top of the national blended range for travel RN." },
+      { "min": 57, "letter": "B", "label": "Above median", "note": "Above the national blended median for travel RN." },
+      { "min": 48, "letter": "C", "label": "Around median", "note": "At the national blended median for travel RN." },
+      { "min": 38, "letter": "D", "label": "Low end of market", "note": "Below the national median. Reasonable in some low-cost markets, thin in most." },
+      { "min": 0, "letter": "F", "label": "Below market", "note": "Below the low end of the national blended range. Worth asking what accounts for the gap." }
+    ]
+  },
+  "provisionalBelowScoredShare": 0.6,
+  "minCategoryFields": 3,
+  "minCategoryPossibleShare": 0.4,
+  "minPriorityLoss": 2,
+  "fields": {
+    "stipend_on_cancellation": {
+      "label": "Stipend on a cancelled shift",
+      "tier": "heavy",
+      "category": "financial",
+      "possible": 10,
+      "type": "derived",
+      "derivation": "stipend_on_cancellation",
+      "points": { "full": 10, "prorated": 4, "forfeited": 0 },
+      "reads": {
+        "treatment": "cancelled_shift_stipend_treatment",
+        "base": "taxable_base_hourly",
+        "housing": "weekly_housing_stipend",
+        "mie": "weekly_mie_stipend",
+        "hours": "guaranteed_hours_weekly",
+        "shift": "shift_length_hours",
+        "paidHours": "cancellation_pay_hours",
+        "proration": "stipend_proration_basis"
+      },
+      "clarifyWhenNull": true,
+      "clarifyRank": 1,
+      "clarifyWhenValue": ["forfeited"],
+      "clarifyAskForValue": "The contract appears to forfeit stipend for a cancelled shift. Is that right, and would the agency pay stipend on shifts the facility cancels?",
+      "why": "In a blended package the stipend is usually the larger half of what you take home. A contract that pays four hours of taxable base on a cancelled shift and drops the stipend for that day has paid you a fraction of the day, not most of it. This is the single term that most often makes a travel assignment pay less than the recruiter's weekly number.",
+      "ask": "If the facility cancels a scheduled shift, is the housing and meal stipend paid in full for that week, or is it reduced?",
+      "clarifyAsk": "The contract does not say what happens to the stipend when a shift is cancelled. Is stipend paid in full, prorated, or forfeited for the missed hours?",
+      "clarifyAskOffer": "This offer doesn't say what happens to the stipend if a shift gets cancelled. Is it paid in full, prorated, or dropped?",
+      "fallback": "If the agency will not pay full stipend on a cancelled shift, ask that stipend be held whole for any shift the FACILITY cancels, and prorated only for shifts you call off. That is the version most agencies will actually sign."
+    },
+    "guaranteed_hours_weekly": {
+      "label": "Guaranteed hours",
+      "tier": "heavy",
+      "category": "financial",
+      "possible": 9,
+      "type": "number",
+      "direction": "higher_better",
+      "bands": [
+        { "gte": 40, "points": 9, "label": "40+ hours guaranteed" },
+        { "gte": 36, "points": 8, "label": "36 to 39 hours guaranteed" },
+        { "gte": 32, "points": 5, "label": "32 to 35 hours guaranteed" },
+        { "gte": 24, "points": 2, "label": "24 to 31 hours guaranteed" },
+        { "gte": null, "points": 0, "label": "No meaningful guarantee" }
+      ],
+      "clarifyWhenNull": true,
+      "clarifyRank": 2,
+      "why": "Without guaranteed hours you carry the facility's census risk for thirteen weeks. A slow week costs you income you moved across the country for and cannot backfill.",
+      "ask": "How many hours per week are guaranteed, and is the guarantee stated in the contract or only on the confirmation?",
+      "clarifyAsk": "The contract does not state a weekly hour guarantee. Are hours guaranteed, and if so at what number, and where is that written down?",
+      "clarifyAskOffer": "This offer doesn't list a weekly hour guarantee. Are hours guaranteed, and at what number?",
+      "fallback": "If they will not guarantee weekly hours, ask that stipend be paid in full regardless of hours worked. That protects the larger half of the package even when the hours are not protected."
+    },
+    "guaranteed_hours_pay_basis": {
+      "label": "What guaranteed hours pay",
+      "tier": "heavy",
+      "category": "financial",
+      "possible": 7,
+      "type": "enum",
+      "points": { "blended": 7, "base_plus_stipend": 7, "base_only": 2, "not_paid": 0 },
+      "clarifyWhenNull": true,
+      "clarifyRank": 3,
+      "clarifyWhenValue": ["base_only"],
+      "clarifyAskForValue": "The guarantee appears to pay taxable base only, not the blended rate. Can guaranteed hours be paid at the full package rate?",
+      "why": "A guarantee that pays taxable base only is worth roughly half what most nurses assume. Thirty-six guaranteed hours at a $23 base is not thirty-six hours of the weekly number the recruiter quoted.",
+      "ask": "When the guarantee is invoked, are those hours paid at the blended rate including stipend, or at the taxable base only?",
+      "clarifyAsk": "The contract does not say what rate guaranteed hours are paid at. Is it the full blended package, or taxable base only?",
+      "clarifyAskOffer": "This offer doesn't say what the guaranteed hours actually pay. Blended rate, or just the taxable base?",
+      "fallback": "If guaranteed hours must be base-only, ask for the base to be raised, or for the guarantee to include the stipend for any week where the shortfall is the facility's doing."
+    },
+    "float_scope": {
+      "label": "Float scope",
+      "tier": "heavy",
+      "category": "lifestyle",
+      "possible": 8,
+      "type": "enum",
+      "points": {
+        "named_units": 8,
+        "comparable_acuity": 6,
+        "department_only": 5,
+        "facility_wide": 1,
+        "any_facility": 0
+      },
+      "clarifyWhenNull": true,
+      "clarifyRank": 4,
+      "clarifyWhenValue": ["facility_wide", "any_facility"],
+      "clarifyAskForValue": "The float language appears to allow assignment to any unit. Can the contract name the units you can be floated to, or limit floating to comparable acuity?",
+      "why": "Unbounded float language is how an ICU contract becomes med-surg, or how you end up on a unit you have no recent competency in while still carrying the license. Verbal assurances about float do not survive a census crunch.",
+      "ask": "Which specific units can I be floated to, and is that list in the contract or only on the confirmation?",
+      "clarifyAsk": "The contract does not define float scope. Which units can you be assigned to, and is floating limited to comparable acuity?",
+      "clarifyAskOffer": "This offer doesn't define float scope. Which units can I be floated to?",
+      "fallback": "If they will not name units, ask for language limiting float to units of comparable acuity where you have documented competency, and for the right to decline without it counting as cause."
+    },
+    "wage_recharacterization_risk": {
+      "label": "Taxable base vs stipend split",
+      "tier": "heavy",
+      "category": "financial",
+      "possible": 8,
+      "type": "derived",
+      "derivation": "wage_recharacterization_risk",
+      "reads": {
+        "base": "taxable_base_hourly",
+        "housing": "weekly_housing_stipend",
+        "mie": "weekly_mie_stipend",
+        "hours": "guaranteed_hours_weekly",
+        "expectedHours": "weekly_hours_expected"
+      },
+      "shareBands": [
+        { "gte": 0.6, "points": 8, "label": "Taxable base is the majority of the package" },
+        { "gte": 0.45, "points": 6, "label": "Taxable base is a substantial share of the package" },
+        { "gte": 0.3, "points": 3, "label": "Stipend-heavy package" },
+        { "gte": null, "points": 0, "label": "Very stipend-heavy package" }
+      ],
+      "clarifyWhenNull": true,
+      "why": "Stipends are only tax-free if you maintain a legitimate tax home and the taxable base is a reasonable wage for the work. A low base paired with large stipends is the pattern the IRS treats as disguised wages, and the back-tax exposure falls on you, not the agency. A low base also shrinks overtime, guaranteed-hours pay, and unemployment or disability calculations, all of which are computed on the taxable figure.",
+      "ask": "What is the taxable hourly base, and how does it compare to what a staff nurse in this role at this facility earns?",
+      "clarifyAsk": "The contract does not break out the taxable base and the stipends separately. What is the taxable hourly rate, and what are the weekly housing and meal stipends?",
+      "clarifyAskOffer": "This offer gives a weekly number but not the split. What's the taxable hourly base, and what are the housing and meal stipends?",
+      "fallback": "If the agency will not raise the base, ask them to confirm in writing that the base is set at or above the prevailing staff wage for the role, and keep that confirmation."
+    },
+    "bonus_clawback": {
+      "label": "Bonus and reimbursement clawback",
+      "tier": "heavy",
+      "category": "protection",
+      "possible": 7,
+      "type": "enum",
+      "points": {
+        "none": 7,
+        "prorated": 5,
+        "cause_only": 4,
+        "full_repayment": 0
+      },
+      "clarifyWhenNull": true,
+      "clarifyWhenValue": ["full_repayment"],
+      "clarifyAskForValue": "The contract appears to require full repayment of bonuses and reimbursements if the assignment ends early. Can that be prorated, and can facility-initiated cancellation be carved out?",
+      "why": "A sign-on bonus and license reimbursement you have to repay in full is not compensation, it is a loan against finishing. The clause usually triggers regardless of who ended the assignment, which means a facility cancelling in week ten can leave you owing money.",
+      "ask": "If the assignment ends early, what has to be repaid, and does that change based on who ended it?",
+      "clarifyAsk": "The contract does not describe what happens to bonuses or reimbursements if the assignment ends early. Is anything repayable, and under what circumstances?",
+      "clarifyAskOffer": "This offer doesn't say whether bonuses have to be repaid if the assignment ends early. What's the clawback?",
+      "fallback": "If clawback cannot be removed, ask that it be prorated by weeks completed and that it not apply where the facility or agency ends the assignment."
+    },
+    "cancellation_notice_days": {
+      "label": "Cancellation notice",
+      "tier": "heavy",
+      "category": "protection",
+      "possible": 6,
+      "type": "number",
+      "direction": "higher_better",
+      "bands": [
+        { "gte": 30, "points": 6, "label": "30+ days" },
+        { "gte": 14, "points": 4, "label": "14 to 29 days" },
+        { "gte": 8, "points": 2, "label": "8 to 13 days" },
+        { "gte": null, "points": 0, "label": "7 days or fewer" }
+      ],
+      "clarifyWhenNull": true,
+      "why": "You signed a lease, moved, and turned down other assignments. Short notice means the income disappears with fixed costs already committed and no realistic way to backfill thirteen weeks.",
+      "ask": "How much notice must the facility give to cancel the assignment, and is there compensation for a cancellation inside that window?",
+      "clarifyAsk": "The contract does not state a cancellation notice period. How much notice is required, and is there compensation for cancellation inside it?",
+      "clarifyAskOffer": "This offer doesn't list a cancellation notice period. How much notice, and is there any compensation inside it?",
+      "fallback": "If the notice period cannot move, ask for a stated minimum payment, two weeks is the common ask, on any assignment cancelled after you have relocated."
+    },
+    "stipend_proration_basis": {
+      "label": "How stipend is prorated",
+      "tier": "moderate",
+      "category": "financial",
+      "possible": 5,
+      "type": "enum",
+      "points": {
+        "not_prorated": 5,
+        "hourly_prorated": 3,
+        "shift_prorated": 3,
+        "weekly_threshold": 0
+      },
+      "clarifyWhenNull": true,
+      "clarifyRank": 5,
+      "clarifyWhenValue": ["weekly_threshold"],
+      "clarifyAskForValue": "The contract appears to use a weekly hours threshold for stipend eligibility. What happens to the whole week's stipend if I fall one shift short?",
+      "why": "A weekly threshold is the version that hurts most and reads the most innocuous. Miss one shift, drop under the threshold, and the entire week's stipend can go rather than a shift's worth. Hourly proration is survivable; a cliff is not.",
+      "ask": "Is stipend reduced hour by hour for missed time, or is there a weekly hours threshold below which the whole stipend is lost?",
+      "clarifyAsk": "The contract does not say how stipend is reduced for missed hours. Is it prorated hourly, per shift, or tied to a weekly threshold?",
+      "clarifyAskOffer": "This offer doesn't say how stipend gets reduced for missed hours. Hourly, per shift, or a weekly cutoff?",
+      "fallback": "If there is a threshold, ask that hours the facility cancels count toward it. That single change removes most of the exposure without changing the number."
+    },
+    "self_cancel_policy": {
+      "label": "Nurse-initiated call-off",
+      "tier": "moderate",
+      "category": "protection",
+      "possible": 5,
+      "type": "enum",
+      "points": {
+        "no_penalty": 5,
+        "hours_only": 4,
+        "makeup_shift": 3,
+        "stipend_penalty": 1,
+        "treated_as_cause": 0
+      },
+      "clarifyWhenNull": true,
+      "why": "One sick day should cost you a shift, not the assignment. Some contracts treat any self-cancel as cause for termination, which converts a stomach bug into a cancelled contract and a clawback.",
+      "ask": "If I call off sick, what is the consequence, and how many call-offs before it becomes a termination issue?",
+      "clarifyAsk": "The contract does not describe what happens if you call off. Is there a penalty beyond the lost hours, and at what point does it become cause?",
+      "clarifyAskOffer": "This offer doesn't say what happens if I call off sick. Is there a penalty beyond losing the hours?",
+      "fallback": "If a penalty stands, ask for one no-fault call-off per assignment, and that a documented illness not be treated as cause."
+    },
+    "call_off_cause_distinction": {
+      "label": "Facility vs nurse call-off",
+      "tier": "moderate",
+      "category": "protection",
+      "possible": 4,
+      "type": "enum",
+      "points": { "facility_exempt": 4, "partial_distinction": 2, "no_distinction": 0 },
+      "clarifyWhenNull": true,
+      "clarifyRank": 6,
+      "clarifyWhenValue": ["no_distinction"],
+      "clarifyAskForValue": "The contract appears to treat a facility cancellation the same as a nurse call-off. Can hours the facility cancels be exempted from any stipend or hours penalty?",
+      "why": "Most contracts penalise missed hours without asking who missed them. That means a low-census cancellation the facility chose costs you the same as calling off, which is the plainest unfairness in a travel contract and often the easiest single fix to get.",
+      "ask": "Does the contract distinguish between hours the facility cancels and hours I call off, for stipend and guarantee purposes?",
+      "clarifyAsk": "The contract does not distinguish facility cancellations from nurse call-offs. Are facility-cancelled hours exempt from stipend reduction and counted toward the guarantee?",
+      "clarifyAskOffer": "This offer doesn't distinguish shifts the facility cancels from ones I call off. Are facility cancellations treated differently?",
+      "fallback": "This is usually the cheapest concession on the list. If nothing else moves, ask for this one in writing."
+    },
+    "overtime": {
+      "label": "Overtime terms",
+      "tier": "moderate",
+      "category": "financial",
+      "possible": 5,
+      "type": "derived",
+      "derivation": "overtime",
+      "reads": {
+        "threshold": "overtime_threshold_hours",
+        "multiplier": "overtime_multiplier"
+      },
+      "clarifyWhenNull": true,
+      "why": "Travel overtime is paid on the taxable base, not the blended rate, so time-and-a-half on a low base is often less than the straight blended hourly the nurse assumes. Knowing the threshold and the multiplier is how you price a fourth shift.",
+      "ask": "At what hours does overtime begin, is it daily or weekly, and is the multiplier applied to the taxable base or the blended rate?",
+      "clarifyAsk": "The contract does not define overtime. At what point do additional hours become overtime, at what rate, and on which base?",
+      "clarifyAskOffer": "This offer doesn't define overtime. When does it start, at what rate, and on the base or the blended rate?",
+      "fallback": "If the multiplier will not move, ask that the overtime threshold be defined in the contract rather than left to facility policy."
+    },
+    "termination_asymmetry": {
+      "label": "Termination notice balance",
+      "tier": "moderate",
+      "category": "protection",
+      "possible": 4,
+      "type": "derived",
+      "derivation": "termination_asymmetry",
+      "reads": {
+        "agency": "termination_notice_agency_days",
+        "clinician": "termination_notice_nurse_days"
+      },
+      "clarifyWhenNull": true,
+      "why": "A contract that lets the agency end the assignment on two days' notice while requiring four weeks from you is not a mutual agreement. The gap is the point, not the absolute number.",
+      "ask": "How much notice must each side give to end the assignment without cause?",
+      "clarifyAsk": "The contract does not state notice periods for ending the assignment. How much notice does each side owe?",
+      "clarifyAskOffer": "This offer doesn't list termination notice. How much notice does each side have to give?",
+      "fallback": "If they will not match the periods, ask that yours be reduced to the agency's rather than asking them to lengthen theirs. It is the same gap and an easier yes."
+    },
+    "facility_return_restriction": {
+      "label": "Returning to the facility",
+      "tier": "moderate",
+      "category": "protection",
+      "possible": 4,
+      "type": "enum",
+      "points": {
+        "none": 4,
+        "conversion_fee_only": 3,
+        "restricted_under_12_months": 1,
+        "restricted_12_months_or_more": 0
+      },
+      "clarifyWhenNull": true,
+      "why": "A clause barring you from returning to the facility through another agency, or from taking a staff position without a conversion fee, limits what you can do with a hospital you liked. It is the travel nursing equivalent of a non-compete and it is negotiable more often than nurses assume.",
+      "ask": "Am I restricted from returning to this facility through another agency or as staff, and for how long?",
+      "clarifyAsk": "The contract does not address returning to the facility. Is there any restriction on coming back through another agency or as staff?",
+      "clarifyAskOffer": "This offer doesn't say whether I can return to the facility later through another agency. Is there a restriction?",
+      "fallback": "If a restriction stands, ask for it to be capped at six months and limited to this facility rather than the health system."
+    },
+    "incorporation_by_reference": {
+      "label": "Documents incorporated by reference",
+      "tier": "moderate",
+      "category": "protection",
+      "possible": 3,
+      "type": "enum",
+      "points": { "none": 3, "named_and_provided": 3, "named_not_provided": 1, "open_ended": 0 },
+      "clarifyWhenNull": true,
+      "clarifyWhenValue": ["named_not_provided", "open_ended"],
+      "clarifyAskForValue": "The contract incorporates documents you have not been given. Can you have copies of everything referenced before signing?",
+      "why": "If a handbook, policy manual, or agency guidelines document is incorporated by reference, you are bound by terms you have not read and that the agency can change after you sign. The confirmation sheet matters the same way: verbal promises about days off or unit restrictions are only enforceable if they appear in a document the contract names.",
+      "ask": "Which documents does this contract incorporate, and can I have copies of all of them before signing?",
+      "clarifyAsk": "The contract does not make clear what other documents it incorporates. Are there policies, handbooks, or a confirmation sheet that form part of the agreement?",
+      "clarifyAskOffer": "Does this assignment reference a confirmation sheet or handbook I should read before signing?",
+      "fallback": "If they will not provide the documents, ask that the contract state it is the entire agreement and that incorporated policies cannot change materially mid-assignment."
+    },
+    "schedule_guarantee": {
+      "label": "Schedule commitment",
+      "tier": "light",
+      "category": "lifestyle",
+      "possible": 3,
+      "type": "enum",
+      "points": { "fixed": 3, "posted_in_advance": 2, "facility_discretion": 0 },
+      "clarifyWhenNull": true,
+      "why": "If the facility sets the schedule at its discretion, the shift pattern you agreed to verbally is not the one you are contractually owed. This is where three twelves quietly becomes a rotating pattern with weekends.",
+      "ask": "Is the shift pattern fixed in the contract, and how far in advance is the schedule posted?",
+      "clarifyAsk": "The contract does not specify how the schedule is set. Is the pattern fixed, or set by the facility, and how much notice do you get?",
+      "clarifyAskOffer": "This offer doesn't say how the schedule gets set. Is the shift pattern locked in?",
+      "fallback": "If the pattern cannot be fixed, ask for it in writing on the confirmation sheet and for a stated minimum posting notice."
+    },
+    "malpractice_type": {
+      "label": "Liability coverage type",
+      "tier": "light",
+      "category": "protection",
+      "possible": 2,
+      "type": "enum",
+      "points": { "occurrence": 2, "claims_made": 1 },
+      "clarifyWhenNull": true,
+      "why": "Occurrence coverage protects you for anything that happened while the policy was live, whatever happens to the policy later. Claims-made only covers you while it is active, which is why the tail question follows it.",
+      "ask": "Is the professional liability coverage occurrence or claims-made, and are the limits dedicated to me or shared?",
+      "clarifyAsk": "The contract does not state the type of liability coverage. Is it occurrence or claims-made, and are the limits shared?",
+      "clarifyAskOffer": "This offer doesn't state the liability coverage type. Occurrence or claims-made?",
+      "fallback": "If coverage is claims-made, the tail question is the one that matters. Ask who pays for it."
+    },
+    "tail_responsibility": {
+      "label": "Tail coverage",
+      "tier": "light",
+      "category": "protection",
+      "possible": 2,
+      "type": "enum",
+      "points": { "agency": 2, "not_applicable": 2, "nurse": 0, "split": 1 },
+      "clarifyWhenNull": true,
+      "why": "With claims-made coverage, a claim filed after the assignment ends is not covered unless someone bought tail. Nurses rarely carry it themselves, which makes this worth confirming rather than assuming.",
+      "ask": "If the coverage is claims-made, who pays for tail coverage after the assignment ends?",
+      "clarifyAsk": "The contract does not address tail coverage. If the policy is claims-made, who pays for the tail?",
+      "clarifyAskOffer": "This offer doesn't mention tail coverage. Who pays for it if the policy is claims-made?",
+      "fallback": "If the agency will not cover tail, ask them to confirm the policy is occurrence-based instead, which removes the need."
+    },
+    "call_off_cap": {
+      "label": "Cap on facility call-offs",
+      "tier": "light",
+      "category": "protection",
+      "possible": 2,
+      "type": "number",
+      "direction": "lower_better",
+      "bands": [
+        { "lte": 0, "points": 2, "label": "No facility call-offs permitted" },
+        { "lte": 2, "points": 2, "label": "Up to 2 call-offs over the assignment" },
+        { "lte": 4, "points": 1, "label": "3 to 4 call-offs over the assignment" },
+        { "lte": null, "points": 0, "label": "5 or more, or uncapped" }
+      ],
+      "clarifyWhenNull": true,
+      "why": "Contracts that permit a set number of unpaid facility call-offs put a number on your downside. Uncapped is the version worth asking about, because it means the guarantee has a hole in it that nobody quantified.",
+      "ask": "How many shifts can the facility cancel over the assignment without paying, and is that capped?",
+      "clarifyAsk": "The contract does not cap facility call-offs. How many unpaid cancellations are permitted over the assignment?",
+      "clarifyAskOffer": "This offer doesn't cap facility call-offs. How many can they cancel unpaid?",
+      "fallback": "If a cap will not be added, ask that call-offs beyond a stated number be paid at the blended rate."
+    },
+    "travel_reimbursement": {
+      "label": "Travel reimbursement",
+      "tier": "light",
+      "category": "financial",
+      "possible": 2,
+      "type": "enum",
+      "points": { "actual": 2, "stipend": 2, "mileage": 1, "none": 0 },
+      "clarifyWhenNull": true,
+      "why": "Know the number, price it in, move on. It matters mostly because travel reimbursement is often the first thing subject to clawback.",
+      "ask": "Is travel reimbursed, at what amount, and is it repayable if the assignment ends early?",
+      "clarifyAsk": "The contract does not address travel reimbursement. Is travel covered, and is it repayable if the assignment ends early?",
+      "clarifyAskOffer": "This offer doesn't cover travel. Is it reimbursed, and at what amount?",
+      "fallback": "If travel is not reimbursed, ask for it to be paid on arrival rather than on completion, so it is not tied to the clawback clause."
+    },
+    "license_reimbursement": {
+      "label": "License and certification costs",
+      "tier": "light",
+      "category": "financial",
+      "possible": 1,
+      "type": "enum",
+      "points": { "agency": 1, "not_applicable": 1, "split": 1, "nurse": 0 },
+      "clarifyWhenNull": true,
+      "why": "State licensure and certification costs are small individually and add up across assignments. Same as travel, they are usually written into the clawback clause.",
+      "ask": "Who pays for state licensure and required certifications, and is any of it repayable?",
+      "clarifyAsk": "The contract does not address licensure costs. Who pays for the state license and required certifications?",
+      "clarifyAskOffer": "This offer doesn't cover licensure costs. Who pays?",
+      "fallback": "If the agency will not pay, ask that it be reimbursed rather than advanced, so it does not sit inside the clawback."
+    },
+    "shift_length_hours": {
+      "label": "Shift length",
+      "tier": "light",
+      "category": "lifestyle",
+      "possible": 1,
+      "type": "number",
+      "direction": "lower_better",
+      "bands": [
+        { "lte": 12, "points": 1, "label": "12 hours or fewer" },
+        { "lte": null, "points": 0, "label": "Longer than 12 hours" }
+      ],
+      "clarifyWhenNull": true,
+      "why": "Shift length sets how a cancelled shift is priced and whether three shifts reaches the guarantee.",
+      "ask": "What is the scheduled shift length, and does the guarantee assume three or four shifts per week?",
+      "clarifyAsk": "The contract does not state a shift length. How long are the shifts?",
+      "clarifyAskOffer": "This offer doesn't state shift length. How long are they?",
+      "fallback": "Ask for the shift length to be written on the confirmation sheet."
+    },
+    "charge_duty": {
+      "label": "Charge and preceptor duty",
+      "tier": "light",
+      "category": "lifestyle",
+      "possible": 1,
+      "type": "enum",
+      "points": { "excluded": 1, "paid_differential": 1, "required_unpaid": 0 },
+      "clarifyWhenNull": true,
+      "why": "Being put in charge as a traveler carries the responsibility without the familiarity with the unit, and often without a differential.",
+      "ask": "Can I be assigned charge or preceptor duty, and is there a differential if so?",
+      "clarifyAsk": "The contract does not address charge duty. Can you be assigned charge, and is it paid at a differential?",
+      "clarifyAskOffer": "This offer doesn't mention charge duty. Can I be put in charge, and is it paid?",
+      "fallback": "Ask that charge duty be excluded, or paid at the facility's own charge differential."
+    },
+    "contract_length_weeks": {
+      "label": "Assignment length",
+      "tier": "light",
+      "category": "lifestyle",
+      "possible": 1,
+      "type": "number",
+      "direction": "higher_better",
+      "bands": [
+        { "gte": 13, "points": 1, "label": "13 weeks or longer" },
+        { "gte": null, "points": 0, "label": "Shorter than 13 weeks" }
+      ],
+      "clarifyWhenNull": true,
+      "why": "Shorter assignments spread fixed relocation, licensure, and credentialing costs across fewer paid hours.",
+      "ask": "How many weeks is the assignment, and is there an extension option at the same package?",
+      "clarifyAsk": "The contract does not state an assignment length. How many weeks is it?",
+      "clarifyAskOffer": "This offer doesn't state a length. How many weeks?",
+      "fallback": "If the term is short, ask for an extension option at the same package rather than renegotiating later."
+    }
+  },
+  "displayOnly": [
+    "pay_rate_unit",
+    "pay_rate_amount",
+    "blended_weekly_total",
+    "taxable_base_hourly",
+    "weekly_housing_stipend",
+    "weekly_mie_stipend",
+    "cancelled_shift_stipend_treatment",
+    "cancellation_pay_hours",
+    "agency_name",
+    "facility_name",
+    "unit",
+    "state",
+    "start_date",
+    "end_date",
+    "specialty",
+    "weekly_hours_expected",
+    "overtime_threshold_hours",
+    "overtime_multiplier",
+    "termination_notice_agency_days",
+    "termination_notice_nurse_days"
+  ],
+  "marketObservationProfession": "travel_rn",
+  "marketObservationFields": [
+    "state",
+    "specialty",
+    "contract_length_weeks",
+    "guaranteed_hours_weekly",
+    "guaranteed_hours_pay_basis",
+    "cancellation_notice_days",
+    "cancellation_pay_hours",
+    "cancelled_shift_stipend_treatment",
+    "stipend_proration_basis",
+    "call_off_cause_distinction",
+    "call_off_cap",
+    "self_cancel_policy",
+    "float_scope",
+    "schedule_guarantee",
+    "bonus_clawback",
+    "facility_return_restriction",
+    "malpractice_type",
+    "tail_responsibility",
+    "travel_reimbursement",
+    "agency_name"
+  ]
+}
