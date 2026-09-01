@@ -1,6 +1,8 @@
 {
   "_copyright": "\u00a9 2026 LocumsLab. All rights reserved. The field set, weights, thresholds and explanatory copy in this file are proprietary to LocumsLab and are not licensed for reuse or redistribution. LocumsLab\u2122.",
   "version": "v1",
+  "profession": "crna_locums",
+  "label": "CRNA locum tenens",
   "appliesTo": [
     "crna_locums"
   ],
@@ -11,7 +13,8 @@
     "Rate is extracted and displayed but never scored. There is no honest absolute standard for it until market_observations has volume.",
     "Edit points and bands here. Do not put grading logic in the extraction prompt.",
     "Letters are coarse (A-F, no plus/minus) so that small extraction differences do not move the grade.",
-    "When overall.provisional is true the client must not display a letter. Show priorities and clarifications instead."
+    "When overall.provisional is true the client must not display a letter. Show priorities and clarifications instead.",
+    "profession/appliesTo select this rubric. The scoring engine is profession-neutral; everything specific to CRNA locums lives in this file."
   ],
   "categoryMeta": {
     "financial": {
@@ -699,5 +702,6 @@
     "agency_name",
     "cancellation_pay_hours"
   ],
-  "minPriorityLoss": 2
+  "minPriorityLoss": 2,
+  "marketObservationProfession": "crna_locums"
 }
