@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The CRNA workforce nearly doubled in 13 years and the market is still tight. What the latest workforce data means for locums rates and demand through the 2030s.">
+<meta name="keywords" content="CRNA oversaturation, CRNA job market 2026, CRNA locums demand, CRNA workforce growth, CRNA supply shortage, CRNA jobs future outlook">
+<meta property="og:title" content="Is the CRNA Field Getting Saturated? I Pulled 14 Years of Census Data to Find Out">
+<meta property="og:description" content="Programs are opening fast and candidates jumped 20% in one year. What practicing locums CRNAs should actually be watching.">
+<meta property="og:type" content="article">
+<link rel="canonical" href="https://locumslab.com/blog/crna-oversaturation-workforce-data.html">
+<title>Is the CRNA Field Getting Saturated? | LocumsLab</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Is the CRNA Field Getting Saturated? What 14 Years of Workforce Data Shows",
+  "description": "Programs are opening fast and candidates jumped 20% in one year. What practicing locums CRNAs should actually be watching.",
+  "datePublished": "2026-09-04",
+  "publisher": {
+    "@type": "Organization",
+    "name": "LocumsLab",
+    "url": "https://locumslab.com"
+  }
+}
+</script>
+<style>
+  :root {
+    --navy: #0a2540;
+    --blue: #0066cc;
+    --green: #10b981;
+    --red: #dc2626;
+    --amber: #d97706;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-600: #475569;
+    --gray-900: #0f172a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', -apple-system, sans-serif; color: var(--gray-900); background: white; line-height: 1.8; }
+
+  header { position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--gray-200); }
+  nav { max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--navy); text-decoration: none; }
+  .nav-right { display: flex; align-items: center; gap: 20px; }
+  .nav-link { color: var(--gray-600); text-decoration: none; font-size: 0.9375rem; }
+  .nav-link:hover { color: var(--navy); }
+  .nav-cta { background: var(--blue); color: white; padding: 9px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9375rem; }
+  .nav-cta:hover { background: #0052a3; }
+
+  article { max-width: 720px; margin: 60px auto; padding: 0 24px; }
+  .article-meta { color: var(--gray-600); font-size: 0.9375rem; margin-bottom: 24px; }
+  h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 2.75rem); line-height: 1.2; color: var(--navy); margin-bottom: 16px; letter-spacing: -0.02em; }
+  .article-intro { font-size: 1.25rem; color: var(--gray-600); margin-bottom: 40px; line-height: 1.7; }
+  h2 { font-family: 'DM Serif Display', serif; font-size: 1.75rem; color: var(--navy); margin: 48px 0 20px; letter-spacing: -0.01em; }
+  p { margin-bottom: 24px; font-size: 1.0625rem; line-height: 1.8; }
+  strong { color: var(--navy); }
+  ul { margin: 0 0 24px 28px; }
+  li { margin-bottom: 10px; font-size: 1.0625rem; line-height: 1.7; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 16px; margin: 32px 0; }
+  .stat-box { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 12px; padding: 20px 18px; text-align: center; }
+  .stat-box.green { background: rgba(16,185,129,0.06); border-color: rgba(16,185,129,0.25); }
+  .stat-number { font-family: 'DM Serif Display', serif; font-size: 1.875rem; color: var(--navy); line-height: 1.1; margin-bottom: 6px; }
+  .stat-box.green .stat-number { color: var(--green); }
+  .stat-label { font-size: 0.8125rem; color: var(--gray-600); font-weight: 500; line-height: 1.4; }
+
+  .callout { border-radius: 10px; padding: 24px 28px; margin: 28px 0; }
+  .callout-info { background: var(--gray-50); border-left: 4px solid var(--blue); }
+  .callout-info-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+  .callout-info p { font-size: 1rem; color: var(--gray-600); margin-bottom: 0; line-height: 1.75; }
+  .callout-info strong { color: var(--navy); }
+  .callout-example { background: rgba(217,119,6,0.06); border-left: 4px solid var(--amber); }
+  .callout-example-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); margin-bottom: 10px; }
+  .callout-example p { font-size: 1rem; color: var(--gray-600); margin-bottom: 8px; line-height: 1.75; }
+  .callout-example p:last-child { margin-bottom: 0; }
+  .callout-example strong { color: var(--navy); }
+
+  .source-box { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 10px; padding: 18px 22px; margin: 32px 0; }
+  .source-box-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-600); margin-bottom: 8px; }
+  .source-box p { font-size: 0.9375rem; color: var(--gray-600); margin-bottom: 0; line-height: 1.7; }
+  .source-box a { color: var(--blue); text-decoration: underline; }
+
+  .divider { border: none; border-top: 1px solid var(--gray-200); margin: 48px 0; }
+
+  .share-bar { border-top: 1px solid var(--gray-200); margin-top: 56px; padding-top: 32px; }
+  .share-bar-label { font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-600); margin-bottom: 14px; }
+  .share-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+  .share-btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; text-decoration: none; border: 1.5px solid var(--gray-200); color: var(--navy); background: white; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+  .share-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--gray-50); }
+  .share-btn svg { flex-shrink: 0; }
+  .share-btn.copied { border-color: var(--green); color: var(--green); }
+
+  .footer-cta { background: var(--navy); color: white; text-align: center; padding: 60px 24px; margin-top: 80px; }
+  .footer-cta h2 { font-family: 'DM Serif Display', serif; color: white; margin-bottom: 16px; font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 400; }
+  .footer-cta p { color: rgba(255,255,255,0.75); margin-bottom: 32px; max-width: 480px; margin-left: auto; margin-right: auto; font-size: 1.0625rem; }
+  .footer-cta-btn { display: inline-block; background: var(--green); color: white; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 1rem; }
+  .footer-cta-btn:hover { background: #059669; }
+
+  @media (max-width: 640px) {
+    .callout { padding: 18px 20px; }
+    .stat-row { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="/" class="logo">LocumsLab</a>
+    <div class="nav-right">
+      <a href="/blog" class="nav-link">Blog</a>
+      <a href="/app.html" class="nav-cta">Open Calculator</a>
+    </div>
+  </nav>
+</header>
+
+<article>
+  <div class="article-meta">September 4, 2026 &middot; 7 min read</div>
+
+  <h1>Is the CRNA Field Getting Saturated? What 14 Years of Workforce Data Shows</h1>
+
+  <p class="article-intro">Twenty new programs in five years. First-time certification candidates up 20% in a single year. Every few weeks someone in a Facebook group declares the field is about to flood. I went looking for actual numbers rather than opinions. What follows is a summary of a data-heavy analysis published in Above the Drapes -- Census microdata, BLS, NBCRNA, HRSA, and the industry's own workforce model -- and what I think it means for anyone working locums right now.</p>
+
+  <div class="source-box">
+    <div class="source-box-label">Source</div>
+    <p>The workforce analysis referenced here was published in the September 2026 issue of <a href="https://above-the-drapes.beehiiv.com/p/is-the-crna-field-becoming-oversaturated-i-pulled-14-years-of-census-data-to-find-out" target="_blank" rel="noopener">Above the Drapes</a>. It draws on IPUMS ACS microdata 2011-2024, BLS OEWS, NBCRNA annual reports, and HRSA's December 2025 national projections. Full methodology and sources are there.</p>
+  </div>
+
+  <h2>The market is tight and the numbers back it up</h2>
+
+  <p>Whatever is happening with program expansion, it has not caught demand. CRNA wages rose roughly 23% nominally between 2021 and 2025. The share of ASCs paying anesthesia stipends to secure coverage went from 28% to 44% in a single year. Nearly 80% of facilities reported anesthesia staffing shortages by late 2022. Those numbers do not describe a profession running out of jobs.</p>
+
+  <p>The underlying workforce data tells the same story. Two independent federal surveys -- one counting people, one counting jobs -- both show the CRNA workforce growing at roughly 4.5% annually over the past decade, more than double the growth rate of healthcare employment overall. The 2021 industry workforce model projected that shortage would narrow steadily toward adequacy. The market moved in the opposite direction. Anesthesia demand has been consistently underestimated, and the locums rate environment reflects it.</p>
+
+  <h2>The pipeline is accelerating, though, and that part is real</h2>
+
+  <p>Program count was essentially flat for thirteen years. Then 20% growth in five years, landing at 155 accredited programs. For a while that was mostly a paper story -- accreditations take years to produce graduates. That changed in 2025.</p>
+
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-number">2,740</div>
+      <div class="stat-label">NCE first-time candidates, 2024</div>
+    </div>
+    <div class="stat-box green">
+      <div class="stat-number">3,294</div>
+      <div class="stat-label">NCE first-time candidates, 2025</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number">90.5%</div>
+      <div class="stat-label">First-time pass rate, 2025</div>
+    </div>
+    <div class="stat-box green">
+      <div class="stat-number">~4,000</div>
+      <div class="stat-label">Projected annual certifications by 2028</div>
+    </div>
+  </div>
+
+  <p>A 20% jump in first-time candidates in one year is not a blip. Programs that opened in 2024 and 2025 have not sent their first graduates through yet, so more acceleration is already in the pipeline. NBCRNA enrollment data suggests annual certifications could approach 4,000 by 2028. Notably, the first-time pass rate went up alongside the volume increase, from 89.3% to 90.5%. If the newer programs were producing weaker graduates, you would expect the opposite.</p>
+
+  <div class="callout callout-info">
+    <div class="callout-info-label">Where programs actually fail students</div>
+    <p>The 155 programs use more than 2,819 clinical sites, but site count and student capacity are not the same thing. Sites vary in case volume and are often shared across multiple programs. Scaling annual certifications from 3,000 to 5,000 requires real expansion in clinical training capacity. <strong>If you are evaluating a newer program, ask specifically about their clinical site contracts -- how many, how stable, how many other programs share them.</strong></p>
+  </div>
+
+  <h2>The retirement wave is not materializing</h2>
+
+  <p>One of the standing arguments for continued demand growth is that a large CRNA retirement wave is coming and new graduates will be needed to replace them. The Census data does not support it. The share of the workforce aged 55 or older actually declined between 2011 and 2024, even as total headcount grew substantially. The mean age has held between 46 and 48 for fourteen straight years, and NBCRNA's own certificant average lands on the same number.</p>
+
+  <p>What is happening instead is that older CRNAs are staying longer. Cohort analysis shows CRNAs in their early 60s are more likely to still be practicing five years later now than the same age group was a decade ago. The implied annual exit rate is around 2.2% for a profession where nearly a third of the workforce is 55 or older. New graduates are additions to a workforce that is not clearing space for them.</p>
+
+  <p>The physician side of anesthesia is a different picture -- roughly 57% of anesthesiologists are 55 or older, versus about 28% of CRNAs. That matters for locums demand. CRNA jobs that open because of physician anesthesiologist exits are a real structural force, and that dynamic has years left to run.</p>
+
+  <h2>HRSA says adequacy arrives by 2028</h2>
+
+  <p>HRSA released updated national workforce projections in December 2025. Their model puts national CRNA supply at 102% of demand by 2028, 108% by 2033, 113% by 2038. Not eventually. By 2028.</p>
+
+  <p>That is worth taking seriously and worth questioning at the same time. The model was built on 2023 inputs, which include the pandemic period, and small assumption errors compound substantially over fifteen years. The 2021 industry model made the same kind of projection and the market contradicted it within three years. Underestimating anesthesia demand is a recurring problem in this literature.</p>
+
+  <p>What I can say is that the facility survey data, wage growth, and stipend behavior all describe a market that does not feel two years from oversupply. Whether HRSA is early, wrong, or correctly identifying a turn that has not yet shown up in wages and vacancies is genuinely unclear. The next few years of data should tell us.</p>
+
+  <h2>Saturation will show up geographically before it shows up nationally</h2>
+
+  <p>The state-level data shows something important: workforce growth over the past decade has been fastest in historically low-density states, not the established markets. High-density states like Michigan (29.6 CRNAs per 100k, mean wage around $234k) and North Dakota (the densest in the country, around $232k) are not showing compensation softening. A market approaching saturation would typically show it in the densest states first.</p>
+
+  <div class="callout callout-example">
+    <div class="callout-example-label">How different state markets actually are</div>
+    <p>Alabama has more than six times the CRNA density of California per 100,000 residents. These are not the same labor market in any meaningful sense.</p>
+    <p><strong>If tightening comes, it will show up in specific high-density metros years before it appears in a national statistic. Geographic flexibility is still one of the more durable advantages a locums CRNA can have.</strong></p>
+  </div>
+
+  <p>One counterintuitive finding: independent practice states have lower median CRNA density than supervision states, 13.2 versus 19.5 per 100k. Legal authority and actual market structure are different things. Several states that adopted independent practice recently remain largely physician-run in anesthesia. The locums opportunity in those markets has not followed the policy change yet.</p>
+
+  <h2>What I watch, and what you probably should too</h2>
+
+  <p>The two numbers worth checking each year are NCE first-time candidate volume and the first-time pass rate, together. Volume tells you how fast the pipeline is growing. Pass rate tells you whether the expanded clinical training capacity is holding up. A sustained pass rate decline alongside rising volume would be an early signal of strain in the newer programs. So far those two have moved in the same direction -- up -- which is the better outcome.</p>
+
+  <p>Nationally, the locums market is still strong by every available measure. Locally, some markets are already diverging. HRSA thinks adequacy is two years out. The market signals say that is probably optimistic. Both are worth holding at the same time.</p>
+
+  <p>The full analysis -- Census methodology, state maps, scenario modeling, complete source list -- is at Above the Drapes and is worth reading if you want the whole picture.</p>
+
+  <p style="margin-top: 8px;"><a href="https://above-the-drapes.beehiiv.com/p/is-the-crna-field-becoming-oversaturated-i-pulled-14-years-of-census-data-to-find-out" target="_blank" rel="noopener" style="color: var(--blue); text-decoration: underline; font-weight: 600;">Read the full analysis at Above the Drapes &rarr;</a></p>
+
+  <div class="share-bar">
+    <div class="share-bar-label">Share this post</div>
+    <div class="share-buttons">
+      <button class="share-btn" onclick="copyLink(this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <span>Copy link</span>
+      </button>
+      <a class="share-btn" id="fb-share" href="#" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        Facebook
+      </a>
+      <a class="share-btn" id="li-share" href="#" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        LinkedIn
+      </a>
+      <a class="share-btn" id="x-share" href="#" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.259 5.631zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X
+      </a>
+    </div>
+  </div>
+  <script>
+    (function() {
+      var url = window.location.href;
+      var title = encodeURIComponent(document.title);
+      var u = encodeURIComponent(url);
+      document.getElementById("fb-share").href = "https://www.facebook.com/sharer/sharer.php?u=" + u;
+      document.getElementById("li-share").href = "https://www.linkedin.com/sharing/share-offsite/?url=" + u;
+      document.getElementById("x-share").href = "https://x.com/intent/tweet?url=" + u + "&text=" + title;
+    })();
+    function copyLink(btn) {
+      navigator.clipboard.writeText(window.location.href).then(function() {
+        var span = btn.querySelector("span");
+        span.textContent = "Copied!";
+        btn.classList.add("copied");
+        setTimeout(function() { span.textContent = "Copy link"; btn.classList.remove("copied"); }, 2000);
+      });
+    }
+  </script>
+
+</article>
+
+<div class="footer-cta">
+  <h2>Know what the current market pays</h2>
+  <p>Free calculators for locums CRNAs. Model take-home pay and compare what contracts actually net after taxes and expenses.</p>
+  <a href="/app.html" class="footer-cta-btn">Open Free Calculator</a>
+</div>
+
+</body>
+</html>
