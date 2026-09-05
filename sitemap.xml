@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://locumslab.com/</loc>
@@ -7,8 +8,14 @@
 </url>
 <url>
 <loc>https://locumslab.com/blog/</loc>
-<lastmod>2026-08-12</lastmod>
+<lastmod>2026-09-04</lastmod>
 <changefreq>weekly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://locumslab.com/blog/crna-oversaturation-workforce-data.html</loc>
+<lastmod>2026-09-04</lastmod>
+<changefreq>monthly</changefreq>
 <priority>0.8</priority>
 </url>
 <url>
@@ -81,6 +88,6 @@
 <loc>https://locumslab.com/guide.html</loc>
 <lastmod>2026-04-02</lastmod>
 <changefreq>monthly</changefreq>
-<priority>0.6</priority>
+<priority>0.8</priority>
 </url>
 </urlset>
