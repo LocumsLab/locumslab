@@ -416,6 +416,12 @@ exports.handler = async (event) => {
     const message = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 8000,
+      // The API default is 1.0. Extraction is not a creative task — there is
+      // one right answer for "what does the cancellation clause say" — and
+      // sampling at 1.0 is why the same contract graded D, C, F, F, D across
+      // five runs. Nothing downstream is stochastic: scoreContract() is pure,
+      // so every bit of that spread came from this call.
+      temperature: 0,
       system: systemPromptFor(profession),
       messages: [{
         role: 'user',
