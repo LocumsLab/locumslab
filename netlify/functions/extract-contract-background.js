@@ -2,6 +2,8 @@ const Anthropic = require('@anthropic-ai/sdk');
 const { createClient } = require('@supabase/supabase-js');
 const { scoreContract, gradeRate } = require('./lib/score-contract');
 const { profileFor, normaliseProfession, rubricApplies } = require('./lib/rubrics');
+const cache = require('./lib/extraction-cache');
+const ctext = require('./lib/contract-text');
 
 // Additive. This does NOT replace analyze-contract-background.js. It writes to
 // new columns (extracted, score, rubric_version, profession) on the same
@@ -19,6 +21,15 @@ const { profileFor, normaliseProfession, rubricApplies } = require('./lib/rubric
 // Required env: ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 
 const MODEL = 'claude-sonnet-5';
+
+// Part of the cache key. BUMP THIS whenever CRNA_SYSTEM_PROMPT, RN_SYSTEM_PROMPT
+// or the shared rule blocks change, otherwise cached extractions made under the
+// old prompt will be served against the new one.
+//   4 = evidence validation: quotes are checked against the contract text
+//   3 = tri-state non_compete/exclusivity/auto_renewal/unilateral_scope_change
+//   2 = general-rule-over-carve-out precedence rule
+//   1 = original
+const PROMPT_VERSION = 4;
 
 // ---------------------------------------------------------------------------
 // Shared extraction discipline. Both prompts open with this, because the rules
@@ -81,12 +92,12 @@ termination_notice_crna_days: number, notice the clinician must give to terminat
 malpractice_type: one of "occurrence", "claims_made"
 tail_responsibility: one of "agency", "crna", "not_applicable"
 indemnification: one of "mutual", "crna_only"
-non_compete_present: boolean
+non_compete_present: one of "present", "absent_stated", "not_addressed"
 non_compete_radius_miles: number
 non_compete_duration_months: number
-exclusivity_clause: boolean, whether the clinician is restricted from other assignments or agencies during the term
-auto_renewal: boolean
-unilateral_scope_change: boolean, whether the facility may change site or duties without the clinician's agreement
+exclusivity_clause: whether the clinician is restricted from other assignments or agencies during the term. One of "present", "absent_stated", "not_addressed"
+auto_renewal: one of "present", "absent_stated", "not_addressed"
+unilateral_scope_change: whether the facility may change site or duties without the clinician's agreement. One of "present", "absent_stated", "not_addressed"
 
 SCHEDULE
 schedule_guarantee: one of "fixed", "posted_in_advance", "facility_discretion"
@@ -99,7 +110,12 @@ Type rules:
 - non_compete_radius_miles and non_compete_duration_months are null when a covenant exists but its scope is not stated numerically. Do not estimate.
 - pay_rate_amount must never be null when the contract states any compensation figure. This is the single most important field. If the contract says $2,500 per shift, that is pay_rate_amount 2500 and pay_rate_unit "shift".
 - Do not infer malpractice_type from a tail clause, or a party's expense obligation from a licensure-maintenance clause.
-- unilateral_scope_change is true only where the contract grants that right in the text.${EXTRACTION_TYPE_RULES}`;
+- The three-state fields (non_compete_present, exclusivity_clause, auto_renewal, unilateral_scope_change) MUST be one of exactly three values, and the difference between the last two matters more than anything else in this prompt:
+    "present"        the contract contains the clause. Quote it.
+    "absent_stated"  the contract AFFIRMATIVELY STATES the clause does not apply, e.g. "no non-competition covenant shall apply to Contractor". Quote that sentence. This is rare.
+    "not_addressed"  the contract simply never mentions the subject. Quote is "".
+  Reading the whole contract and finding no covenant is "not_addressed", NOT "absent_stated". "absent_stated" requires a sentence you can quote saying the clause does not apply. If you cannot quote such a sentence, the value is "not_addressed". Never use true or false for these fields.
+- unilateral_scope_change is "present" only where the contract grants that right in the text.${EXTRACTION_TYPE_RULES}`;
 
 const RN_SYSTEM_PROMPT = `You extract structured facts from travel nursing assignment contracts. You do not evaluate, grade, rank, or advise. You report only what the document says.
 
@@ -378,9 +394,9 @@ exports.handler = async (event) => {
     return json(405, { success: false, error: 'Method Not Allowed' });
   }
 
-  let pdfBase64, contractText, jobId, contractType;
+  let pdfBase64, contractText, jobId, contractType, userId;
   try {
-    ({ pdfBase64, contractText, jobId, contractType } = JSON.parse(event.body || '{}'));
+    ({ pdfBase64, contractText, jobId, contractType, userId } = JSON.parse(event.body || '{}'));
   } catch (e) {
     return json(400, { success: false, error: 'Malformed request body.' });
   }
@@ -410,6 +426,30 @@ exports.handler = async (event) => {
 
   const docNoun = profession === 'travel_rn'
     ? 'travel nursing assignment contract' : 'contract';
+
+  // Cache lookup. Same user, same bytes, same rubric/prompt/model -> return the
+  // analysis we already produced, rather than re-running a non-deterministic
+  // model and showing them a different grade for the same document.
+  const key = cache.cacheKey({
+    userId: userId,
+    contentHash: cache.contentHash(pdfBase64, contractText),
+    profession: profession,
+    rubricVersion: RUBRIC.version,
+    promptVersion: PROMPT_VERSION,
+    model: MODEL
+  });
+
+  const hit = await cache.lookup(db(), key);
+  if (hit && hit.extracted && hit.score) {
+    await finish(jobId, {
+      extracted: hit.extracted,
+      score: hit.score,
+      rubric_version: hit.rubric_version || RUBRIC.version
+    });
+    // Deliberately NOT recording a market observation on a cache hit. The same
+    // contract counted twice would skew the rate bands it feeds.
+    return json(200, { success: true, cached: true, letter: hit.score.overall.letter });
+  }
 
   try {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -465,12 +505,60 @@ exports.handler = async (event) => {
       return json(200, { success: false });
     }
 
+    // ---- evidence validation --------------------------------------------
+    // Deterministic, no model involved. Every non-null field carries a quote;
+    // check that the quote actually appears in the contract. A field whose
+    // quote cannot be found is not established, so it is nulled and routed to
+    // clarifications rather than scored.
+    //
+    // This closes the gap the quote rule left open. score-contract.js already
+    // dropped values with an EMPTY quote, but a quote that is present and
+    // wrong — the model paraphrasing, or citing a clause that says something
+    // else — was scored as if it were supported.
+    //
+    // Scanned PDFs arrive as base64 with no text layer, so there is nothing to
+    // check against and every field passes untouched. auditEvidence reports
+    // that via hadSource.
+    // A scanned PDF has no text layer, so nothing can be checked. That is
+    // validation UNAVAILABLE, not validation passed — the distinction is
+    // recorded so a scan is never mistaken for a clean bill of health.
+    let evidence = {
+      rejected: [], checkedCount: 0,
+      validationAvailable: false, sourceType: 'scanned_pdf', status: 'unavailable'
+    };
+    if (hasText) {
+      const normalised = ctext.normaliseContractText(contractText);
+      evidence = ctext.auditEvidence(extracted, normalised, 'text');
+      evidence.rejected.forEach(function (r) {
+        // Mark it, do NOT null it. Nulling would make an extraction failure
+        // look like contract silence, which drops the field from the
+        // denominator and IMPROVES the grade. scoreContract() reads this flag
+        // and keeps the field in the denominator at zero points instead.
+        // The claimed value and its quote are kept for inspection.
+        extracted[r.key].evidence_rejected = true;
+      });
+      if (evidence.rejected.length) {
+        console.warn('Evidence rejected for ' + evidence.rejected.length + ' field(s): '
+          + evidence.rejected.map(function (r) { return r.key; }).join(', '));
+      }
+    }
+
     const score = scoreContract(extracted, RUBRIC);
     score.rate = normaliseRate(extracted, profession);
     // Rate gets its own A-F band, shown beside the offer grade but never folded
     // into it. Without this the analyzer renders a rate with no letter.
     score.rate.band = gradeRate(score.rate.hourly, RUBRIC);
     score.rate.label = profile.rateLabel;
+
+    // Recorded on the score so it is visible from SQL without re-reading the
+    // extraction, and so the UI can eventually say "we could not verify this".
+    score.evidence = {
+      status: evidence.status,
+      validationAvailable: evidence.validationAvailable,
+      sourceType: evidence.sourceType,
+      checked: evidence.checkedCount,
+      rejected: evidence.rejected.map(function (r) { return r.key; })
+    };
 
     // Same column set as before this change. contract_type is already on the
     // row, written by the uploader, so the profession is recorded without a
@@ -482,6 +570,9 @@ exports.handler = async (event) => {
     });
 
     await recordObservation(extracted, score, RUBRIC);
+    await cache.store(db(), key, {
+      extracted: extracted, score: score, rubricVersion: RUBRIC.version
+    });
 
     return json(200, { success: true, letter: score.overall.letter, profession: profession });
 
