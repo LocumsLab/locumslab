@@ -417,12 +417,16 @@ exports.handler = async (event) => {
     const message = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 8000,
-      // The API default is 1.0. Extraction is not a creative task — there is
-      // one right answer for "what does the cancellation clause say" — and
-      // sampling at 1.0 is why the same contract graded D, C, F, F, D across
-      // five runs. Nothing downstream is stochastic: scoreContract() is pure,
-      // so every bit of that spread came from this call.
-      temperature: 0,
+      // Do NOT set temperature or top_p here. This model rejects them with
+      // HTTP 400 "`temperature` is deprecated for this model", and because the
+      // whole call is inside one try/catch, that 400 killed every extraction —
+      // the row still completed with a prose review, so the only visible
+      // symptom was the negotiation report never arriving.
+      //
+      // Determinism has to come from the prompt and the schema instead: the
+      // general-rule-over-carve-out precedence rule, the verbatim quote
+      // requirement, and giving every clause a field of its own so the model
+      // is never forced to choose which one to record.
       system: systemPromptFor(profession),
       messages: [{
         role: 'user',
