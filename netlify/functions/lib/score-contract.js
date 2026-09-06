@@ -178,9 +178,21 @@ const BUILTIN_DERIVATIONS = {
   // ---- CRNA locums ----
 
   non_compete: function (spec, extracted) {
-    const present = readRaw(extracted, spec, 'present', 'non_compete_present');
-    if (present === null || present === undefined) return null;
-    if (present === false || String(present).toLowerCase() === 'false') {
+    const raw = readRaw(extracted, spec, 'present', 'non_compete_present');
+    if (raw === null || raw === undefined) return null;
+    const v = String(raw).trim().toLowerCase();
+
+    // Tri-state, not boolean. A boolean plus null had to carry three distinct
+    // states — a covenant exists, the contract affirmatively says there is
+    // none, and the contract is silent — so the model had to guess which one
+    // "false" meant. Across four runs of one contract this field returned
+    // true, false, AND not-found: 0 points, 9 points, and excluded from the
+    // denominator entirely. One field, three different letter grades.
+    //
+    // Old boolean values still score, so rows extracted before the schema
+    // change keep working.
+    if (v === 'not_addressed') return null;             // silent -> clarification
+    if (v === 'absent_stated' || v === 'false') {
       return { points: spec.possible, band: 'No restrictive covenant' };
     }
 
@@ -331,6 +343,9 @@ function scoreContract(extracted, rubric, options) {
 
   const scored = [];
   const clarifications = [];
+  // Fields the model answered but whose evidence could not be verified. These
+  // are NOT the same as silence and must not be treated as such.
+  const unresolved = [];
 
   Object.keys(rubric.fields).forEach(function (key) {
     const spec = rubric.fields[key];
@@ -338,6 +353,74 @@ function scoreContract(extracted, rubric, options) {
     let quote = '';
     let value = null;
     let unsupported = false;
+
+    // ---- unverified evidence -------------------------------------------
+    // A value whose quote could not be found in the contract means the
+    // EXTRACTOR failed, not that the contract is silent. Those two must be
+    // handled differently, and getting it wrong is worse than the variance it
+    // was meant to fix: dropping the field would shrink the denominator, so a
+    // failed extraction would IMPROVE the grade. A contract scored A because
+    // the model hallucinated its way out of three findings is the single worst
+    // output this system could produce.
+    //
+    // So an unverified field stays in the denominator, earns nothing, and is
+    // surfaced as needing clarification. It cannot help the grade and it cannot
+    // silently vanish. Once targeted re-verification exists, these are the
+    // fields it re-reads.
+    // Derived fields read OTHER keys, so checking extracted[key] misses them
+    // entirely — and non_compete, the heaviest and least stable field in the
+    // rubric, is derived. A derived field is unresolved when ANY input it
+    // depends on failed verification.
+    let rawField = extracted && extracted[key];
+    if (spec.type === 'derived') {
+      const sourceKeys = Object.keys(spec.reads || {}).map(function (role) {
+        return spec.reads[role];
+      });
+      const failed = sourceKeys.filter(function (k) {
+        const f = extracted && extracted[k];
+        return f && typeof f === 'object' && f.evidence_rejected;
+      });
+      if (failed.length) {
+        const f = extracted[failed[0]];
+        rawField = {
+          evidence_rejected: true,
+          value: f.value === undefined ? null : f.value,
+          quote: typeof f.quote === 'string' ? f.quote : ''
+        };
+      }
+    }
+
+    if (rawField && typeof rawField === 'object' && rawField.evidence_rejected) {
+      unresolved.push({
+        key: key,
+        label: spec.label,
+        tier: spec.tier,
+        category: spec.category,
+        claimedValue: rawField.value === undefined ? null : rawField.value,
+        quote: typeof rawField.quote === 'string' ? rawField.quote : '',
+        possible: spec.possible
+      });
+      clarifications.push({
+        key: key,
+        label: spec.label,
+        tier: spec.tier,
+        rank: -1, // ahead of ordinary clarifications: this is a known unknown
+        question: spec.clarifyAsk || spec.ask || '',
+        questionOffer: spec.clarifyAskOffer || spec.clarifyAsk || spec.ask || '',
+        relatedText: typeof rawField.quote === 'string' ? rawField.quote : '',
+        unsupportedValue: true,
+        unverified: true
+      });
+      scored.push({
+        key: key, label: spec.label, tier: spec.tier, category: spec.category,
+        value: null, quote: typeof rawField.quote === 'string' ? rawField.quote : '',
+        band: 'Could not be verified in the contract',
+        points: 0, possible: spec.possible, lost: spec.possible,
+        unverified: true,
+        why: spec.why || '', ask: spec.ask || '', fallback: spec.fallback || ''
+      });
+      return;
+    }
 
     if (spec.type === 'derived') {
       const fn = derivations[spec.derivation];
@@ -467,7 +550,7 @@ function scoreContract(extracted, rubric, options) {
   // because a recruiter gives you two or three concessions, not eight.
   const minLoss = rubric.minPriorityLoss || 2;
   const priorities = scored
-    .filter(function (f) { return f.lost >= minLoss; })
+    .filter(function (f) { return f.lost >= minLoss && !f.unverified; })
     .sort(function (a, b) {
       if (b.lost !== a.lost) return b.lost - a.lost;
       return TIER_ORDER[a.tier] - TIER_ORDER[b.tier];
@@ -545,8 +628,10 @@ function scoreContract(extracted, rubric, options) {
       fieldsScored: scored.length,
       fieldsTotal: totalFields,
       scoredShare: Math.round(scoredShare * 100) / 100,
-      provisional: scoredShare < minShare
+      provisional: scoredShare < minShare,
+      unresolvedCount: unresolved.length
     },
+    unresolved: unresolved,
     categories: categories,
     priorities: priorities,
     notWorthFighting: notWorthFighting,
