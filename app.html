@@ -4960,16 +4960,31 @@ async function attachOfferGrade(jobId) {
 
     let row = null;
     try {
+      // maybeSingle, not single. single() returns HTTP 406 when zero rows
+      // match, the supabase-js client surfaces that in res.error rather than
+      // throwing, and res.data comes back null — so the catch never fired and
+      // `if (!row) continue` silently swallowed every failure for the full
+      // three minutes. Same defect as the analysis poll above.
       const res = await sb
         .from('contract_reviews')
         .select('score, extraction_error')
         .eq('id', jobId)
-        .single();
+        .maybeSingle();
+      if (res.error) {
+        console.error('Grade poll failed:', res.error.code, res.error.message);
+        continue;
+      }
       row = res.data;
-    } catch (e) { continue; }
+    } catch (e) {
+      console.error('Grade poll threw:', e && e.message);
+      continue;
+    }
 
     if (!row) continue;
-    if (row.extraction_error) return;
+    if (row.extraction_error) {
+      console.warn('Extraction reported an error; no grade will render:', row.extraction_error);
+      return;
+    }
     if (row.score) { renderOfferGrade(row.score); return; }
   }
 }
