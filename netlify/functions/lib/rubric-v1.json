@@ -151,6 +151,11 @@
       "possible": 9,
       "type": "derived",
       "derivation": "non_compete",
+      "reads": {
+        "present": "non_compete_present",
+        "radius": "non_compete_radius_miles",
+        "months": "non_compete_duration_months"
+      },
       "clarifyWhenNull": true,
       "why": "This limits where you can work after the assignment ends. The dangerous version is the one with no stated radius or end date, because you can't tell what it rules out until someone tells you.",
       "ask": "What is the exact geographic radius and duration of the restrictive covenant, and does it apply to the facility only or to any client of the agency?",
@@ -260,6 +265,10 @@
       "possible": 7,
       "type": "derived",
       "derivation": "overtime",
+      "reads": {
+        "threshold": "overtime_threshold_hours",
+        "multiplier": "overtime_multiplier"
+      },
       "clarifyWhenNull": true,
       "why": "If the threshold isn't defined, extra hours are just hours. Assignments run long often enough that this comes up.",
       "ask": "At what hourly threshold does overtime begin, is it daily or weekly, and at what multiple is it paid?",
@@ -274,7 +283,9 @@
       "possible": 7,
       "type": "enum",
       "points": {
+        "absent_stated": 7,
         "false": 7,
+        "present": 0,
         "true": 0
       },
       "clarifyWhenNull": true,
@@ -398,6 +409,10 @@
       "possible": 4,
       "type": "derived",
       "derivation": "termination_asymmetry",
+      "reads": {
+        "agency": "termination_notice_agency_days",
+        "clinician": "termination_notice_crna_days"
+      },
       "clarifyWhenNull": true,
       "why": "The gap between the two notice periods is the signal. If they can leave in 7 days and you owe 30, the flexibility runs one direction only.",
       "ask": "Can the without-cause termination notice be made symmetric between the parties?",
@@ -431,7 +446,9 @@
       "possible": 2,
       "type": "enum",
       "points": {
+        "absent_stated": 2,
         "false": 2,
+        "present": 0,
         "true": 0
       },
       "clarifyWhenNull": true,
@@ -448,7 +465,9 @@
       "possible": 2,
       "type": "enum",
       "points": {
+        "absent_stated": 2,
         "false": 2,
+        "present": 0,
         "true": 0
       },
       "clarifyWhenNull": true,
