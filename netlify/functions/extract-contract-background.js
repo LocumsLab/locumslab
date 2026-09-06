@@ -37,6 +37,7 @@ const EXTRACTION_TYPE_RULES = `
 - A non-null value REQUIRES a verbatim quote. If you cannot quote text supporting the value, the value is null. This applies especially to "none": only use it where the contract affirmatively says the term does not apply.
 - The quote must support the specific value. If no sentence states the value directly, the value is null.
 - If you find language relevant to a field but it does not fit the required type, set value to null and still put the language in "quote".
+- Where SEVERAL clauses address the same field, extract the GENERAL RULE and quote it. Do not extract an exception, carve-out, cap, or limited allowance as if it were the rule. Example: if one clause states that cancelled shifts are paid at four hours, and a separate clause allows the facility a limited number of unpaid cancellations, then cancellation_pay_hours is 4 — the allowance is a carve-out, not the rule. If a field exists for the carve-out itself, put it there; if no field exists for it, leave it out rather than overwriting the general rule with it.
 - Never derive a MONETARY value by calculation. Report figures as the contract states them.
 - Unit conversion of a stated duration is not derivation. One year is 52 weeks, six months is 26 weeks, ninety days is 13 weeks. Convert and quote the stated term.
 - Every quote must be copied verbatim from the contract. Never paraphrase inside a quote. If a value comes from a table, quote the row.`;
@@ -481,8 +482,30 @@ exports.handler = async (event) => {
     return json(200, { success: true, letter: score.overall.letter, profession: profession });
 
   } catch (error) {
-    console.error('Extraction error:', error && error.message);
-    await finish(jobId, { extraction_error: 'The term extraction failed to run.' });
+    // "The term extraction failed to run." told us nothing. An Anthropic SDK
+    // error carries the useful part in .status and .error, not .message, so
+    // both were being discarded. Log everything, and store a short version on
+    // the row so the cause is visible from SQL without digging through logs.
+    const status = error && (error.status || error.statusCode);
+    const apiMsg = error && error.error && error.error.error && error.error.error.message;
+    const detail = [
+      status ? 'HTTP ' + status : null,
+      apiMsg || (error && error.message) || String(error),
+      error && error.type ? '(' + error.type + ')' : null
+    ].filter(Boolean).join(' — ');
+
+    console.error('Extraction error:', detail);
+    console.error('Extraction error full:', JSON.stringify({
+      name: error && error.name,
+      status: status,
+      type: error && error.type,
+      message: error && error.message,
+      body: error && error.error
+    }));
+
+    await finish(jobId, {
+      extraction_error: 'Extraction failed: ' + String(detail).slice(0, 300)
+    });
     return json(200, { success: false });
   }
 };
