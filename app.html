@@ -5080,6 +5080,36 @@ function renderOfferGrade(score) {
       + '</div></div>';
   }
 
+  // Clauses the extractor answered but could not support with text found in the
+  // contract. They stay in the denominator at zero, so they never inflate the
+  // grade — but they are not the same as a term the contract omits, and saying
+  // so is more honest than a score range.
+  const unresolvedCount = (o.unresolvedCount || 0);
+  if (unresolvedCount > 0) {
+    const names = (score.unresolved || []).map(function (u) { return u.label; }).filter(Boolean);
+    html += '<div style="margin-top:16px;border-left:3px solid var(--warning);'
+      + 'background:rgba(183,121,31,0.06);border-radius:0 10px 10px 0;padding:12px 16px;">'
+      + '<div style="font-size:0.875rem;font-weight:700;">'
+      + unresolvedCount + (unresolvedCount === 1 ? ' clause needs' : ' clauses need') + ' clarification</div>'
+      + '<div style="font-size:0.8125rem;color:var(--muted);line-height:1.6;margin-top:5px;">'
+      + (names.length ? escapeHtml(names.join(', ')) + '. ' : '')
+      + 'The review found language on ' + (unresolvedCount === 1 ? 'this' : 'these')
+      + ' but could not confirm it against the contract text, so '
+      + (unresolvedCount === 1 ? 'it was' : 'they were') + ' left out of the grade. '
+      + 'Check ' + (unresolvedCount === 1 ? 'this clause' : 'these clauses') + ' yourself before you sign.'
+      + '</div></div>';
+  }
+
+  // A scan has no text layer, so nothing could be checked against the source.
+  // That is different from everything checking out, and the difference matters
+  // enough to say once.
+  const ev = score.evidence;
+  if (ev && ev.validationAvailable === false) {
+    html += '<div style="margin-top:12px;font-size:0.75rem;color:var(--muted);line-height:1.55;">'
+      + 'This file had no readable text layer, so quoted contract language could not be '
+      + 'checked against the source. The findings below come from the document as scanned.</div>';
+  }
+
   const rt = score.rate;
   if (rt && rt.stated) {
     html += '<div style="margin-top:18px;background:var(--bg);border:1px solid var(--border);'
