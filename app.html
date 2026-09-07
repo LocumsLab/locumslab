@@ -4545,6 +4545,11 @@ async function analyzeContractWithClaude(payload, filename) {
 
  body.jobId = job.id;
  body.contractType = selectedContractType;
+ // Scopes both caches to this user. Without it, extraction-cache.js fell back
+ // to 'anon' and every user shared one cache entry per contract — so an
+ // identical template contract uploaded by two clinicians returned the first
+ // one's stored result.
+ body.userId = currentUserId;
  _lastReviewJobId = job.id;
 
  // 2. Hand it off. A background function replies 202 with no body.
