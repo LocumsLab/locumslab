@@ -4,6 +4,7 @@ const { scoreContract, gradeRate } = require('./lib/score-contract');
 const { profileFor, normaliseProfession, rubricApplies } = require('./lib/rubrics');
 const cache = require('./lib/extraction-cache');
 const ctext = require('./lib/contract-text');
+const { reverify } = require('./lib/reverify');
 
 // Additive. This does NOT replace analyze-contract-background.js. It writes to
 // new columns (extracted, score, rubric_version, profession) on the same
@@ -25,11 +26,12 @@ const MODEL = 'claude-sonnet-5';
 // Part of the cache key. BUMP THIS whenever CRNA_SYSTEM_PROMPT, RN_SYSTEM_PROMPT
 // or the shared rule blocks change, otherwise cached extractions made under the
 // old prompt will be served against the new one.
+//   5 = targeted re-verification of unresolved / ambiguous / conflicting fields
 //   4 = evidence validation: quotes are checked against the contract text
 //   3 = tri-state non_compete/exclusivity/auto_renewal/unilateral_scope_change
 //   2 = general-rule-over-carve-out precedence rule
 //   1 = original
-const PROMPT_VERSION = 4;
+const PROMPT_VERSION = 5;
 
 // ---------------------------------------------------------------------------
 // Shared extraction discipline. Both prompts open with this, because the rules
@@ -543,6 +545,33 @@ exports.handler = async (event) => {
       }
     }
 
+    // ---- targeted re-verification ---------------------------------------
+    // Only the fields that did not resolve: an unverifiable quote, or language
+    // the model flagged ambiguous or conflicting. One narrow call, not a second
+    // reading of the whole contract — re-reading everything would risk
+    // perturbing the fields that were already fine, which is the variance this
+    // whole effort exists to remove.
+    //
+    // Answers go through the same evidence check as the first pass. Anything
+    // still doubtful keeps its flag and stays unresolved: in the denominator,
+    // scoring nothing, surfaced as needing clarification.
+    let review = { ran: false, resolved: [], stillUnresolved: [] };
+    if (hasText) {
+      review = await reverify({
+        anthropic: anthropic,
+        model: MODEL,
+        extracted: extracted,
+        rubric: RUBRIC,
+        contractText: contractText,
+        systemContext: systemPromptFor(profession)
+      });
+      if (review.ran) {
+        console.log('Re-verification: ' + review.pending.length + ' field(s) reviewed, '
+          + review.resolved.length + ' resolved, ' + review.stillUnresolved.length + ' still unresolved'
+          + (review.stillUnresolved.length ? ' (' + review.stillUnresolved.join(', ') + ')' : ''));
+      }
+    }
+
     const score = scoreContract(extracted, RUBRIC);
     score.rate = normaliseRate(extracted, profession);
     // Rate gets its own A-F band, shown beside the offer grade but never folded
@@ -552,6 +581,15 @@ exports.handler = async (event) => {
 
     // Recorded on the score so it is visible from SQL without re-reading the
     // extraction, and so the UI can eventually say "we could not verify this".
+    score.reverification = {
+      ran: !!review.ran,
+      reviewed: (review.pending || []).length,
+      resolved: (review.resolved || []).map(function (r) { return r.key; }),
+      changed: (review.resolved || []).filter(function (r) { return r.changed; })
+                                      .map(function (r) { return r.key; }),
+      stillUnresolved: review.stillUnresolved || []
+    };
+
     score.evidence = {
       status: evidence.status,
       validationAvailable: evidence.validationAvailable,
