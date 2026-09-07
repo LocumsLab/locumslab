@@ -13,6 +13,14 @@ const { createClient } = require('@supabase/supabase-js');
 
 const MODEL = 'claude-sonnet-5';
 
+const cache = require('./lib/analysis-cache');
+
+// Bump when the prompt or the post-processing changes in a way that should
+// invalidate stored reviews. Same discipline as PROMPT_VERSION in
+// extract-contract-background.js.
+//   1 = initial cached version
+const ANALYZER_VERSION = 1;
+
 const CRNA_PROMPT = `You are reviewing a locum tenens contract on behalf of a CRNA who is deciding whether to sign it. You are not their attorney and you do not give legal advice. Your job is to make the contract legible: say what it actually says, flag what is missing, and give them precise questions to ask.
 
 Review these categories specifically:
@@ -219,9 +227,9 @@ exports.handler = async (event) => {
     return json(405, { success: false, error: 'Method Not Allowed' });
   }
 
-  let pdfBase64, contractText, jobId, contractType;
+  let pdfBase64, contractText, jobId, contractType, userId;
   try {
-    ({ pdfBase64, contractText, jobId, contractType } = JSON.parse(event.body || '{}'));
+    ({ pdfBase64, contractText, jobId, contractType, userId } = JSON.parse(event.body || '{}'));
   } catch (e) {
     return json(400, { success: false, error: 'Malformed request body.' });
   }
@@ -249,6 +257,34 @@ exports.handler = async (event) => {
 
   const type = contractType === 'travel_rn' ? 'travel_rn' : 'crna_locums';
   const docNoun = type === 'travel_rn' ? 'travel nursing assignment contract' : 'contract';
+
+  // ---- cache -------------------------------------------------------------
+  // The same contract, re-uploaded under the same analyzer version, returns the
+  // same review. Without this the model re-reads the document every time and
+  // can return a different set of issues — the review is the product, and a
+  // product that changes when you look at it twice is not one.
+  //
+  // Keyed on the normalised contract text, not the file bytes, so a re-export
+  // of the same agreement still hits. Scoped per user, so nothing about one
+  // person's upload is inferable from another's.
+  const cacheKey = cache.cacheKey({
+    userId: userId,
+    contentHash: cache.contentHash(pdfBase64, contractText),
+    contractType: type,
+    analyzerVersion: ANALYZER_VERSION,
+    model: MODEL
+  });
+
+  const cached = await cache.lookup(db(), cacheKey);
+  if (cached && cached.analysis) {
+    console.log('analysis cache hit for job ' + jobId);
+    await finish(jobId, {
+      status: 'complete',
+      analysis: cached.analysis,
+      completed_at: new Date().toISOString()
+    });
+    return json(200, { success: true, cached: true });
+  }
 
   try {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -380,11 +416,41 @@ exports.handler = async (event) => {
       attorneyItems: strArr(parsed.takeToAttorney)
     };
 
+    // A review that rates the contract High or Medium risk and then lists no
+    // issues, no missing terms and no questions contradicts itself. The prompt
+    // says risk reflects the severity of the issues listed, so an empty review
+    // at that risk level is a bad generation, not a clean contract.
+    //
+    // This is checked BEFORE the cache write. Storing it would freeze the empty
+    // review for thirty days and every re-upload would return it — caching
+    // makes output consistent, which is only worth having when the output is
+    // right.
+    const isEmpty = issues.length === 0
+      && missing.length === 0
+      && analysis.recruiterQuestions.length === 0;
+    const incoherent = isEmpty && (riskLevel === 'High' || riskLevel === 'Medium');
+
+    if (incoherent) {
+      console.error('Incoherent analysis: riskLevel=' + riskLevel + ' with no issues, '
+        + 'no missing terms and no questions. stop_reason=' + message.stop_reason
+        + ' summary_len=' + analysis.summary.length + '. Not stored, not cached.');
+      await finish(jobId, {
+        status: 'failed',
+        error: 'The review came back incomplete for this document. Please try again — '
+             + 'if it happens twice, email hello@locumslab.com and it will be reviewed manually.',
+        completed_at: new Date().toISOString()
+      });
+      return json(200, { success: false, reason: 'incoherent' });
+    }
+
     await finish(jobId, {
       status: 'complete',
       analysis: analysis,
       completed_at: new Date().toISOString()
     });
+
+    // Fire and forget. A failed cache write must never fail a review.
+    await cache.store(db(), cacheKey, { analysis: analysis, analyzerVersion: ANALYZER_VERSION });
 
     return json(200, { success: true });
 
