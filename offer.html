@@ -49,7 +49,7 @@
 
   <div class="crna-note">
     This is the offer as the agency entered it. Anything they left blank shows as
-    not stated, because that's worth knowing before you sign.
+    not stated.
   </div>
 
   <div class="attribution">
@@ -61,7 +61,7 @@
 
   <footer>
     <p><a href="https://locumslab.com">LocumsLab</a> · Not legal, tax, or financial advice.
-      The figures come from what the agency entered and nobody has verified them.</p>
+      The figures come from what the agency entered.</p>
     <p style="margin-top:8px;font-size:.6875rem;color:#8a92a0;">© 2026 LocumsLab. All rights reserved. LocumsLab™ and the LocumsLab offer grade are trademarks of LocumsLab.</p>
   </footer>
 
@@ -195,8 +195,7 @@ function render(raw, meta, score) {
     + (clar.length
         ? '<section><div class="clarify-box">'
           + '<div class="clarify-title">Questions worth asking</div>'
-          + '<div class="clarify-sub">The agency didn\'t fill in these ' + clar.length + ' terms. '
-          + 'Here\'s what to ask your recruiter.</div>'
+          + '<div class="clarify-sub">The agency didn\'t fill in these ' + clar.length + ' terms.</div>'
           + '<ul class="clarify-list">' + clarList + '</ul>'
           + '<button id="sendQs" class="cta-btn" style="margin-top:14px;border:none;cursor:pointer;">'
           + 'Send these to ' + esc(agency) + '</button>'
@@ -211,9 +210,15 @@ function render(raw, meta, score) {
     + 'is the thing that binds you.'
     + (isRn ? ' Ask for the confirmation sheet too — days off and unit restrictions agreed verbally '
             + 'are only enforceable if they appear on it.' : '') + '</div>'
+    // /app rather than /app.html, matching the clean URL in netlify.toml, and
+    // ?type= carries the profession so the candidate lands on the right rubric
+    // instead of picking again. Picking wrong would grade a travel contract
+    // against the locums rubric: confidently wrong rather than obviously broken.
     + '<div class="analyzer-note">Upload it to the '
-    + '<a href="https://locumslab.com/app.html">Contract Analyzer</a> and you\'ll get the same grade on '
-    + 'the real document, plus every spot where it doesn\'t match what you were told here.</div>'
+    + '<a href="https://locumslab.com/app?type=' + encodeURIComponent(score.profession || 'crna_locums') + '">'
+    + 'Contract Analyzer</a> and you\'ll get the same grade on '
+    + 'the real document, plus every spot where it doesn\'t match what you were told here. '
+    + 'The first three are free.</div>'
     + '</div></section>'
 
     + (score.profession === 'crna_locums'
