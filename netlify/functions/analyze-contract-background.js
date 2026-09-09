@@ -14,6 +14,7 @@ const { createClient } = require('@supabase/supabase-js');
 const MODEL = 'claude-sonnet-5';
 
 const cache = require('./lib/analysis-cache');
+const preview = require('./lib/preview');
 
 // Bump when the prompt or the post-processing changes in a way that should
 // invalidate stored reviews. Same discipline as PROMPT_VERSION in
@@ -258,6 +259,23 @@ exports.handler = async (event) => {
   const type = contractType === 'travel_rn' ? 'travel_rn' : 'crna_locums';
   const docNoun = type === 'travel_rn' ? 'travel nursing assignment contract' : 'contract';
 
+  // ---- access ------------------------------------------------------------
+  // Checked server-side against the entitlements table. The client sends no
+  // flag we would trust, and a free user's row must never contain the full
+  // review — RLS lets them read their own row, so anything the UI merely blurs
+  // is one devtools call away from being free.
+  const access = await preview.accessFor(db(), userId);
+  if (!access.pro && access.exhausted) {
+    await finish(jobId, {
+      status: 'failed',
+      error: 'You have used all ' + preview.PREVIEW_LIMIT + ' free contract previews. '
+           + 'Upgrade to run full reviews.',
+      access_tier: 'blocked',
+      completed_at: new Date().toISOString()
+    });
+    return json(200, { success: false, reason: 'preview_limit' });
+  }
+
   // ---- cache -------------------------------------------------------------
   // The same contract, re-uploaded under the same analyzer version, returns the
   // same review. Without this the model re-reads the document every time and
@@ -277,13 +295,14 @@ exports.handler = async (event) => {
 
   const cached = await cache.lookup(db(), cacheKey);
   if (cached && cached.analysis) {
-    console.log('analysis cache hit for job ' + jobId);
+    console.log('analysis cache hit for job ' + jobId + ' (tier ' + access.tier + ')');
     await finish(jobId, {
       status: 'complete',
-      analysis: cached.analysis,
+      analysis: access.pro ? cached.analysis : preview.redactAnalysis(cached.analysis),
+      access_tier: access.tier,
       completed_at: new Date().toISOString()
     });
-    return json(200, { success: true, cached: true });
+    return json(200, { success: true, cached: true, tier: access.tier });
   }
 
   try {
@@ -443,14 +462,17 @@ exports.handler = async (event) => {
       return json(200, { success: false, reason: 'incoherent' });
     }
 
+    // The FULL analysis is always cached, whatever the user paid. On upgrade
+    // the same contract re-runs, hits this entry, and returns everything in
+    // under a second with no second API call.
+    await cache.store(db(), cacheKey, { analysis: analysis, analyzerVersion: ANALYZER_VERSION });
+
     await finish(jobId, {
       status: 'complete',
-      analysis: analysis,
+      analysis: access.pro ? analysis : preview.redactAnalysis(analysis),
+      access_tier: access.tier,
       completed_at: new Date().toISOString()
     });
-
-    // Fire and forget. A failed cache write must never fail a review.
-    await cache.store(db(), cacheKey, { analysis: analysis, analyzerVersion: ANALYZER_VERSION });
 
     return json(200, { success: true });
 
