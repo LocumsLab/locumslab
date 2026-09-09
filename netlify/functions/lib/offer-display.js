@@ -101,10 +101,14 @@ function crnaPackage(offer, extracted, rate) {
       { label: 'Guaranteed contract gross', value: money(contract) },
       { label: 'Effective hourly rate', value: rate.hourly ? money(rate.hourly) + '/hr' : null }
     ],
+    // Written the way a clinician would say it out loud. The earlier version
+    // used a mirrored "adds to it / comes out of it" construction, which is
+    // tidy and reads like a form letter. Real speech is not symmetrical: the
+    // main point lands first, the afterthought trails.
     note: (hours && weeks)
-      ? hours + ' hours \u00d7 ' + weeks + ' weeks at the stated rate. Overtime and call add to '
-        + 'it. Taxes, travel, housing, and your own malpractice come out of it.'
-      : 'A gross figure needs the guaranteed hours and the contract length, which this offer does not state.'
+      ? hours + ' hours a week for ' + weeks + ' weeks at the stated rate. That\'s before '
+        + 'taxes, and before travel, housing and malpractice. Overtime and call would be on top.'
+      : 'There\'s no gross figure here without the guaranteed hours and the contract length, and this offer states neither.'
   };
 }
 
