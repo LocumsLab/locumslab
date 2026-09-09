@@ -102,8 +102,8 @@ function crnaPackage(offer, extracted, rate) {
       { label: 'Effective hourly rate', value: rate.hourly ? money(rate.hourly) + '/hr' : null }
     ],
     note: (hours && weeks)
-      ? hours + ' hours \u00d7 ' + weeks + ' weeks at the stated rate. Before tax, before overtime '
-        + 'and call, and before anything you pay for yourself.'
+      ? hours + ' hours \u00d7 ' + weeks + ' weeks at the stated rate. Overtime and call add to '
+        + 'it. Taxes, travel, housing, and your own malpractice come out of it.'
       : 'A gross figure needs the guaranteed hours and the contract length, which this offer does not state.'
   };
 }
