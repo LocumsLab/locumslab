@@ -5,6 +5,7 @@ const { profileFor, normaliseProfession, rubricApplies } = require('./lib/rubric
 const cache = require('./lib/extraction-cache');
 const ctext = require('./lib/contract-text');
 const { reverify } = require('./lib/reverify');
+const preview = require('./lib/preview');
 
 // Additive. This does NOT replace analyze-contract-background.js. It writes to
 // new columns (extracted, score, rubric_version, profession) on the same
@@ -601,9 +602,14 @@ exports.handler = async (event) => {
     // Same column set as before this change. contract_type is already on the
     // row, written by the uploader, so the profession is recorded without a
     // schema change and without a second source of truth.
+    // Same entitlement rule as the prose review. The grade and the rate band
+    // survive a preview; the negotiation playbook does not. `extracted` is the
+    // raw contract terms and is withheld entirely — it is the analysis.
+    const access = await preview.accessFor(db(), userId);
+
     await finish(jobId, {
-      extracted: extracted,
-      score: score,
+      extracted: access.pro ? extracted : null,
+      score: access.pro ? score : preview.redactScore(score),
       rubric_version: RUBRIC.version
     });
 
