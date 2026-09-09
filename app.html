@@ -4191,11 +4191,20 @@ async function handleContractUpload(event) {
     return;
   }
 
-  // Gate on Pro using the module-level isPro variable
+  // Free users get three previews before the paywall. Asking for $99 with
+  // nothing shown is the hardest possible sell; one real finding about their
+  // own contract is not.
+  //
+  // This check is convenience only. The paywall is enforced server-side in
+  // lib/preview.js, which decides what actually gets written to the row —
+  // the browser is never trusted with that decision.
   if (!isPro) {
-    showUpgradeModal();
-    document.getElementById('contractUpload').value = '';
-    return;
+    const used = await countPreviewsUsed();
+    if (used >= 3) {
+      showUpgradeModal();
+      document.getElementById('contractUpload').value = '';
+      return;
+    }
   }
 
   // Pro user - go straight to analysis
@@ -4462,7 +4471,85 @@ function setContractType(type) {
   if (note) note.textContent = CTYPE_NOTES[selectedContractType];
 }
 
+// A candidate arriving from a recruiter's offer page has already told us which
+// kind of assignment this is. Carrying it through means they land on the right
+// contract type instead of picking again — and picking wrong sends the contract
+// to the other profession's rubric, which is a confidently wrong grade rather
+// than an obvious error.
+//
+// Only ever preselects a control the user can still change; it never starts an
+// upload or bypasses anything.
+(function applyContractTypeFromUrl() {
+  try {
+    const t = new URLSearchParams(location.search).get('type');
+    if (t === 'travel_rn' || t === 'crna_locums') {
+      // After DOM ready, so the buttons exist to be styled.
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () { setContractType(t); });
+      } else {
+        setContractType(t);
+      }
+    }
+  } catch (e) { /* a malformed URL should never break the page */ }
+})();
+
 // ---------- MAIN ----------
+// Counted from the reviews themselves. Advisory: the server counts again and
+// its answer is the one that decides.
+async function countPreviewsUsed() {
+  try {
+    const { count, error } = await sb
+      .from('contract_reviews')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', currentUserId)
+      .eq('access_tier', 'preview');
+    if (error) return 0;
+    return count || 0;
+  } catch (e) { return 0; }
+}
+
+// Shown above a preview result. Names what is being held back, with counts, so
+// the value of upgrading is concrete rather than implied.
+function previewLockHtml(analysis, remaining) {
+  const l = (analysis && analysis.locked) || {};
+  const titles = (analysis && analysis.lockedIssueTitles) || [];
+  const bits = [];
+  if (l.issues) bits.push(l.issues + ' more issue' + (l.issues === 1 ? '' : 's'));
+  if (l.missingItems) bits.push(l.missingItems + ' missing provision' + (l.missingItems === 1 ? '' : 's'));
+  if (l.recruiterQuestions) bits.push(l.recruiterQuestions + ' question' + (l.recruiterQuestions === 1 ? '' : 's') + ' to send');
+  if (l.attorneyItems) bits.push(l.attorneyItems + ' item' + (l.attorneyItems === 1 ? '' : 's') + ' for an attorney');
+
+  return '<div style="margin-top:20px;border:1px solid var(--border);border-radius:12px;overflow:hidden;">'
+    + '<div style="padding:16px 18px;background:var(--surface2);border-bottom:1px solid var(--border);">'
+    +   '<div style="font-weight:700;font-size:0.9375rem;">This review found ' + (bits.join(', ') || 'more detail') + '.</div>'
+    +   '<div style="font-size:0.8125rem;color:var(--muted);line-height:1.6;margin-top:4px;">'
+    +     'You are seeing the highest-severity finding in full. The rest of this contract\'s '
+    +     'review is above, locked.</div>'
+    + '</div>'
+    + (titles.length
+        ? '<div style="padding:6px 18px 14px;">'
+          + titles.map(function (t) {
+              return '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;'
+                + 'border-bottom:1px solid var(--border);font-size:0.875rem;color:var(--muted);">'
+                + '<span style="opacity:.5;">&#128274;</span>'
+                + '<span style="flex:1;">' + escapeHtml(t.title) + '</span>'
+                + (t.severity ? '<span style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;'
+                    + 'letter-spacing:.05em;color:var(--muted);">' + escapeHtml(t.severity) + '</span>' : '')
+                + '</div>';
+            }).join('')
+          + '</div>'
+        : '')
+    + '<div style="padding:16px 18px;background:var(--bg);border-top:1px solid var(--border);">'
+    +   '<button class="calc-btn" style="width:100%;" onclick="showUpgradeModal()">'
+    +     'Unlock the full review &mdash; $99 once</button>'
+    +   '<div style="font-size:0.75rem;color:var(--muted);text-align:center;margin-top:9px;line-height:1.5;">'
+    +     (remaining > 0
+        ? remaining + ' free preview' + (remaining === 1 ? '' : 's') + ' left. '
+        : 'This was your last free preview. ')
+    +     'One-time payment, no subscription. Unlocks every review, including this one.</div>'
+    + '</div></div>';
+}
+
 async function analyzeContractFile(file) {
   const contentDiv = document.getElementById('redFlagsContent');
 
@@ -5376,7 +5463,8 @@ Thank you,
    + 'color:var(--muted);font-size:0.9rem;line-height:1.6;">Building your negotiation report&hellip;<br>'
    + '<span style="font-size:0.8125rem;">This takes about a minute. The full contract review is ready '
    + 'under the Contract Analyzer tab.</span></div></div></div>'
-   + '<div id="llAnalyzer" class="ll-panel" hidden>' + html + '</div>';
+   + '<div id="llAnalyzer" class="ll-panel" hidden>' + html + '</div>'
+   + (lockedMeta ? previewLockHtml(lockedMeta, Math.max(0, 3 - (window._previewsUsed || 0))) : '');
  if (jobId) attachOfferGrade(jobId);
 
  // Seed the recruiter message with the questions this review produced
